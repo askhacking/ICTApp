@@ -123,10 +123,10 @@
     async function doForce() { const d = await rpc('change_password', { p_old: $('#fa').value, p_new: $('#fb').value }, 'Password diganti'); if (d) { S.user.mustChange = false; closeM() } }
 
     /* ---- Shell ---- */
-    const ST = [['home', 'Beranda'], ['hadir', 'Hadir & Kas'], ['grp', 'Kelompok'], ['lap', 'Laporan'], ['usr', 'Anggota'], ['akun', 'Akun']];
-    const TABS = { pelatih: ST, pengurus: [...ST.slice(0, 5), ['kas', 'Kas Saya'], ST[5]], peserta: [['home', 'Beranda'], ['kas', 'Kas Saya'], ['akun', 'Akun']] };
+    const ST = [['home', 'Beranda'], ['hadir', 'Hadir & Kas'], ['grp', 'Kelompok'], ['lap', 'Laporan Kas'], ['rh', 'Laporan Hadir'], ['usr', 'Anggota'], ['akun', 'Akun']];
+    const TABS = { pelatih: ST, pengurus: [...ST.slice(0, 6), ['kas', 'Kas Saya'], ST[6]], peserta: [['home', 'Beranda'], ['kas', 'Kas Saya'], ['akun', 'Akun']] };
     function shell() { const u = S.user; $('#app').innerHTML = `<header class="p-3"><b>${esc(u.nama)}</b> <span class="badge bg-light text-dark ms-1">${u.role}</span></header><main class="container py-3" style="max-width:720px" id="main"></main><div id="nav" class="d-flex">${TABS[u.role].map(([k, l]) => `<button class="flex-fill" onclick="go('${k}')">${l}</button>`).join('')}</div>`; go('home') }
-    function go(k) { tab = k; document.querySelectorAll('#nav button').forEach((b, i) => b.classList.toggle('on', TABS[S.user.role][i][0] === k)); ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, usr: vUsr, akun: vAkun })[k]($('#main')) }
+    function go(k) { tab = k; document.querySelectorAll('#nav button').forEach((b, i) => b.classList.toggle('on', TABS[S.user.role][i][0] === k)); ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, akun: vAkun })[k]($('#main')) }
 
     /* ---- Beranda & absen ---- */
     const st = g => g === 'OPEN' ? '<span class="badge bg-success">Dibuka</span>' : g === 'CLOSED' ? '<span class="badge bg-secondary">Ditutup</span>' : '<span class="badge bg-light text-dark border">Belum dibuka</span>';
@@ -167,6 +167,23 @@
       $('#lr').innerHTML = `<div class="row g-2 mb-2">${c('Tagihan', d.tagihan)}${c('Terbayar', d.dibayar)}${c('Tunggakan', d.tagihan - d.dibayar)}${c('Pemasukan periode', d.pemasukan)}</div>${card(`<div class="text-secondary small">Saldo kas keseluruhan</div><h4>${rp(d.saldo)}</h4><div class="text-secondary small">Per metode: ${Object.keys(d.metode).map(k => `${esc(k)} ${rp(d.metode[k])}`).join(' · ') || '-'}</div>`)}${card('<h6>Per tanggal</h6>' + T(['Tanggal', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], d.perHari.map(r => [r.tanggal, r.hadir, rp(r.tagihan), rp(r.dibayar), rp(r.tagihan - r.dibayar)])))}${card('<h6>Per anggota</h6>' + T(['Nama', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], d.perPeserta.map(r => [esc(r.nama), r.hadir, rp(r.tagihan), rp(r.dibayar), rp(r.tagihan - r.dibayar)])))}<div class="d-flex gap-2"><button class="btn btn-outline-success flex-fill" onclick="csv()">Unduh CSV</button><button class="btn btn-outline-success flex-fill" onclick="print()">Cetak</button></div>`
     }
     function csv() { const q = v => '"' + String(v).replace(/"/g, '""') + '"', R = [['NIK', 'Nama', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], ...LP.perPeserta.map(r => [r.nik, r.nama, r.hadir, r.tagihan, r.dibayar, r.tagihan - r.dibayar])], a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + R.map(r => r.map(q).join(',')).join('\n')], { type: 'text/csv' })); a.download = `laporan-kas_${LP.from}_${LP.to}.csv`; a.click() }
+
+    /* ---- Laporan kehadiran ---- */
+    let LH = null;
+    const tb = (h, rows) => `<div class="table-responsive"><table class="table table-sm small"><thead><tr>${h.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(x => `<td class="text-nowrap">${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    const pc = (h, n) => n ? Math.round(h * 100 / n) + '%' : '-';
+    function vRh(m) { const t = S.today; m.innerHTML = card(`<div class="row g-2"><div class="col">${lbl('Dari')}<input type="date" id="hf" class="form-control" value="${t.slice(0, 8)}01"></div><div class="col">${lbl('Sampai')}<input type="date" id="ht" class="form-control" value="${t}"></div></div><button class="btn btn-success w-100 mt-3" onclick="loadRh()">Tampilkan laporan</button>`) + '<div id="hr"></div>'; loadRh() }
+    async function loadRh() {
+      const d = await rpc('report_kehadiran', { p_from: $('#hf').value || null, p_to: $('#ht').value || null }); if (!d) return; LH = d;
+      const A = d.perAnggota, sh = A.reduce((a, x) => a + x.hadir, 0), ss = A.reduce((a, x) => a + x.sesi, 0), nol = A.filter(x => x.sesi > 0 && x.hadir === 0).length, dv = {};
+      A.forEach(x => { const o = dv[x.divisi] = dv[x.divisi] || { n: 0, h: 0, s: 0 }; o.n++; o.h += x.hadir; o.s += x.sesi });
+      const c = (l, v) => `<div class="col-6"><div class="card card-body"><div class="text-secondary small">${l}</div><b>${v}</b></div></div>`;
+      $('#hr').innerHTML = `<div class="row g-2 mb-2">${c('Total sesi', d.totalSesi)}${c('Total kehadiran', d.hadirTotal)}${c('Rata-rata kehadiran', pc(sh, ss))}${c('Belum pernah hadir', nol)}</div>
+ ${card('<h6>Per tanggal</h6>' + tb(['Tanggal', 'Sesi', 'Pengurus', 'Peserta', 'Total'], d.perHari.map(r => [r.tanggal, esc(r.judul), r.pengurus, r.peserta, r.pengurus + r.peserta])))}
+ ${card('<h6>Per divisi</h6>' + tb(['Divisi', 'Anggota', 'Hadir', 'Kehadiran'], Object.keys(dv).sort().map(k => [esc(k), dv[k].n, dv[k].h, pc(dv[k].h, dv[k].s)])))}
+ ${card('<h6>Per anggota</h6>' + tb(['Nama', 'Role', 'Divisi', 'Hadir', 'Sesi', '%'], A.map(x => [esc(x.nama), x.role, esc(x.divisi), x.hadir, x.sesi, `<span class="${x.sesi && x.hadir * 2 < x.sesi ? 'text-danger' : ''}">${pc(x.hadir, x.sesi)}</span>`])))}
+ <div class="d-flex gap-2"><button class="btn btn-outline-success flex-fill" onclick="csvH()">Unduh CSV</button><button class="btn btn-outline-success flex-fill" onclick="print()">Cetak</button></div>`}
+    function csvH() { const q = v => '"' + String(v).replace(/"/g, '""') + '"', R = [['NIK', 'Nama', 'Role', 'Divisi', 'Hadir', 'Sesi', 'Persen'], ...LH.perAnggota.map(x => [x.nik, x.nama, x.role, x.divisi, x.hadir, x.sesi, pc(x.hadir, x.sesi)])], a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + R.map(r => r.map(q).join(',')).join('\n')], { type: 'text/csv' })); a.download = `laporan-kehadiran_${LH.from}_${LH.to}.csv`; a.click() }
 
     /* ---- Anggota & Divisi ---- */
     let LD = [];
