@@ -5,76 +5,425 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Absensi & Kas</title>
-    <meta name="theme-color" content="#113045">
+    <meta name="theme-color" content="#132234">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
     <style>
         :root {
-            --navy: #113045;
+            --navy: #293F59;
+            --ink: #132234;
+            --band: #081F44;
             --blue: #4D9CBA;
             --sky: #9BC9E3;
             --yellow: #F5BA42;
             --orange: #ED8B34;
-            --bg: #EDF4F8;
-            --navy2: #1B4764;
-            --bs-body-color: #113045;
-            --bs-secondary-color: #5A7487
+            --bs-body-font-family: 'Poppins', system-ui, sans-serif;
+            --bs-body-color: #293F59;
+            --bs-secondary-color: #5f7088
         }
 
         body {
-            background: var(--bg);
-            padding-bottom: 70px
+            font-family: 'Poppins', system-ui, sans-serif;
+            background: linear-gradient(157deg, #293F59 6%, #fff 43%, #A4A4A4 85%) fixed;
+            min-height: 100vh
         }
 
         .text-secondary {
-            color: #5A7487 !important
+            color: #5f7088 !important
         }
 
-        header {
-            background: var(--navy);
+        .shell {
+            max-width: 640px;
+            margin: 0 auto;
+            min-height: 100vh
+        }
+
+        .hdr {
+            background: var(--ink);
+            color: #fff;
+            border-radius: 0 0 40px 40px;
+            padding: 18px 20px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 20
+        }
+
+        .hdr h1 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0
+        }
+
+        .ib {
+            background: none;
+            border: 0;
+            color: #fff;
+            font-size: 1.35rem;
+            position: relative;
+            padding: 4px 8px;
+            line-height: 1
+        }
+
+        .ib.dk {
+            color: var(--navy)
+        }
+
+        .dot {
+            position: absolute;
+            top: -4px;
+            right: 0;
+            background: var(--orange);
+            color: var(--ink);
+            font-size: .62rem;
+            font-weight: 700;
+            border-radius: 99px;
+            padding: 1px 6px
+        }
+
+        .prof {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 22px 24px 12px;
             color: #fff
         }
 
-        header .badge {
-            background: var(--yellow) !important;
-            color: var(--navy) !important
+        .av {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--sky);
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            flex: none
+        }
+
+        .band {
+            background: var(--band);
+            height: 70px;
+            border-radius: 21px 21px 0 0;
+            margin-top: 6px
+        }
+
+        .sheet {
+            background: linear-gradient(#CED8E3, #89919A);
+            border-radius: 21px 21px 0 0;
+            margin-top: -34px;
+            padding: 18px 16px 40px;
+            min-height: 60vh;
+            position: relative
+        }
+
+        .sheet.flat {
+            margin-top: 16px
         }
 
         .card {
-            border-color: #D3E3EC
+            background: linear-gradient(#ECF0F9, #D3D6DD);
+            border: 0;
+            border-radius: 21px;
+            box-shadow: 1px 2px 5px 1.5px rgba(0, 0, 0, .4)
         }
 
-        #nav {
+        .form-control,
+        .form-select {
+            border-radius: 30px;
+            border: 1px solid rgba(0, 0, 0, .28);
+            padding: .6rem 1rem;
+            background-color: #fff
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--navy);
+            box-shadow: 0 0 0 .2rem rgba(41, 63, 89, .2)
+        }
+
+        .btn {
+            border-radius: 16px;
+            font-weight: 600
+        }
+
+        .btn-success {
+            --bs-btn-color: #fff;
+            --bs-btn-bg: var(--navy);
+            --bs-btn-border-color: var(--navy);
+            --bs-btn-hover-color: #fff;
+            --bs-btn-hover-bg: #1b2c40;
+            --bs-btn-hover-border-color: #1b2c40;
+            --bs-btn-active-color: #fff;
+            --bs-btn-active-bg: #1b2c40;
+            --bs-btn-active-border-color: #1b2c40;
+            --bs-btn-disabled-color: #fff;
+            --bs-btn-disabled-bg: var(--navy);
+            --bs-btn-disabled-border-color: var(--navy)
+        }
+
+        .btn-outline-success {
+            --bs-btn-color: var(--navy);
+            --bs-btn-border-color: var(--navy);
+            --bs-btn-hover-color: #fff;
+            --bs-btn-hover-bg: var(--navy);
+            --bs-btn-hover-border-color: var(--navy);
+            --bs-btn-active-color: #fff;
+            --bs-btn-active-bg: var(--navy);
+            --bs-btn-active-border-color: var(--navy)
+        }
+
+        .btn-outline-secondary {
+            --bs-btn-color: var(--navy);
+            --bs-btn-border-color: #9fb0c2;
+            --bs-btn-hover-color: var(--navy);
+            --bs-btn-hover-bg: #e1e8ef;
+            --bs-btn-hover-border-color: #9fb0c2;
+            --bs-btn-active-color: var(--navy);
+            --bs-btn-active-bg: #e1e8ef
+        }
+
+        .btn-warning {
+            --bs-btn-color: var(--ink);
+            --bs-btn-bg: var(--orange);
+            --bs-btn-border-color: var(--orange);
+            --bs-btn-hover-color: var(--ink);
+            --bs-btn-hover-bg: #F19D52;
+            --bs-btn-hover-border-color: #F19D52;
+            --bs-btn-active-color: var(--ink);
+            --bs-btn-active-bg: #F19D52;
+            --bs-btn-active-border-color: #F19D52;
+            --bs-btn-disabled-color: var(--ink);
+            --bs-btn-disabled-bg: var(--orange);
+            --bs-btn-disabled-border-color: var(--orange)
+        }
+
+        .bg-success {
+            background-color: var(--blue) !important
+        }
+
+        .badge.bg-success {
+            color: var(--ink)
+        }
+
+        .bg-warning {
+            background-color: var(--yellow) !important
+        }
+
+        .bg-info-subtle {
+            background-color: var(--sky) !important
+        }
+
+        .bg-success-subtle {
+            background-color: #E1EFF7 !important
+        }
+
+        .border-success {
+            border-color: var(--blue) !important
+        }
+
+        .text-bg-dark {
+            background-color: var(--ink) !important
+        }
+
+        .alert-warning {
+            --bs-alert-bg: #FDF1D4;
+            --bs-alert-border-color: var(--yellow);
+            --bs-alert-color: #5A3D00
+        }
+
+        .pill {
+            background: var(--navy);
+            color: #fff;
+            border-radius: 20px;
+            padding: 8px 0;
+            flex: 1;
+            margin: 0 8px;
+            text-align: center;
+            font-weight: 700;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, .25)
+        }
+
+        .cg {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px 0;
+            text-align: center;
+            font-size: .9rem
+        }
+
+        .cg b {
+            font-weight: 400
+        }
+
+        .cg .sun {
+            color: #ff0004
+        }
+
+        .cg .now {
+            background: var(--navy);
+            color: #fff;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            margin: auto
+        }
+
+        .qm {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px 6px;
+            text-align: center
+        }
+
+        .qm button {
+            background: none;
+            border: 0;
+            color: var(--navy);
+            font-size: .72rem;
+            font-weight: 700;
+            padding: 0
+        }
+
+        .qc {
+            display: flex;
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 6px;
+            border-radius: 50%;
+            background: var(--navy);
+            color: #fff;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.45rem
+        }
+
+        .drw {
             position: fixed;
-            bottom: 0;
-            left: 0;
+            inset: 0;
+            z-index: 60;
+            visibility: hidden
+        }
+
+        .drw.on {
+            visibility: visible
+        }
+
+        .drw-bg {
+            position: absolute;
+            inset: 0;
+            background: rgba(19, 34, 52, .55);
+            opacity: 0;
+            transition: .2s
+        }
+
+        .drw.on .drw-bg {
+            opacity: 1
+        }
+
+        .drw-p {
+            position: absolute;
+            top: 0;
             right: 0;
-            background: #fff;
-            border-top: 1px solid #D3E3EC;
-            z-index: 10;
+            bottom: 0;
+            width: 270px;
+            background: var(--ink);
+            color: #fff;
+            transform: translateX(100%);
+            transition: .2s;
+            padding: 22px 12px;
+            overflow: auto
+        }
+
+        .drw.on .drw-p {
+            transform: none
+        }
+
+        .drw-p button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            background: none;
+            border: 0;
+            color: #fff;
+            padding: 12px 14px;
+            border-radius: 14px;
+            font-weight: 600;
+            text-align: left
+        }
+
+        .drw-p button.on {
+            background: var(--navy)
+        }
+
+        .lg {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: #fafafa
+        }
+
+        .lg-top {
+            background: var(--navy);
+            padding: 36px 24px 80px;
+            text-align: center
+        }
+
+        .logo {
+            max-width: 300px;
+            width: 100%
+        }
+
+        .logo-fb {
+            color: #fff;
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: .12em
+        }
+
+        .lg-sheet {
+            background: #fafafa;
+            margin-top: -44px;
+            border-radius: 60px 60px 0 0;
+            padding: 36px 32px 40px;
+            position: relative
+        }
+
+        .seg {
+            display: flex;
+            gap: 6px;
             overflow-x: auto
         }
 
-        #nav button {
+        .seg button {
+            flex: 1 0 auto;
             border: 0;
-            background: none;
-            padding: 14px 10px;
-            white-space: nowrap;
+            background: #fff;
+            border-radius: 99px;
+            padding: 7px 12px;
             font-size: .78rem;
             font-weight: 600;
-            color: #5A7487
+            color: var(--navy)
         }
 
-        #nav button.on {
-            color: var(--navy);
-            box-shadow: inset 0 3px var(--orange)
+        .seg button.on {
+            background: var(--navy);
+            color: #fff
         }
 
         .ov {
             position: fixed;
             inset: 0;
-            background: rgba(17, 48, 69, .55);
-            z-index: 50;
+            background: rgba(19, 34, 52, .55);
+            z-index: 80;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -99,106 +448,12 @@
             display: none
         }
 
-        .form-control:focus,
-        .form-select:focus {
-            border-color: var(--blue);
-            box-shadow: 0 0 0 .2rem rgba(77, 156, 186, .25)
-        }
-
-        /* tombol utama = navy, aksi sekunder = outline biru, CTA absen = oranye */
-        .btn-success {
-            --bs-btn-color: #fff;
-            --bs-btn-bg: var(--navy);
-            --bs-btn-border-color: var(--navy);
-            --bs-btn-hover-color: #fff;
-            --bs-btn-hover-bg: var(--navy2);
-            --bs-btn-hover-border-color: var(--navy2);
-            --bs-btn-active-color: #fff;
-            --bs-btn-active-bg: var(--navy2);
-            --bs-btn-active-border-color: var(--navy2);
-            --bs-btn-disabled-color: #fff;
-            --bs-btn-disabled-bg: var(--navy);
-            --bs-btn-disabled-border-color: var(--navy)
-        }
-
-        .btn-outline-success {
-            --bs-btn-color: var(--navy);
-            --bs-btn-border-color: var(--blue);
-            --bs-btn-hover-color: var(--navy);
-            --bs-btn-hover-bg: var(--sky);
-            --bs-btn-hover-border-color: var(--blue);
-            --bs-btn-active-color: var(--navy);
-            --bs-btn-active-bg: var(--sky);
-            --bs-btn-active-border-color: var(--blue);
-            --bs-btn-disabled-color: var(--navy);
-            --bs-btn-disabled-border-color: var(--blue)
-        }
-
-        .btn-outline-secondary {
-            --bs-btn-color: var(--navy);
-            --bs-btn-border-color: #B7CDDA;
-            --bs-btn-hover-color: var(--navy);
-            --bs-btn-hover-bg: #E1EDF4;
-            --bs-btn-hover-border-color: #B7CDDA;
-            --bs-btn-active-color: var(--navy);
-            --bs-btn-active-bg: #E1EDF4;
-            --bs-btn-active-border-color: #B7CDDA
-        }
-
-        .btn-warning {
-            --bs-btn-color: var(--navy);
-            --bs-btn-bg: var(--orange);
-            --bs-btn-border-color: var(--orange);
-            --bs-btn-hover-color: var(--navy);
-            --bs-btn-hover-bg: #F19D52;
-            --bs-btn-hover-border-color: #F19D52;
-            --bs-btn-active-color: var(--navy);
-            --bs-btn-active-bg: #F19D52;
-            --bs-btn-active-border-color: #F19D52;
-            --bs-btn-disabled-color: var(--navy);
-            --bs-btn-disabled-bg: var(--orange);
-            --bs-btn-disabled-border-color: var(--orange)
-        }
-
-        .bg-success {
-            background-color: var(--blue) !important
-        }
-
-        .badge.bg-success {
-            color: var(--navy)
-        }
-
-        .bg-warning {
-            background-color: var(--yellow) !important
-        }
-
-        .bg-info-subtle {
-            background-color: var(--sky) !important
-        }
-
-        .bg-success-subtle {
-            background-color: #E1EFF7 !important
-        }
-
-        .border-success {
-            border-color: var(--blue) !important
-        }
-
-        .text-bg-dark {
-            background-color: var(--navy) !important
-        }
-
-        .alert-warning {
-            --bs-alert-bg: #FDF1D4;
-            --bs-alert-border-color: var(--yellow);
-            --bs-alert-color: #5A3D00
-        }
-
-        /* cetak: tanpa navbar/tombol/filter, konten tidak terpotong */
         @media print {
 
-            header,
-            #nav,
+            .hdr,
+            .prof,
+            .band,
+            .drw,
             #bar,
             #toast,
             .btn,
@@ -208,18 +463,24 @@
             }
 
             body {
-                background: #fff;
-                padding: 0 !important
+                background: #fff
             }
 
-            main {
-                max-width: none !important;
+            .shell {
+                max-width: none
+            }
+
+            .sheet {
+                background: #fff !important;
+                border-radius: 0;
+                margin: 0 !important;
                 padding: 0 !important
             }
 
             .card {
                 break-inside: avoid;
-                box-shadow: none
+                box-shadow: none;
+                border: 1px solid #ddd
             }
 
             .table-responsive {
@@ -263,8 +524,20 @@
         const closeM = () => { const o = $('#ov'); o && o.remove() };
         const lbl = t => `<label class="form-label fw-semibold small mt-2 mb-1">${t}</label>`;
 
-        /* ---- Login ---- */
-        function viewLogin(msg) { closeM(); $('#app').innerHTML = `<div class="container login" style="max-width:380px;margin-top:12vh"><h1 class="fw-bold" style="color:var(--navy)">Absensi<br>&amp; Kas</h1><p class="text-secondary">Masuk menggunakan NIK Anda.</p>${msg ? `<div class="alert alert-warning">${esc(msg)}</div>` : ''}${lbl('NIK')}<input id="nik" class="form-control" inputmode="numeric" autocomplete="username">${lbl('Password')}<input id="pw" type="password" class="form-control" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"><button class="btn btn-success w-100 mt-3" onclick="doLogin()">Masuk</button><p class="text-secondary small mt-3">Satu akun hanya dapat digunakan pada satu perangkat.</p></div>` }
+        /* ---- Login & pendaftaran anggota ---- */
+        const LOGO = `<img src="assets/logo.png" alt="ICT Club" class="logo" onerror="this.style.display='none';document.getElementById('lgfb').style.display='block'"><div id="lgfb" class="logo-fb" style="display:none">ICT CLUB</div>`;
+        const lgWrap = h => `<div class="lg"><div class="lg-top">${LOGO}</div><div class="lg-sheet">${h}</div></div>`;
+        function viewLogin(msg) { closeM(); $('#app').innerHTML = lgWrap(`<h5 class="fw-bold mb-3">Masuk ke akun Anda</h5>${msg ? `<div class="alert alert-warning">${esc(msg)}</div>` : ''}${lbl('NIK')}<input id="nik" class="form-control" inputmode="numeric" autocomplete="username" placeholder="NIK">${lbl('Password')}<input id="pw" type="password" class="form-control" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"><button class="btn btn-success w-100 mt-4 py-2" onclick="doLogin()">Masuk</button><p class="text-secondary small text-center mt-3 mb-1">Lupa password? Hubungi pelatih atau pengurus.</p><p class="text-center small mt-4">Belum menjadi anggota? <a href="#" onclick="viewDaftar();return false">Daftar sebagai anggota</a></p><p class="text-secondary small text-center">Satu akun hanya dapat dipakai di satu perangkat.</p>`) }
+        async function viewDaftar() {
+            busy(1); const { data } = await sb.rpc('public_divisions'); busy(0); const dv = data || [];
+            $('#app').innerHTML = lgWrap(`<h5 class="fw-bold mb-1">Pendaftaran anggota</h5><p class="text-secondary small">Pendaftaran disetujui pelatih, lalu akun diaktifkan pengurus. NIK dan password dikirim ke WhatsApp Anda setelah akun aktif.</p>${lbl('Nama lengkap')}<input id="dn" class="form-control" maxlength="100">${lbl('No. WhatsApp')}<input id="dh" class="form-control" inputmode="tel" placeholder="08xxxxxxxxxx">${lbl('Divisi')}<select id="dd" class="form-select"><option value="">Pilih divisi</option>${dv.map(x => `<option value="${x.id}">${esc(x.nama)}</option>`).join('')}</select>${lbl('Catatan (opsional)')}<input id="dc" class="form-control" maxlength="300"><input id="dw" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"><button class="btn btn-success w-100 mt-4 py-2" onclick="doDaftar()">Kirim pendaftaran</button><p class="text-center small mt-3"><a href="#" onclick="viewLogin();return false">Kembali ke login</a></p>`)
+        }
+        async function doDaftar() {
+            const dd = $('#dd').value; if (!dd) return toast('Pilih divisi.', 1); busy(1);
+            const { error } = await sb.rpc('submit_registration', { p_nama: $('#dn').value, p_hp: $('#dh').value, p_divisi: +dd, p_catatan: $('#dc').value || null, p_website: $('#dw').value || null }); busy(0);
+            if (error) return toast(error.message, 1);
+            $('#app').innerHTML = lgWrap(`<div class="text-center"><div class="display-4"><i class="bi bi-check-circle" style="color:var(--blue)"></i></div><h5 class="fw-bold">Pendaftaran terkirim</h5><p class="text-secondary small">Menunggu persetujuan pelatih, lalu aktivasi oleh pengurus. Informasi NIK dan password akan dikirim ke WhatsApp Anda.</p><button class="btn btn-success w-100" onclick="viewLogin()">Kembali ke login</button></div>`)
+        }
         async function doLogin() {
             busy(1); const { error } = await sb.auth.signInWithPassword({ email: $('#nik').value.trim() + '@kas.local', password: $('#pw').value }); busy(0);
             if (error) return toast('NIK atau password salah.', 1);
@@ -272,14 +545,58 @@
         }
         function logoutLocal(m) { S = null; viewLogin(m) }
         async function doLogout() { await sb.auth.signOut(); logoutLocal() }
-        function start() { tab = 'home'; shell(); if (S.user.mustChange) modal(`<h5>Ganti password</h5><p class="text-secondary small">Demi keamanan, ganti password sementara Anda.</p>${lbl('Password saat ini')}<input id="fa" type="password" class="form-control">${lbl('Password baru (min. 6)')}<input id="fb" type="password" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="doForce()">Simpan</button>`, true) }
+        function start() { shell(); if (S.user.mustChange) modal(`<h5>Ganti password</h5><p class="text-secondary small">Demi keamanan, ganti password sementara Anda.</p>${lbl('Password saat ini')}<input id="fa" type="password" class="form-control">${lbl('Password baru (min. 6)')}<input id="fb" type="password" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="doForce()">Simpan</button>`, true) }
         async function doForce() { const d = await rpc('change_password', { p_old: $('#fa').value, p_new: $('#fb').value }, 'Password diganti'); if (d) { S.user.mustChange = false; closeM() } }
 
-        /* ---- Shell ---- */
-        const ST = [['home', 'Beranda'], ['hadir', 'Hadir & Kas'], ['grp', 'Kelompok'], ['lap', 'Laporan Kas'], ['rh', 'Laporan Hadir'], ['usr', 'Anggota'], ['akun', 'Akun']];
-        const TABS = { pelatih: ST, pengurus: [...ST.slice(0, 6), ['kas', 'Kas Saya'], ST[6]], peserta: [['home', 'Beranda'], ['kas', 'Kas Saya'], ['akun', 'Akun']] };
-        function shell() { const u = S.user; $('#app').innerHTML = `<header class="p-3"><b>${esc(u.nama)}</b> <span class="badge bg-light text-dark ms-1">${u.role}</span></header><main class="container py-3" style="max-width:720px" id="main"></main><div id="nav" class="d-flex">${TABS[u.role].map(([k, l]) => `<button class="flex-fill" onclick="go('${k}')">${l}</button>`).join('')}</div>`; go('home') }
-        function go(k) { tab = k; document.querySelectorAll('#nav button').forEach((b, i) => b.classList.toggle('on', TABS[S.user.role][i][0] === k)); ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, akun: vAkun })[k]($('#main')) }
+        /* ---- Shell: header, menu samping, kalender, menu cepat ---- */
+        const M = { home: ['Beranda', 'house'], hadir: ['Hadir & Kas', 'cash-coin'], grp: ['Kelompok', 'people'], lap: ['Laporan Kas', 'graph-up'], rh: ['Laporan Hadir', 'calendar-check'], usr: ['Anggota', 'person-lines-fill'], reg: ['Pendaftaran', 'person-plus'], kas: ['Kas Saya', 'wallet2'], akun: ['Akun', 'person-circle'] };
+        const ROLEMENU = { pelatih: ['home', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'akun'], pengurus: ['home', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'kas', 'akun'], peserta: ['home', 'kas', 'akun'] };
+        function shell() {
+            const u = S.user, st = u.role !== 'peserta';
+            $('#app').innerHTML = `<div class="shell"><div class="hdr"><button class="ib" onclick="go('${st ? 'reg' : 'home'}')"><i class="bi bi-${st ? 'bell' : 'house'}"></i>${S.notif > 0 ? `<span class="dot">${S.notif}</span>` : ''}</button><h1 id="ttl"></h1><button class="ib" onclick="drw(1)"><i class="bi bi-list"></i></button></div><div id="top"></div><main class="sheet" id="main"></main></div><div class="drw" id="drw"><div class="drw-bg" onclick="drw(0)"></div><div class="drw-p"><div class="mb-3 px-2"><b>${esc(u.nama)}</b><div class="small" style="opacity:.7">${u.role}${u.divisi ? ' · ' + esc(u.divisi) : ''}</div></div>${ROLEMENU[u.role].map(k => `<button data-k="${k}" onclick="drw(0);go('${k}')"><i class="bi bi-${M[k][1]}"></i>${M[k][0]}${k === 'reg' && S.notif > 0 ? `<span class="badge bg-warning text-dark ms-auto">${S.notif}</span>` : ''}</button>`).join('')}<button onclick="drw(0);doLogout()"><i class="bi bi-box-arrow-right"></i>Keluar</button></div></div>`; go('home')
+        }
+        const drw = o => $('#drw').classList.toggle('on', !!o);
+        function go(k) {
+            tab = k; const u = S.user, h = k === 'home'; $('#ttl').textContent = M[k][0];
+            document.querySelectorAll('.drw-p button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === k));
+            $('#top').innerHTML = h ? `<div class="prof"><div class="av">${esc((u.nama.trim()[0] || '?').toUpperCase())}</div><div class="flex-fill"><div class="fw-bold">${esc(u.nama)}</div><div class="small">${esc(u.divisi || u.role)}</div></div><button class="ib" onclick="go('akun')"><i class="bi bi-pencil-square"></i></button></div><div class="band"></div>` : '';
+            $('#main').classList.toggle('flat', !h); window.scrollTo(0, 0);
+            ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, reg: vReg, akun: vAkun })[k]($('#main'))
+        }
+        let cy = null, cmn = 0;
+        const BLN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        function calHTML() {
+            const t = S.today.split('-').map(Number); if (cy == null) { cy = t[0]; cmn = t[1] - 1 }
+            const first = (new Date(cy, cmn, 1).getDay() + 6) % 7, n = new Date(cy, cmn + 1, 0).getDate(), now = cy === t[0] && cmn === t[1] - 1; let c = '';
+            for (let i = 0; i < first; i++)c += '<span></span>';
+            for (let d = 1; d <= n; d++) { const w = (first + d - 1) % 7; c += `<span class="${w === 6 ? 'sun' : ''}${now && d === t[2] ? ' now' : ''}">${d}</span>` }
+            return `<div class="card card-body mb-3"><div class="d-flex align-items-center justify-content-between mb-3"><button class="ib dk" onclick="calGo(-1)"><i class="bi bi-chevron-left"></i></button><div class="pill">${BLN[cmn]} - ${cy}</div><button class="ib dk" onclick="calGo(1)"><i class="bi bi-chevron-right"></i></button></div><div class="cg">${['SN', 'SL', 'RB', 'KM', 'JM', 'SB', 'MG'].map(x => `<b>${x}</b>`).join('')}${c}</div></div>`
+        }
+        function calGo(n) { cmn += n; if (cmn < 0) { cmn = 11; cy-- } if (cmn > 11) { cmn = 0; cy++ } $('#cal').innerHTML = calHTML() }
+        const calWrap = () => `<div id="cal">${calHTML()}</div>`;
+        const menuCard = () => `<div class="card card-body mb-3"><div class="qm">${ROLEMENU[S.user.role].filter(k => k !== 'home' && k !== 'akun').map(k => `<button onclick="go('${k}')"><span class="qc"><i class="bi bi-${M[k][1]}"></i></span>${M[k][0]}</button>`).join('')}</div></div>`;
+
+        /* ---- Pendaftaran anggota (pelatih setujui, pengurus aktifkan) ---- */
+        let RG = [], rs = '';
+        const RS = [['MENUNGGU', 'Menunggu'], ['DISETUJUI', 'Disetujui'], ['AKTIF', 'Aktif'], ['DITOLAK', 'Ditolak']];
+        async function vReg(m) { const d = await rpc('list_registrations'); if (!d) return; RG = d; if (!rs) rs = S.user.role === 'pelatih' ? 'MENUNGGU' : 'DISETUJUI'; drawReg() }
+        function drawReg() {
+            const P = S.user.role === 'pelatih', n = k => RG.filter(x => x.status === k).length, L = RG.filter(x => x.status === rs);
+            $('#main').innerHTML = `<div class="seg mb-2">${RS.map(([k, l]) => `<button class="${k === rs ? 'on' : ''}" onclick="rs='${k}';drawReg()">${l} (${n(k)})</button>`).join('')}</div><p class="text-secondary small">${P ? 'Pelatih menyetujui atau menolak pendaftaran. Setelah disetujui, pengurus mengaktifkan akun.' : 'Pengurus mengaktifkan akun untuk pendaftaran yang sudah disetujui pelatih.'}</p>` +
+                (L.map(x => `<div class="card card-body mb-2"><div class="d-flex justify-content-between"><b>${esc(x.nama)}</b><span class="badge ${x.status === 'AKTIF' ? 'bg-success' : x.status === 'DITOLAK' ? 'bg-secondary' : 'bg-warning text-dark'}">${x.status}</span></div><div class="text-secondary small">${esc(x.divisi || '-')} · ${esc(x.hp)} · ${x.created}</div>${x.catatan ? `<div class="small mt-1">${esc(x.catatan)}</div>` : ''}${x.angkatan ? `<div class="small mt-1">Angkatan ${esc(x.angkatan)} · disetujui ${esc(x.reviewedBy || '')}</div>` : ''}${x.alasan ? `<div class="small mt-1 text-danger">Ditolak: ${esc(x.alasan)}</div>` : ''}${x.nik ? `<div class="small mt-1">NIK <b>${esc(x.nik)}</b> · diaktifkan ${esc(x.activatedBy || '')}</div>` : ''}
+ ${x.status === 'MENUNGGU' && P ? `<div class="d-flex gap-2 mt-2"><button class="btn btn-success flex-fill" onclick="regOk(${x.id})">Setujui</button><button class="btn btn-outline-secondary flex-fill" onclick="regNo(${x.id})">Tolak</button></div>` : ''}${x.status === 'DISETUJUI' && !P ? `<button class="btn btn-success w-100 mt-2" onclick="regAct(${x.id})">Aktifkan akun</button>` : ''}</div>`).join('') || '<p class="text-secondary">Tidak ada data.</p>')
+        }
+        function regOk(id) { modal(`<h5>Setujui pendaftaran</h5>${lbl('Angkatan (2 digit)')}<input id="ra" class="form-control" inputmode="numeric" maxlength="2" placeholder="mis. 20" value="${esc(localStorage.getItem('ang') || '')}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="regSave(${id},'setuju')">Setujui</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
+        function regNo(id) { modal(`<h5>Tolak pendaftaran</h5>${lbl('Alasan (opsional)')}<input id="rb" class="form-control" maxlength="200"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="regSave(${id},'tolak')">Tolak</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
+        async function regSave(id, a) {
+            const p = { p_id: id, p_aksi: a }; if (a === 'setuju') { p.p_angkatan = $('#ra').value.trim(); localStorage.setItem('ang', p.p_angkatan) } else p.p_alasan = $('#rb').value;
+            const d = await rpc('review_registration', p, a === 'setuju' ? 'Pendaftaran disetujui' : 'Pendaftaran ditolak'); if (d) { closeM(); vReg($('#main')) }
+        }
+        async function regAct(id) {
+            if (!confirm('Aktifkan akun untuk pendaftar ini?')) return; const d = await rpc('activate_registration', { p_id: id }); if (!d) return;
+            const msg = `Halo ${d.nama}, akun ICT Club Anda sudah aktif.\nNIK: ${d.nik}\nPassword sementara: ${d.password}\nLogin: ${location.origin + location.pathname}\nSilakan ganti password setelah login.`;
+            modal(`<h5>Akun diaktifkan</h5><p>${esc(d.nama)}<br>NIK (untuk login): <b class="fs-5">${esc(d.nik)}</b><br>Password sementara: <b class="fs-5">${esc(d.password)}</b></p><a class="btn btn-success w-100 mb-2" target="_blank" rel="noopener" href="https://wa.me/${esc(d.hp)}?text=${encodeURIComponent(msg)}"><i class="bi bi-whatsapp"></i> Kirim lewat WhatsApp</a><button class="btn btn-outline-secondary w-100" onclick="closeM()">Tutup</button>`); vReg($('#main'))
+        }
 
         /* ---- Beranda & absen ---- */
         const st = g => g === 'OPEN' ? '<span class="badge bg-success">Dibuka</span>' : g === 'CLOSED' ? '<span class="badge bg-secondary">Ditutup</span>' : '<span class="badge bg-light text-dark border">Belum dibuka</span>';
@@ -290,7 +607,7 @@
         }
         async function vHome(m) {
             const d = await rpc('get_state'); if (d) S = d; const s = S.sesi, u = S.user;
-            let h = card(`<div class="text-secondary small">${S.today}</div><h5 class="mb-1">${s ? esc(s.judul) : 'Belum ada sesi hari ini'}</h5>${s ? `<div class="text-secondary small">Kas per kehadiran: <b>${rp(s.nominal)}</b></div>` : ''}`);
+            let h = calWrap() + menuCard() + card(`<div class="text-secondary small">${S.today}</div><h5 class="mb-1">${s ? esc(s.judul) : 'Belum ada sesi hari ini'}</h5>${s ? `<div class="text-secondary small">Kas per kehadiran: <b>${rp(s.nominal)}</b></div>` : ''}`);
             if (u.role !== 'peserta') h += card(`<div class="d-flex justify-content-between"><span>Hadir pengurus: <b>${S.hadirPengurus}</b></span><span>Hadir peserta: <b>${S.hadirPeserta}</b></span></div>`);
             if (u.role === 'pelatih') h += card(`<h6>Akses absen pengurus ${st(s?.gate_pengurus)}</h6>${lbl('Judul sesi')}<input id="jd" class="form-control" value="${esc(s?.judul || 'Latihan')}">${lbl('Nominal kas per peserta (Rp)')}<input id="nm" type="number" inputmode="numeric" class="form-control" value="${s?.nominal ?? 0}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="gate('open_gate','pengurus')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','pengurus')">Tutup</button></div>`) + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6><p class="text-secondary small">Dibuka oleh pengurus. Pelatih dapat menutupnya kapan saja.</p><button class="btn btn-outline-success" onclick="gate('close_gate','peserta')">Tutup akses peserta</button>`);
             if (u.role === 'pengurus') h += absenCard() + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6>${S.canOpenPeserta ? '' : '<p class="text-secondary small">Dapat dibuka setelah pelatih membuka sesi dan Anda sudah absen.</p>'}<div class="d-flex gap-2"><button class="btn btn-success flex-fill" ${S.canOpenPeserta ? '' : 'disabled'} onclick="gate('open_gate','peserta')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','peserta')">Tutup</button></div>`);
@@ -379,7 +696,7 @@
         async function chPw() { const d = await rpc('change_password', { p_old: $('#pa').value, p_new: $('#pb').value }, 'Password diganti'); if (d) { $('#pa').value = ''; $('#pb').value = '' } }
 
         /* ---- Init ---- */
-        (async () => { const { data: { session } } = await sb.auth.getSession(); if (!session) return viewLogin(); const d = await rpc('get_state'); if (d) { S = d; start() } else if (!$('.login')) viewLogin() })();
+        (async () => { const { data: { session } } = await sb.auth.getSession(); if (!session) return viewLogin(); const d = await rpc('get_state'); if (d) { S = d; start() } else if (!$('.lg')) viewLogin() })();
     </script>
 </body>
 
