@@ -2,210 +2,215 @@
 <html lang="id">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Absensi & Kas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-    <style>
-        body {
-            background: #f4f1ea;
-            padding-bottom: 70px
-        }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Absensi & Kas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <style>
+    body {
+      background: #f4f1ea;
+      padding-bottom: 70px
+    }
 
-        header {
-            background: #0f5c3f;
-            color: #fff
-        }
+    header {
+      background: #0f5c3f;
+      color: #fff
+    }
 
-        #nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #fff;
-            border-top: 1px solid #dee2e6;
-            z-index: 10
-        }
+    #nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid #dee2e6;
+      z-index: 10;
+      overflow-x: auto
+    }
 
-        #nav button {
-            border: 0;
-            background: none;
-            padding: 14px 2px;
-            font-size: .78rem;
-            font-weight: 600;
-            color: #6c757d
-        }
+    #nav button {
+      border: 0;
+      background: none;
+      padding: 14px 10px;
+      white-space: nowrap;
+      font-size: .78rem;
+      font-weight: 600;
+      color: #6c757d
+    }
 
-        #nav button.on {
-            color: #0f5c3f;
-            box-shadow: inset 0 3px #0f5c3f
-        }
+    #nav button.on {
+      color: #0f5c3f;
+      box-shadow: inset 0 3px #0f5c3f
+    }
 
-        .ov {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .45);
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px
-        }
+    .ov {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .45);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px
+    }
 
-        .ov .card {
-            width: 100%;
-            max-width: 420px;
-            max-height: 90vh;
-            overflow: auto
-        }
+    .ov .card {
+      width: 100%;
+      max-width: 420px;
+      max-height: 90vh;
+      overflow: auto
+    }
 
-        #bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 3px;
-            width: 100%;
-            background: #e8a317;
-            z-index: 99;
-            display: none
-        }
+    #bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: #e8a317;
+      z-index: 99;
+      display: none
+    }
 
-        @media print {
+    @media print {
 
-            header,
-            #nav,
-            .btn {
-                display: none
-            }
-        }
-    </style>
+      header,
+      #nav,
+      .btn {
+        display: none
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <div id="bar"></div>
-    <div id="app"></div>
-    <div id="toast" class="toast align-items-center text-bg-dark border-0 position-fixed start-50 translate-middle-x"
-        style="bottom:90px;z-index:99">
-        <div class="toast-body" id="tmsg"></div>
-    </div>
-    <script>
-        /* ====== ISI DUA NILAI INI (Supabase → Project Settings → API) ====== */
-        const SUPABASE_URL = 'https://pmcvcymtexbenufozqys.supabase.co', SUPABASE_KEY = 'sb_publishable_rcmsIg81XZ1O2D44LYxoGg_uV_YcYm0';
-        /* ================================================================== */
-        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        const $ = s => document.querySelector(s), esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])), rp = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
-        let dev = localStorage.getItem('dev'); if (!dev) { dev = crypto.randomUUID(); localStorage.setItem('dev', dev) }
-        let S = null, tab = 'home', LR = [], LU = [], LP = null, hd = '', mode = 0;
-        const busy = x => $('#bar').style.display = x ? 'block' : 'none';
-        function toast(m, e) { const t = $('#toast'); t.className = 'toast show align-items-center border-0 position-fixed start-50 translate-middle-x text-bg-' + (e ? 'danger' : 'dark'); $('#tmsg').textContent = m; clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3200) }
-        async function rpc(fn, args, msg) {
-            busy(1); const { data, error } = await sb.rpc(fn, { p_device: dev, ...(args || {}) }); busy(0);
-            if (error) { const m = error.message; if (m === 'AUTH' || m === 'DEVICE') { await sb.auth.signOut(); logoutLocal(m === 'DEVICE' ? 'Perangkat ini tidak lagi terdaftar. Silakan login ulang.' : 'Sesi berakhir. Silakan login ulang.'); return null } toast(m, 1); return null }
-            if (msg) toast(msg); return data
-        }
-        function modal(h, lock) { closeM(); const o = document.createElement('div'); o.className = 'ov'; o.id = 'ov'; o.innerHTML = `<div class="card card-body">${h}</div>`; if (!lock) o.onclick = e => { if (e.target === o) closeM() }; document.body.appendChild(o) }
-        const closeM = () => { const o = $('#ov'); o && o.remove() };
-        const lbl = t => `<label class="form-label fw-semibold small mt-2 mb-1">${t}</label>`;
+  <div id="bar"></div>
+  <div id="app"></div>
+  <div id="toast" class="toast align-items-center text-bg-dark border-0 position-fixed start-50 translate-middle-x"
+    style="bottom:90px;z-index:99">
+    <div class="toast-body" id="tmsg"></div>
+  </div>
+  <script>
+    /* ====== ISI DUA NILAI INI (Supabase → Project Settings → API) ====== */
+    const SUPABASE_URL = 'https://pmcvcymtexbenufozqys.supabase.co', SUPABASE_KEY = 'sb_publishable_rcmsIg81XZ1O2D44LYxoGg_uV_YcYm0';
+    /* ================================================================== */
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const $ = s => document.querySelector(s), esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])), rp = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+    let dev = localStorage.getItem('dev'); if (!dev) { dev = crypto.randomUUID(); localStorage.setItem('dev', dev) }
+    let S = null, tab = 'home', LR = [], LU = [], LP = null, hd = '', mode = 0;
+    const busy = x => $('#bar').style.display = x ? 'block' : 'none';
+    function toast(m, e) { const t = $('#toast'); t.className = 'toast show align-items-center border-0 position-fixed start-50 translate-middle-x text-bg-' + (e ? 'danger' : 'dark'); $('#tmsg').textContent = m; clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3200) }
+    async function rpc(fn, args, msg) {
+      busy(1); const { data, error } = await sb.rpc(fn, { p_device: dev, ...(args || {}) }); busy(0);
+      if (error) { const m = error.message; if (m === 'AUTH' || m === 'DEVICE') { await sb.auth.signOut(); logoutLocal(m === 'DEVICE' ? 'Perangkat ini tidak lagi terdaftar. Silakan login ulang.' : 'Sesi berakhir. Silakan login ulang.'); return null } toast(m, 1); return null }
+      if (msg) toast(msg); return data
+    }
+    function modal(h, lock) { closeM(); const o = document.createElement('div'); o.className = 'ov'; o.id = 'ov'; o.innerHTML = `<div class="card card-body">${h}</div>`; if (!lock) o.onclick = e => { if (e.target === o) closeM() }; document.body.appendChild(o) }
+    const closeM = () => { const o = $('#ov'); o && o.remove() };
+    const lbl = t => `<label class="form-label fw-semibold small mt-2 mb-1">${t}</label>`;
 
-        /* ---- Login ---- */
-        function viewLogin(msg) { closeM(); $('#app').innerHTML = `<div class="container login" style="max-width:380px;margin-top:12vh"><h1 class="fw-bold" style="color:#0f5c3f">Absensi<br>&amp; Kas</h1><p class="text-secondary">Masuk menggunakan NIK Anda.</p>${msg ? `<div class="alert alert-warning">${esc(msg)}</div>` : ''}${lbl('NIK')}<input id="nik" class="form-control" inputmode="numeric" autocomplete="username">${lbl('Password')}<input id="pw" type="password" class="form-control" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"><button class="btn btn-success w-100 mt-3" onclick="doLogin()">Masuk</button><p class="text-secondary small mt-3">Satu akun hanya dapat digunakan pada satu perangkat.</p></div>` }
-        async function doLogin() {
-            busy(1); const { error } = await sb.auth.signInWithPassword({ email: $('#nik').value.trim() + '@kas.local', password: $('#pw').value }); busy(0);
-            if (error) return toast('NIK atau password salah.', 1);
-            const d = await rpc('claim_device'); if (!d) { await sb.auth.signOut(); return } S = d; start()
-        }
-        function logoutLocal(m) { S = null; viewLogin(m) }
-        async function doLogout() { await sb.auth.signOut(); logoutLocal() }
-        function start() { tab = 'home'; shell(); if (S.user.mustChange) modal(`<h5>Ganti password</h5><p class="text-secondary small">Demi keamanan, ganti password sementara Anda.</p>${lbl('Password saat ini')}<input id="fa" type="password" class="form-control">${lbl('Password baru (min. 6)')}<input id="fb" type="password" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="doForce()">Simpan</button>`, true) }
-        async function doForce() { const d = await rpc('change_password', { p_old: $('#fa').value, p_new: $('#fb').value }, 'Password diganti'); if (d) { S.user.mustChange = false; closeM() } }
+    /* ---- Login ---- */
+    function viewLogin(msg) { closeM(); $('#app').innerHTML = `<div class="container login" style="max-width:380px;margin-top:12vh"><h1 class="fw-bold" style="color:#0f5c3f">Absensi<br>&amp; Kas</h1><p class="text-secondary">Masuk menggunakan NIK Anda.</p>${msg ? `<div class="alert alert-warning">${esc(msg)}</div>` : ''}${lbl('NIK')}<input id="nik" class="form-control" inputmode="numeric" autocomplete="username">${lbl('Password')}<input id="pw" type="password" class="form-control" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"><button class="btn btn-success w-100 mt-3" onclick="doLogin()">Masuk</button><p class="text-secondary small mt-3">Satu akun hanya dapat digunakan pada satu perangkat.</p></div>` }
+    async function doLogin() {
+      busy(1); const { error } = await sb.auth.signInWithPassword({ email: $('#nik').value.trim() + '@kas.local', password: $('#pw').value }); busy(0);
+      if (error) return toast('NIK atau password salah.', 1);
+      const d = await rpc('claim_device'); if (!d) { await sb.auth.signOut(); return } S = d; start()
+    }
+    function logoutLocal(m) { S = null; viewLogin(m) }
+    async function doLogout() { await sb.auth.signOut(); logoutLocal() }
+    function start() { tab = 'home'; shell(); if (S.user.mustChange) modal(`<h5>Ganti password</h5><p class="text-secondary small">Demi keamanan, ganti password sementara Anda.</p>${lbl('Password saat ini')}<input id="fa" type="password" class="form-control">${lbl('Password baru (min. 6)')}<input id="fb" type="password" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="doForce()">Simpan</button>`, true) }
+    async function doForce() { const d = await rpc('change_password', { p_old: $('#fa').value, p_new: $('#fb').value }, 'Password diganti'); if (d) { S.user.mustChange = false; closeM() } }
 
-        /* ---- Shell ---- */
-        const ST = [['home', 'Beranda'], ['hadir', 'Hadir & Kas'], ['grp', 'Kelompok'], ['lap', 'Laporan'], ['usr', 'Anggota'], ['akun', 'Akun']];
-        const TABS = { pelatih: ST, pengurus: ST, peserta: [['home', 'Beranda'], ['kas', 'Kas Saya'], ['akun', 'Akun']] };
-        function shell() { const u = S.user; $('#app').innerHTML = `<header class="p-3"><b>${esc(u.nama)}</b> <span class="badge bg-light text-dark ms-1">${u.role}</span></header><main class="container py-3" style="max-width:720px" id="main"></main><div id="nav" class="d-flex">${TABS[u.role].map(([k, l]) => `<button class="flex-fill" onclick="go('${k}')">${l}</button>`).join('')}</div>`; go('home') }
-        function go(k) { tab = k; document.querySelectorAll('#nav button').forEach((b, i) => b.classList.toggle('on', TABS[S.user.role][i][0] === k)); ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, usr: vUsr, akun: vAkun })[k]($('#main')) }
+    /* ---- Shell ---- */
+    const ST = [['home', 'Beranda'], ['hadir', 'Hadir & Kas'], ['grp', 'Kelompok'], ['lap', 'Laporan'], ['usr', 'Anggota'], ['akun', 'Akun']];
+    const TABS = { pelatih: ST, pengurus: [...ST.slice(0, 5), ['kas', 'Kas Saya'], ST[5]], peserta: [['home', 'Beranda'], ['kas', 'Kas Saya'], ['akun', 'Akun']] };
+    function shell() { const u = S.user; $('#app').innerHTML = `<header class="p-3"><b>${esc(u.nama)}</b> <span class="badge bg-light text-dark ms-1">${u.role}</span></header><main class="container py-3" style="max-width:720px" id="main"></main><div id="nav" class="d-flex">${TABS[u.role].map(([k, l]) => `<button class="flex-fill" onclick="go('${k}')">${l}</button>`).join('')}</div>`; go('home') }
+    function go(k) { tab = k; document.querySelectorAll('#nav button').forEach((b, i) => b.classList.toggle('on', TABS[S.user.role][i][0] === k)); ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, usr: vUsr, akun: vAkun })[k]($('#main')) }
 
-        /* ---- Beranda & absen ---- */
-        const st = g => g === 'OPEN' ? '<span class="badge bg-success">Dibuka</span>' : g === 'CLOSED' ? '<span class="badge bg-secondary">Ditutup</span>' : '<span class="badge bg-light text-dark border">Belum dibuka</span>';
-        const card = h => `<div class="card card-body mb-2">${h}</div>`;
-        function absenCard() {
-            if (S.sudahAbsen) return `<div class="card card-body mb-2 border-success bg-success-subtle"><h6>✓ Sudah absen hari ini</h6><div class="text-secondary small">${esc(S.sudahAbsen)}</div></div>`;
-            return card(`<h6>Absen hari ini</h6>${S.canAbsen ? '' : `<p class="text-secondary small">${S.user.role === 'pengurus' ? 'Menunggu pelatih membuka akses absen.' : 'Menunggu pengurus membuka akses absen.'}</p>`}<button class="btn btn-warning btn-lg fw-bold" ${S.canAbsen ? '' : 'disabled'} onclick="doAbsen()">Absen Sekarang</button>`)
-        }
-        async function vHome(m) {
-            const d = await rpc('get_state'); if (d) S = d; const s = S.sesi, u = S.user;
-            let h = card(`<div class="text-secondary small">${S.today}</div><h5 class="mb-1">${s ? esc(s.judul) : 'Belum ada sesi hari ini'}</h5>${s ? `<div class="text-secondary small">Kas per kehadiran: <b>${rp(s.nominal)}</b></div>` : ''}`);
-            if (u.role !== 'peserta') h += card(`<div class="d-flex justify-content-between"><span>Hadir pengurus: <b>${S.hadirPengurus}</b></span><span>Hadir peserta: <b>${S.hadirPeserta}</b></span></div>`);
-            if (u.role === 'pelatih') h += card(`<h6>Akses absen pengurus ${st(s?.gate_pengurus)}</h6>${lbl('Judul sesi')}<input id="jd" class="form-control" value="${esc(s?.judul || 'Latihan')}">${lbl('Nominal kas per peserta (Rp)')}<input id="nm" type="number" inputmode="numeric" class="form-control" value="${s?.nominal ?? 0}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="gate('open_gate','pengurus')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','pengurus')">Tutup</button></div>`) + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6><p class="text-secondary small">Dibuka oleh pengurus. Pelatih dapat menutupnya kapan saja.</p><button class="btn btn-outline-success" onclick="gate('close_gate','peserta')">Tutup akses peserta</button>`);
-            if (u.role === 'pengurus') h += absenCard() + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6>${S.canOpenPeserta ? '' : '<p class="text-secondary small">Dapat dibuka setelah pelatih membuka sesi dan Anda sudah absen.</p>'}<div class="d-flex gap-2"><button class="btn btn-success flex-fill" ${S.canOpenPeserta ? '' : 'disabled'} onclick="gate('open_gate','peserta')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','peserta')">Tutup</button></div>`);
-            if (u.role === 'peserta') h += absenCard();
-            m.innerHTML = h + `<button class="btn btn-outline-secondary w-100" onclick="go('home')">Perbarui</button>`
-        }
-        async function gate(fn, t) { const a = { p_target: t }; if (fn === 'open_gate' && t === 'pengurus') { a.p_judul = $('#jd').value; a.p_nominal = $('#nm').value === '' ? null : +$('#nm').value } const d = await rpc(fn, a, 'Berhasil'); if (d) { S = d; go('home') } }
-        async function doAbsen() { const d = await rpc('do_absen', {}, 'Absen berhasil'); if (d) { S = d; go('home') } }
+    /* ---- Beranda & absen ---- */
+    const st = g => g === 'OPEN' ? '<span class="badge bg-success">Dibuka</span>' : g === 'CLOSED' ? '<span class="badge bg-secondary">Ditutup</span>' : '<span class="badge bg-light text-dark border">Belum dibuka</span>';
+    const card = h => `<div class="card card-body mb-2">${h}</div>`;
+    function absenCard() {
+      if (S.sudahAbsen) return `<div class="card card-body mb-2 border-success bg-success-subtle"><h6>✓ Sudah absen hari ini</h6><div class="text-secondary small">${esc(S.sudahAbsen)}</div></div>`;
+      return card(`<h6>Absen hari ini</h6>${S.canAbsen ? '' : `<p class="text-secondary small">${S.user.role === 'pengurus' ? 'Menunggu pelatih membuka akses absen.' : 'Menunggu pengurus membuka akses absen.'}</p>`}<button class="btn btn-warning btn-lg fw-bold" ${S.canAbsen ? '' : 'disabled'} onclick="doAbsen()">Absen Sekarang</button>`)
+    }
+    async function vHome(m) {
+      const d = await rpc('get_state'); if (d) S = d; const s = S.sesi, u = S.user;
+      let h = card(`<div class="text-secondary small">${S.today}</div><h5 class="mb-1">${s ? esc(s.judul) : 'Belum ada sesi hari ini'}</h5>${s ? `<div class="text-secondary small">Kas per kehadiran: <b>${rp(s.nominal)}</b></div>` : ''}`);
+      if (u.role !== 'peserta') h += card(`<div class="d-flex justify-content-between"><span>Hadir pengurus: <b>${S.hadirPengurus}</b></span><span>Hadir peserta: <b>${S.hadirPeserta}</b></span></div>`);
+      if (u.role === 'pelatih') h += card(`<h6>Akses absen pengurus ${st(s?.gate_pengurus)}</h6>${lbl('Judul sesi')}<input id="jd" class="form-control" value="${esc(s?.judul || 'Latihan')}">${lbl('Nominal kas per peserta (Rp)')}<input id="nm" type="number" inputmode="numeric" class="form-control" value="${s?.nominal ?? 0}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="gate('open_gate','pengurus')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','pengurus')">Tutup</button></div>`) + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6><p class="text-secondary small">Dibuka oleh pengurus. Pelatih dapat menutupnya kapan saja.</p><button class="btn btn-outline-success" onclick="gate('close_gate','peserta')">Tutup akses peserta</button>`);
+      if (u.role === 'pengurus') h += absenCard() + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6>${S.canOpenPeserta ? '' : '<p class="text-secondary small">Dapat dibuka setelah pelatih membuka sesi dan Anda sudah absen.</p>'}<div class="d-flex gap-2"><button class="btn btn-success flex-fill" ${S.canOpenPeserta ? '' : 'disabled'} onclick="gate('open_gate','peserta')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','peserta')">Tutup</button></div>`);
+      if (u.role === 'peserta') h += absenCard();
+      m.innerHTML = h + `<button class="btn btn-outline-secondary w-100" onclick="go('home')">Perbarui</button>`
+    }
+    async function gate(fn, t) { const a = { p_target: t }; if (fn === 'open_gate' && t === 'pengurus') { a.p_judul = $('#jd').value; a.p_nominal = $('#nm').value === '' ? null : +$('#nm').value } const d = await rpc(fn, a, 'Berhasil'); if (d) { S = d; go('home') } }
+    async function doAbsen() { const d = await rpc('do_absen', {}, 'Absen berhasil'); if (d) { S = d; go('home') } }
 
-        /* ---- Kehadiran & Kas ---- */
-        function vHadir(m) { hd = hd || S.today; m.innerHTML = card(`${lbl('Tanggal')}<input type="date" id="hd" class="form-control" value="${hd}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="loadH(0)">Tampilkan</button><button class="btn btn-outline-success flex-fill" onclick="loadH(1)">Semua tunggakan</button></div>`) + '<div id="hl"></div>'; loadH(0) }
-        async function loadH(un) {
-            mode = un; hd = $('#hd').value || hd; const d = await rpc(un ? 'list_unpaid' : 'list_attendance', un ? {} : { p_tanggal: hd }); if (!d) return; LR = d;
-            $('#hl').innerHTML = d.length ? d.map((r, i) => `<div class="card card-body mb-2 flex-row justify-content-between align-items-center"><div><b>${esc(r.nama)}</b> <span class="badge bg-light text-dark border">${r.role}</span><div class="text-secondary small">${un ? r.tanggal : esc(r.waktu)}${r.billId ? ` · ${rp(r.dibayar)} / ${rp(r.tagihan)}` : ''}</div></div><div>${r.status ? `<span class="badge ${r.status === 'LUNAS' ? 'bg-success' : 'bg-warning text-dark'}">${r.status}</span>` : ''}${r.billId && r.status !== 'LUNAS' ? `<button class="btn btn-sm btn-success ms-2" onclick="pay(${i})">Bayar</button>` : ''}</div></div>`).join('') : '<p class="text-secondary">Tidak ada data.</p>'
-        }
-        function pay(i) { const r = LR[i], sisa = r.tagihan - r.dibayar; modal(`<h5>Catat pembayaran kas</h5><p><b>${esc(r.nama)}</b> · ${r.tanggal}<br>Sisa tagihan ${rp(sisa)}</p>${lbl('Jumlah (Rp)')}<input id="pj" type="number" class="form-control" value="${sisa}">${lbl('Metode')}<select id="pm" class="form-select"><option>Tunai</option><option>Transfer</option><option>QRIS</option></select>${lbl('Catatan')}<input id="pc" class="form-control"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="savePay(${r.billId})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
-        async function savePay(id) { const d = await rpc('pay_bill', { p_bill: id, p_jumlah: +$('#pj').value, p_metode: $('#pm').value, p_catatan: $('#pc').value }, 'Pembayaran tercatat'); if (d) { closeM(); loadH(mode) } }
+    /* ---- Kehadiran & Kas ---- */
+    function vHadir(m) { hd = hd || S.today; m.innerHTML = card(`${lbl('Tanggal')}<input type="date" id="hd" class="form-control" value="${hd}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="loadH(0)">Tampilkan</button><button class="btn btn-outline-success flex-fill" onclick="loadH(1)">Semua tunggakan</button></div>`) + '<div id="hl"></div>'; loadH(0) }
+    async function loadH(un) {
+      mode = un; hd = $('#hd').value || hd; const d = await rpc(un ? 'list_unpaid' : 'list_attendance', un ? {} : { p_tanggal: hd }); if (!d) return; LR = d;
+      $('#hl').innerHTML = d.length ? d.map((r, i) => `<div class="card card-body mb-2 flex-row justify-content-between align-items-center"><div><b>${esc(r.nama)}</b> <span class="badge bg-light text-dark border">${r.role}</span><div class="text-secondary small">${un ? r.tanggal : esc(r.waktu)}${r.billId ? ` · ${rp(r.dibayar)} / ${rp(r.tagihan)}` : ''}</div></div><div>${r.status ? `<span class="badge ${r.status === 'LUNAS' ? 'bg-success' : 'bg-warning text-dark'}">${r.status}</span>` : ''}${r.billId && r.status !== 'LUNAS' ? `<button class="btn btn-sm btn-success ms-2" onclick="pay(${i})">Bayar</button>` : ''}</div></div>`).join('') : '<p class="text-secondary">Tidak ada data.</p>'
+    }
+    function pay(i) { const r = LR[i], sisa = r.tagihan - r.dibayar; modal(`<h5>Catat pembayaran kas</h5><p><b>${esc(r.nama)}</b> · ${r.tanggal}<br>Sisa tagihan ${rp(sisa)}</p>${lbl('Jumlah (Rp)')}<input id="pj" type="number" class="form-control" value="${sisa}">${lbl('Metode')}<select id="pm" class="form-select"><option>Tunai</option><option>Transfer</option><option>QRIS</option></select>${lbl('Catatan')}<input id="pc" class="form-control"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="savePay(${r.billId})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
+    async function savePay(id) { const d = await rpc('pay_bill', { p_bill: id, p_jumlah: +$('#pj').value, p_metode: $('#pm').value, p_catatan: $('#pc').value }, 'Pembayaran tercatat'); if (d) { closeM(); loadH(mode) } }
 
-        /* ---- Kas saya ---- */
-        async function vKas(m) { const d = await rpc('my_bills'); if (!d) return; m.innerHTML = card(`<div class="text-secondary small">Total tunggakan</div><h4>${rp(d.tunggakan)}</h4>`) + (d.rows.map(r => `<div class="card card-body mb-2 flex-row justify-content-between align-items-center"><div><b>${r.tanggal}</b><div class="text-secondary small">${rp(r.dibayar)} / ${rp(r.tagihan)}</div></div><span class="badge ${r.status === 'LUNAS' ? 'bg-success' : 'bg-warning text-dark'}">${r.status}</span></div>`).join('') || '<p class="text-secondary">Belum ada data kas.</p>') }
+    /* ---- Kas saya ---- */
+    async function vKas(m) { const d = await rpc('my_bills'); if (!d) return; m.innerHTML = card(`<div class="text-secondary small">Total tunggakan</div><h4>${rp(d.tunggakan)}</h4>`) + (d.rows.map(r => `<div class="card card-body mb-2 flex-row justify-content-between align-items-center"><div><b>${r.tanggal}</b><div class="text-secondary small">${rp(r.dibayar)} / ${rp(r.tagihan)}</div></div><span class="badge ${r.status === 'LUNAS' ? 'bg-success' : 'bg-warning text-dark'}">${r.status}</span></div>`).join('') || '<p class="text-secondary">Belum ada data kas.</p>') }
 
-        /* ---- Laporan ---- */
-        function vLap(m) { const t = S.today; m.innerHTML = card(`<div class="row g-2"><div class="col">${lbl('Dari')}<input type="date" id="lf" class="form-control" value="${t.slice(0, 8)}01"></div><div class="col">${lbl('Sampai')}<input type="date" id="lt" class="form-control" value="${t}"></div></div><button class="btn btn-success w-100 mt-3" onclick="loadLap()">Tampilkan laporan</button>`) + '<div id="lr"></div>'; loadLap() }
-        async function loadLap() {
-            const d = await rpc('report', { p_from: $('#lf').value || null, p_to: $('#lt').value || null }); if (!d) return; LP = d;
-            const T = (h, rows) => `<div class="table-responsive"><table class="table table-sm small"><thead><tr>${h.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(x => `<td class="text-nowrap">${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`, c = (l, v) => `<div class="col-6"><div class="card card-body"><div class="text-secondary small">${l}</div><b>${rp(v)}</b></div></div>`;
-            $('#lr').innerHTML = `<div class="row g-2 mb-2">${c('Tagihan', d.tagihan)}${c('Terbayar', d.dibayar)}${c('Tunggakan', d.tagihan - d.dibayar)}${c('Pemasukan periode', d.pemasukan)}</div>${card(`<div class="text-secondary small">Saldo kas keseluruhan</div><h4>${rp(d.saldo)}</h4><div class="text-secondary small">Per metode: ${Object.keys(d.metode).map(k => `${esc(k)} ${rp(d.metode[k])}`).join(' · ') || '-'}</div>`)}${card('<h6>Per tanggal</h6>' + T(['Tanggal', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], d.perHari.map(r => [r.tanggal, r.hadir, rp(r.tagihan), rp(r.dibayar), rp(r.tagihan - r.dibayar)])))}${card('<h6>Per peserta</h6>' + T(['Nama', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], d.perPeserta.map(r => [esc(r.nama), r.hadir, rp(r.tagihan), rp(r.dibayar), rp(r.tagihan - r.dibayar)])))}<div class="d-flex gap-2"><button class="btn btn-outline-success flex-fill" onclick="csv()">Unduh CSV</button><button class="btn btn-outline-success flex-fill" onclick="print()">Cetak</button></div>`
-        }
-        function csv() { const q = v => '"' + String(v).replace(/"/g, '""') + '"', R = [['NIK', 'Nama', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], ...LP.perPeserta.map(r => [r.nik, r.nama, r.hadir, r.tagihan, r.dibayar, r.tagihan - r.dibayar])], a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + R.map(r => r.map(q).join(',')).join('\n')], { type: 'text/csv' })); a.download = `laporan-kas_${LP.from}_${LP.to}.csv`; a.click() }
+    /* ---- Laporan ---- */
+    function vLap(m) { const t = S.today; m.innerHTML = card(`<div class="row g-2"><div class="col">${lbl('Dari')}<input type="date" id="lf" class="form-control" value="${t.slice(0, 8)}01"></div><div class="col">${lbl('Sampai')}<input type="date" id="lt" class="form-control" value="${t}"></div></div><button class="btn btn-success w-100 mt-3" onclick="loadLap()">Tampilkan laporan</button>`) + '<div id="lr"></div>'; loadLap() }
+    async function loadLap() {
+      const d = await rpc('report', { p_from: $('#lf').value || null, p_to: $('#lt').value || null }); if (!d) return; LP = d;
+      const T = (h, rows) => `<div class="table-responsive"><table class="table table-sm small"><thead><tr>${h.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(x => `<td class="text-nowrap">${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`, c = (l, v) => `<div class="col-6"><div class="card card-body"><div class="text-secondary small">${l}</div><b>${rp(v)}</b></div></div>`;
+      $('#lr').innerHTML = `<div class="row g-2 mb-2">${c('Tagihan', d.tagihan)}${c('Terbayar', d.dibayar)}${c('Tunggakan', d.tagihan - d.dibayar)}${c('Pemasukan periode', d.pemasukan)}</div>${card(`<div class="text-secondary small">Saldo kas keseluruhan</div><h4>${rp(d.saldo)}</h4><div class="text-secondary small">Per metode: ${Object.keys(d.metode).map(k => `${esc(k)} ${rp(d.metode[k])}`).join(' · ') || '-'}</div>`)}${card('<h6>Per tanggal</h6>' + T(['Tanggal', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], d.perHari.map(r => [r.tanggal, r.hadir, rp(r.tagihan), rp(r.dibayar), rp(r.tagihan - r.dibayar)])))}${card('<h6>Per anggota</h6>' + T(['Nama', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], d.perPeserta.map(r => [esc(r.nama), r.hadir, rp(r.tagihan), rp(r.dibayar), rp(r.tagihan - r.dibayar)])))}<div class="d-flex gap-2"><button class="btn btn-outline-success flex-fill" onclick="csv()">Unduh CSV</button><button class="btn btn-outline-success flex-fill" onclick="print()">Cetak</button></div>`
+    }
+    function csv() { const q = v => '"' + String(v).replace(/"/g, '""') + '"', R = [['NIK', 'Nama', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], ...LP.perPeserta.map(r => [r.nik, r.nama, r.hadir, r.tagihan, r.dibayar, r.tagihan - r.dibayar])], a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + R.map(r => r.map(q).join(',')).join('\n')], { type: 'text/csv' })); a.download = `laporan-kas_${LP.from}_${LP.to}.csv`; a.click() }
 
-        /* ---- Anggota & Divisi ---- */
-        let LD = [];
-        const divOpt = sel => '<option value="">(Tanpa divisi)</option>' + LD.map(x => `<option value="${x.id}" ${String(x.id) === String(sel) ? 'selected' : ''}>${esc(x.nama)}</option>`).join('');
-        async function vUsr(m) {
-            const [d, dv] = await Promise.all([rpc('list_members'), rpc('list_divisions')]); if (!d || !dv) return; LU = d; LD = dv; const P = S.user.role === 'pelatih';
-            m.innerHTML = (P ? card(`<h6>Divisi</h6>${LD.map(x => `<div class="d-flex justify-content-between align-items-center border-bottom py-1"><span>${esc(x.nama)} <span class="text-secondary small">(${x.jumlah} anggota)</span></span><span class="text-nowrap"><button class="btn btn-sm btn-outline-secondary" onclick="divForm(${x.id})">Ubah</button> <button class="btn btn-sm btn-outline-danger" onclick="divDel(${x.id})">Hapus</button></span></div>`).join('') || '<div class="text-secondary small">Belum ada divisi.</div>'}<button class="btn btn-sm btn-success mt-2" onclick="divForm()">+ Tambah divisi</button>`) : '')
-                + `<button class="btn btn-success w-100 mb-2" onclick="userForm()">+ Tambah / ubah anggota</button>` + d.map((x, i) => `<div class="card card-body mb-2"><div><b>${esc(x.nama)}</b> <span class="badge bg-light text-dark border">${x.role}</span> <span class="badge bg-info-subtle text-dark">${esc(x.divisi || 'Tanpa divisi')}</span></div><div class="text-secondary small">${esc(x.nik)} · ${x.active ? 'Aktif' : 'Nonaktif'} · ${x.device ? 'Perangkat terikat' : 'Belum ada perangkat'}</div><div class="d-flex gap-2 flex-wrap mt-2"><button class="btn btn-sm btn-success" onclick="divPick(${i})">Ubah divisi</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'resetDevice')">Reset perangkat</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'resetPassword')">Reset password</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'toggle')">${x.active ? 'Nonaktifkan' : 'Aktifkan'}</button></div></div>`).join('')
-        }
-        function divForm(id) { const x = LD.find(y => y.id === id); modal(`<h5>${x ? 'Ubah' : 'Tambah'} divisi</h5>${lbl('Nama divisi')}<input id="dn" class="form-control" value="${esc(x?.nama || '')}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveDiv(${x ? x.id : 'null'})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
-        async function saveDiv(id) { const d = await rpc('save_division', { p_nama: $('#dn').value, p_id: id }, 'Divisi tersimpan'); if (d) { closeM(); vUsr($('#main')) } }
-        async function divDel(id) { const x = LD.find(y => y.id === id); if (!confirm('Hapus divisi "' + x.nama + '"? Anggotanya menjadi tanpa divisi.')) return; const d = await rpc('delete_division', { p_id: id }, 'Divisi dihapus'); if (d) vUsr($('#main')) }
-        function divPick(i) { const x = LU[i]; modal(`<h5>Ubah divisi</h5><p><b>${esc(x.nama)}</b> <span class="text-secondary small">(${x.role})</span></p>${lbl('Divisi')}<select id="dp" class="form-select">${divOpt(x.divisiId)}</select><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveDivPick('${esc(x.nik)}')">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
-        async function saveDivPick(nik) { const v = $('#dp').value, d = await rpc('set_divisi', { p_nik: nik, p_divisi: v ? +v : null }, 'Divisi diperbarui'); if (d) { closeM(); vUsr($('#main')) } }
-        const pwBox = (t, n, pw) => modal(`<h5>${t}</h5><p>${esc(n)}<br>Password sementara:<br><b class="fs-3">${esc(pw)}</b></p><p class="text-secondary small">Berikan ke pengguna. Wajib diganti saat login.</p><button class="btn btn-success" onclick="closeM()">Tutup</button>`);
-        async function uAct(i, a) { const x = LU[i]; if (!confirm('Lanjutkan untuk ' + x.nama + '?')) return; const d = await rpc('member_action', { p_nik: x.nik, p_act: a }, 'Berhasil'); if (d) { if (d.password) pwBox('Password direset', x.nama, d.password); vUsr($('#main')) } }
-        function userForm() { modal(`<h5>Tambah / ubah anggota</h5>${lbl('NIK')}<input id="un" class="form-control" inputmode="numeric">${lbl('Nama')}<input id="uc" class="form-control">${lbl('Role')}<select id="ur" class="form-select">${S.user.role === 'pelatih' ? '<option>peserta</option><option>pengurus</option><option>pelatih</option>' : '<option>peserta</option>'}</select>${lbl('Divisi')}<select id="ud" class="form-select">${divOpt('')}</select>${lbl('Password awal (kosongkan = acak)')}<input id="up" class="form-control"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveU()">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
-        async function saveU() { const n = $('#uc').value, dv = $('#ud').value, d = await rpc('save_member', { p_nik: $('#un').value.trim(), p_nama: n, p_role: $('#ur').value, p_password: $('#up').value || null, p_divisi: dv ? +dv : null }, 'Tersimpan'); if (!d) return; closeM(); if (d.password) pwBox('Anggota ditambahkan', n, d.password); vUsr($('#main')) }
+    /* ---- Anggota & Divisi ---- */
+    let LD = [];
+    const divOpt = sel => '<option value="">(Tanpa divisi)</option>' + LD.map(x => `<option value="${x.id}" ${String(x.id) === String(sel) ? 'selected' : ''}>${esc(x.nama)}</option>`).join('');
+    async function vUsr(m) {
+      const [d, dv] = await Promise.all([rpc('list_members'), rpc('list_divisions')]); if (!d || !dv) return; LU = d; LD = dv; const P = S.user.role === 'pelatih';
+      m.innerHTML = (P ? card(`<h6>Divisi</h6>${LD.map(x => `<div class="d-flex justify-content-between align-items-center border-bottom py-1"><span>${esc(x.nama)} <span class="text-secondary small">(${x.jumlah} anggota)</span></span><span class="text-nowrap"><button class="btn btn-sm btn-outline-secondary" onclick="divForm(${x.id})">Ubah</button> <button class="btn btn-sm btn-outline-danger" onclick="divDel(${x.id})">Hapus</button></span></div>`).join('') || '<div class="text-secondary small">Belum ada divisi.</div>'}<button class="btn btn-sm btn-success mt-2" onclick="divForm()">+ Tambah divisi</button>`) : '')
+        + `<button class="btn btn-success w-100 mb-2" onclick="userForm()">+ Tambah anggota</button>` + d.map((x, i) => `<div class="card card-body mb-2"><div><b>${esc(x.nama)}</b> <span class="badge bg-light text-dark border">${x.role}</span> <span class="badge bg-info-subtle text-dark">${esc(x.divisi || 'Tanpa divisi')}</span></div><div class="text-secondary small">${esc(x.nik)} · ${x.active ? 'Aktif' : 'Nonaktif'} · ${x.device ? 'Perangkat terikat' : 'Belum ada perangkat'}</div><div class="d-flex gap-2 flex-wrap mt-2"><button class="btn btn-sm btn-success" onclick="divPick(${i})">Ubah divisi</button><button class="btn btn-sm btn-outline-success" onclick="userForm(${i})">Ubah data</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'resetDevice')">Reset perangkat</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'resetPassword')">Reset password</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'toggle')">${x.active ? 'Nonaktifkan' : 'Aktifkan'}</button></div></div>`).join('')
+    }
+    function divForm(id) { const x = LD.find(y => y.id === id); modal(`<h5>${x ? 'Ubah' : 'Tambah'} divisi</h5>${lbl('Nama divisi')}<input id="dn" class="form-control" value="${esc(x?.nama || '')}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveDiv(${x ? x.id : 'null'})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
+    async function saveDiv(id) { const d = await rpc('save_division', { p_nama: $('#dn').value, p_id: id }, 'Divisi tersimpan'); if (d) { closeM(); vUsr($('#main')) } }
+    async function divDel(id) { const x = LD.find(y => y.id === id); if (!confirm('Hapus divisi "' + x.nama + '"? Anggotanya menjadi tanpa divisi.')) return; const d = await rpc('delete_division', { p_id: id }, 'Divisi dihapus'); if (d) vUsr($('#main')) }
+    function divPick(i) { const x = LU[i]; modal(`<h5>Ubah divisi</h5><p><b>${esc(x.nama)}</b> <span class="text-secondary small">(${x.role})</span></p>${lbl('Divisi')}<select id="dp" class="form-select">${divOpt(x.divisiId)}</select><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveDivPick('${esc(x.nik)}')">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
+    async function saveDivPick(nik) { const v = $('#dp').value, d = await rpc('set_divisi', { p_nik: nik, p_divisi: v ? +v : null }, 'Divisi diperbarui'); if (d) { closeM(); vUsr($('#main')) } }
+    const pwBox = (t, n, pw, nik) => modal(`<h5>${t}</h5><p>${esc(n)}${nik ? `<br>NIK (untuk login): <b class="fs-5">${esc(nik)}</b>` : ''}<br>Password sementara:<br><b class="fs-3">${esc(pw)}</b></p><p class="text-secondary small">Berikan ke pengguna. Wajib diganti saat login.</p><button class="btn btn-success" onclick="closeM()">Tutup</button>`);
+    async function uAct(i, a) { const x = LU[i]; if (!confirm('Lanjutkan untuk ' + x.nama + '?')) return; const d = await rpc('member_action', { p_nik: x.nik, p_act: a }, 'Berhasil'); if (d) { if (d.password) pwBox('Password direset', x.nama, d.password); vUsr($('#main')) } }
+    function userForm(i) { const x = i == null ? null : LU[i], P = S.user.role === 'pelatih'; modal(`<h5>${x ? 'Ubah data anggota' : 'Tambah anggota'}</h5>${x ? `<div class="text-secondary small">NIK <b>${esc(x.nik)}</b> (tidak dapat diubah)</div>` : `<div class="alert alert-secondary py-2 small mb-0 mt-2">NIK dibuat otomatis: tahun daftar + angkatan + nomor urut.</div>${lbl('Angkatan (2 digit)')}<input id="ua" class="form-control" inputmode="numeric" maxlength="2" placeholder="mis. 20">`}${lbl('Nama')}<input id="uc" class="form-control" value="${esc(x?.nama || '')}">${lbl('Role')}<select id="ur" class="form-select">${(P ? ['peserta', 'pengurus', 'pelatih'] : ['peserta']).map(r => `<option ${x && x.role === r ? 'selected' : ''}>${r}</option>`).join('')}</select>${lbl('Divisi')}<select id="ud" class="form-select">${divOpt(x?.divisiId || '')}</select>${x ? '' : `${lbl('Password awal (kosongkan = acak)')}<input id="up" class="form-control">`}<div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveU(${x ? `'${esc(x.nik)}'` : 'null'})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
+    async function saveU(nik) {
+      const n = $('#uc').value, dv = $('#ud').value, a = { p_nama: n, p_role: $('#ur').value, p_divisi: dv ? +dv : null }; if (nik) a.p_nik = nik; else { a.p_angkatan = $('#ua').value.trim(); a.p_password = $('#up').value || null }
+      const d = await rpc('save_member', a, 'Tersimpan'); if (!d) return; closeM(); if (d.nik) pwBox('Anggota ditambahkan', n, d.password, d.nik); vUsr($('#main'))
+    }
 
-        /* ---- Kelompok (memakai daftar yang hadir hari ini) ---- */
-        function vGrp(m) { m.innerHTML = card(`<h6>Pembagian kelompok</h6><p class="text-secondary small mb-2">Selalu memakai daftar yang hadir hari ini. Tekan lagi untuk mengacak ulang.</p><div class="form-check"><input class="form-check-input" type="checkbox" id="gp" checked><label class="form-check-label" for="gp">Sertakan pengurus yang hadir</label></div>${lbl('Jenis pembagian')}<select id="gm" class="form-select" onchange="$('#gl').textContent=this.value==='div_ukuran'?'Maks. anggota per kelompok':'Jumlah kelompok'"><option value="div_jumlah">Per divisi — tentukan jumlah kelompok per divisi</option><option value="div_ukuran">Per divisi — tentukan maks. anggota per kelompok</option><option value="games">Games — kelompok seimbang antar divisi</option></select><label id="gl" class="form-label fw-semibold small mt-2 mb-1">Jumlah kelompok</label><input id="gn" type="number" min="1" value="2" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="doGrp()">Acak kelompok</button>`) + '<div id="gr"></div>' }
-        const li = a => a.map(x => `<li>${esc(x.nama)}${x.role === 'pengurus' ? ' <span class="badge bg-light text-dark border">pengurus</span>' : ''}${x.divisi ? ` <span class="text-secondary small">· ${esc(x.divisi)}</span>` : ''}</li>`).join('');
-        async function doGrp() {
-            const t = $('#gm').value, n = +$('#gn').value, p = $('#gp').checked; if (!(n >= 1)) return toast('Isi angka minimal 1.', 1);
-            if (t === 'games') {
-                const d = await rpc('group_games', { p_jumlah: n, p_pengurus: p }); if (!d) return;
-                $('#gr').innerHTML = d.map(g => { const c = {}; g.anggota.forEach(x => c[x.divisi] = (c[x.divisi] || 0) + 1); return card(`<h6>Kelompok ${g.kelompok} <span class="text-secondary small">(${g.anggota.length} orang)</span></h6><div class="text-secondary small mb-1">Komposisi: ${Object.keys(c).map(k => esc(k) + ' ' + c[k]).join(' · ')}</div><ul class="mb-0">${li(g.anggota)}</ul>`) }).join('') + '<button class="btn btn-outline-success w-100" onclick="print()">Cetak</button>'
-            }
-            else {
-                const d = await rpc('group_by_divisi', { p_mode: t === 'div_ukuran' ? 'ukuran' : 'jumlah', p_n: n, p_pengurus: p }); if (!d) return;
-                $('#gr').innerHTML = d.map(v => card(`<h6>${esc(v.divisi)}</h6>` + v.kelompok.map(g => `<div class="mb-2"><b class="small">Kelompok ${g.kelompok}</b> <span class="text-secondary small">(${g.anggota.length} orang)</span><ul class="mb-0">${li(g.anggota)}</ul></div>`).join(''))).join('') + '<button class="btn btn-outline-success w-100" onclick="print()">Cetak</button>'
-            }
-        }
+    /* ---- Kelompok (memakai daftar yang hadir hari ini) ---- */
+    function vGrp(m) { m.innerHTML = card(`<h6>Pembagian kelompok</h6><p class="text-secondary small mb-2">Selalu memakai daftar yang hadir hari ini. Tekan lagi untuk mengacak ulang.</p><div class="form-check"><input class="form-check-input" type="checkbox" id="gp" checked><label class="form-check-label" for="gp">Sertakan pengurus yang hadir</label></div>${lbl('Jenis pembagian')}<select id="gm" class="form-select" onchange="$('#gl').textContent=this.value==='div_ukuran'?'Maks. anggota per kelompok':'Jumlah kelompok'"><option value="div_jumlah">Per divisi — tentukan jumlah kelompok per divisi</option><option value="div_ukuran">Per divisi — tentukan maks. anggota per kelompok</option><option value="games">Games — kelompok seimbang antar divisi</option></select><label id="gl" class="form-label fw-semibold small mt-2 mb-1">Jumlah kelompok</label><input id="gn" type="number" min="1" value="2" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="doGrp()">Acak kelompok</button>`) + '<div id="gr"></div>' }
+    const li = a => a.map(x => `<li>${esc(x.nama)}${x.role === 'pengurus' ? ' <span class="badge bg-light text-dark border">pengurus</span>' : ''}${x.divisi ? ` <span class="text-secondary small">· ${esc(x.divisi)}</span>` : ''}</li>`).join('');
+    async function doGrp() {
+      const t = $('#gm').value, n = +$('#gn').value, p = $('#gp').checked; if (!(n >= 1)) return toast('Isi angka minimal 1.', 1);
+      if (t === 'games') {
+        const d = await rpc('group_games', { p_jumlah: n, p_pengurus: p }); if (!d) return;
+        $('#gr').innerHTML = d.map(g => { const c = {}; g.anggota.forEach(x => c[x.divisi] = (c[x.divisi] || 0) + 1); return card(`<h6>Kelompok ${g.kelompok} <span class="text-secondary small">(${g.anggota.length} orang)</span></h6><div class="text-secondary small mb-1">Komposisi: ${Object.keys(c).map(k => esc(k) + ' ' + c[k]).join(' · ')}</div><ul class="mb-0">${li(g.anggota)}</ul>`) }).join('') + '<button class="btn btn-outline-success w-100" onclick="print()">Cetak</button>'
+      }
+      else {
+        const d = await rpc('group_by_divisi', { p_mode: t === 'div_ukuran' ? 'ukuran' : 'jumlah', p_n: n, p_pengurus: p }); if (!d) return;
+        $('#gr').innerHTML = d.map(v => card(`<h6>${esc(v.divisi)}</h6>` + v.kelompok.map(g => `<div class="mb-2"><b class="small">Kelompok ${g.kelompok}</b> <span class="text-secondary small">(${g.anggota.length} orang)</span><ul class="mb-0">${li(g.anggota)}</ul></div>`).join(''))).join('') + '<button class="btn btn-outline-success w-100" onclick="print()">Cetak</button>'
+      }
+    }
 
-        /* ---- Akun ---- */
-        function vAkun(m) { const u = S.user; m.innerHTML = card(`<h6>${esc(u.nama)}</h6><div class="text-secondary small">NIK ${esc(u.nik)} · ${u.role}</div>`) + card(`<h6>Ganti password</h6>${lbl('Password lama')}<input id="pa" type="password" class="form-control">${lbl('Password baru (min. 6)')}<input id="pb" type="password" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="chPw()">Simpan</button>`) + `<button class="btn btn-outline-secondary w-100" onclick="doLogout()">Keluar</button>` }
-        async function chPw() { const d = await rpc('change_password', { p_old: $('#pa').value, p_new: $('#pb').value }, 'Password diganti'); if (d) { $('#pa').value = ''; $('#pb').value = '' } }
+    /* ---- Akun ---- */
+    function vAkun(m) { const u = S.user; m.innerHTML = card(`<h6>${esc(u.nama)}</h6><div class="text-secondary small">NIK ${esc(u.nik)} · ${u.role}</div>`) + card(`<h6>Ganti password</h6>${lbl('Password lama')}<input id="pa" type="password" class="form-control">${lbl('Password baru (min. 6)')}<input id="pb" type="password" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="chPw()">Simpan</button>`) + `<button class="btn btn-outline-secondary w-100" onclick="doLogout()">Keluar</button>` }
+    async function chPw() { const d = await rpc('change_password', { p_old: $('#pa').value, p_new: $('#pb').value }, 'Password diganti'); if (d) { $('#pa').value = ''; $('#pb').value = '' } }
 
-        /* ---- Init ---- */
-        (async () => { const { data: { session } } = await sb.auth.getSession(); if (!session) return viewLogin(); const d = await rpc('get_state'); if (d) { S = d; start() } else if (!$('.login')) viewLogin() })();
-    </script>
+    /* ---- Init ---- */
+    (async () => { const { data: { session } } = await sb.auth.getSession(); if (!session) return viewLogin(); const d = await rpc('get_state'); if (d) { S = d; start() } else if (!$('.login')) viewLogin() })();
+  </script>
 </body>
 
 </html>
