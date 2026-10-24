@@ -91,7 +91,7 @@
     </div>
     <script>
         /* ====== ISI DUA NILAI INI (Supabase → Project Settings → API) ====== */
-        const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co', SUPABASE_KEY = 'YOUR-ANON-KEY';
+        const SUPABASE_URL = 'https://pmcvcymtexbenufozqys.supabase.co', SUPABASE_KEY = 'sb_publishable_rcmsIg81XZ1O2D44LYxoGg_uV_YcYm0';
         /* ================================================================== */
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const $ = s => document.querySelector(s), esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])), rp = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
