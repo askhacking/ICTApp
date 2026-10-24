@@ -664,7 +664,7 @@
             if (u.role === 'pelatih') h += card(`<h6>Akses absen pengurus ${st(s?.gate_pengurus)}</h6>${lbl('Judul sesi')}<input id="jd" class="form-control" value="${esc(s?.judul || 'Latihan')}">${lbl('Nominal kas per peserta (Rp)')}<input id="nm" type="number" inputmode="numeric" class="form-control" value="${s?.nominal ?? 0}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="gate('open_gate','pengurus')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','pengurus')">Tutup</button></div>`) + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6><p class="text-secondary small">Dibuka oleh pengurus. Pelatih dapat menutupnya kapan saja.</p><button class="btn btn-outline-success" onclick="gate('close_gate','peserta')">Tutup akses peserta</button>`);
             if (u.role === 'pengurus') h += absenCard() + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6>${S.canOpenPeserta ? '' : '<p class="text-secondary small">Dapat dibuka setelah pelatih membuka sesi dan Anda sudah absen.</p>'}<div class="d-flex gap-2"><button class="btn btn-success flex-fill" ${S.canOpenPeserta ? '' : 'disabled'} onclick="gate('open_gate','peserta')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','peserta')">Tutup</button></div>`);
             if (u.role === 'peserta') h += absenCard();
-            m.innerHTML = h + `<button class="btn btn-outline-secondary w-100" onclick="go('home')">Perbarui</button>`
+            m.innerHTML = h + `<button class="btn btn-secondary w-100" onclick="go('home')">Perbarui</button>`
         }
         async function gate(fn, t) { const a = { p_target: t }; if (fn === 'open_gate' && t === 'pengurus') { a.p_judul = $('#jd').value; a.p_nominal = $('#nm').value === '' ? null : +$('#nm').value } const d = await rpc(fn, a, 'Berhasil'); if (d) { S = d; go('home') } }
         async function doAbsen() { const d = await rpc('do_absen', {}, 'Absen berhasil'); if (d) { S = d; go('home') } }
@@ -744,7 +744,7 @@
         }
 
         /* ---- Akun ---- */
-        function vAkun(m) { const u = S.user; m.innerHTML = card(`<h6>${esc(u.nama)}</h6><div class="text-secondary small">NIK ${esc(u.nik)} · ${u.role}</div>`) + card(`<h6>Ganti password</h6>${lbl('Password lama')}<input id="pa" type="password" class="form-control">${lbl('Password baru (min. 6)')}<input id="pb" type="password" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="chPw()">Simpan</button>`) + `<button class="btn btn-outline-secondary w-100" onclick="doLogout()">Keluar</button>` }
+        function vAkun(m) { const u = S.user; m.innerHTML = card(`<h6>${esc(u.nama)}</h6><div class="text-secondary small">NIK ${esc(u.nik)} · ${u.role}</div>`) + card(`<h6>Ganti password</h6>${lbl('Password lama')}<input id="pa" type="password" class="form-control">${lbl('Password baru (min. 6)')}<input id="pb" type="password" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="chPw()">Simpan</button>`) + `<button class="btn btn-danger w-100" onclick="doLogout()">Keluar</button>` }
         async function chPw() { const d = await rpc('change_password', { p_old: $('#pa').value, p_new: $('#pb').value }, 'Password diganti'); if (d) { $('#pa').value = ''; $('#pb').value = '' } }
 
         /* ---- Init ---- */
