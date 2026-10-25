@@ -526,6 +526,35 @@
       bottom: -5px
     }
 
+    .cgrid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px
+    }
+
+    .mcell {
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, .15);
+      cursor: pointer;
+      font-size: .85rem
+    }
+
+    .mcell.done {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy)
+    }
+
+    .mcell.lock {
+      background: #cbd2db;
+      color: #6b7a8c
+    }
+
     @media print {
 
       .hdr,
@@ -628,8 +657,8 @@
     async function doForce() { const d = await rpc('change_password', { p_old: $('#fa').value, p_new: $('#fb').value }, 'Password diganti'); if (d) { S.user.mustChange = false; closeM() } }
 
     /* ---- Shell: header, menu samping, kalender, menu cepat ---- */
-    const M = { home: ['Beranda', 'house'], hadir: ['Hadir & Kas', 'cash-coin'], grp: ['Kelompok', 'people'], lap: ['Laporan Kas', 'graph-up'], rh: ['Laporan Hadir', 'calendar-check'], usr: ['Anggota', 'person-lines-fill'], reg: ['Pendaftaran', 'person-plus'], kas: ['Kas Saya', 'wallet2'], evt: ['Event', 'calendar-event'], akun: ['Akun', 'person-circle'] };
-    const ROLEMENU = { pelatih: ['home', 'evt', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'akun'], pengurus: ['home', 'evt', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'kas', 'akun'], peserta: ['home', 'evt', 'kas', 'akun'] };
+    const M = { home: ['Beranda', 'house'], hadir: ['Hadir & Kas', 'cash-coin'], grp: ['Kelompok', 'people'], lap: ['Laporan Kas', 'graph-up'], rh: ['Laporan Hadir', 'calendar-check'], usr: ['Anggota', 'person-lines-fill'], reg: ['Pendaftaran', 'person-plus'], kas: ['Kas Saya', 'wallet2'], evt: ['Event', 'calendar-event'], krs: ['Kursus', 'mortarboard'], nil: ['Nilai', 'award'], akun: ['Akun', 'person-circle'] };
+    const ROLEMENU = { pelatih: ['home', 'evt', 'krs', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'akun'], pengurus: ['home', 'evt', 'krs', 'nil', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'kas', 'akun'], peserta: ['home', 'evt', 'krs', 'nil', 'kas', 'akun'] };
     function shell() {
       const u = S.user, st = u.role !== 'peserta';
       $('#app').innerHTML = `<div class="shell"><div class="hdr"><button class="ib" onclick="go('${st ? 'reg' : 'home'}')"><i class="bi bi-${st ? 'bell' : 'house'}"></i>${S.notif > 0 ? `<span class="dot">${S.notif}</span>` : ''}</button><h1 id="ttl"></h1><button class="ib" onclick="drw(1)"><i class="bi bi-list"></i></button></div><div id="top"></div><main class="sheet" id="main"></main></div><div class="drw" id="drw"><div class="drw-bg" onclick="drw(0)"></div><div class="drw-p"><div class="mb-3 px-2"><b>${esc(u.nama)}</b><div class="small" style="opacity:.7">${u.role}${u.divisi ? ' · ' + esc(u.divisi) : ''}</div></div>${ROLEMENU[u.role].map(k => `<button data-k="${k}" onclick="drw(0);go('${k}')"><i class="bi bi-${M[k][1]}"></i>${M[k][0]}${(k === 'reg' ? S.notif : k === 'evt' ? S.notifEvt : 0) > 0 ? `<span class="badge bg-warning text-dark ms-auto">${k === 'reg' ? S.notif : S.notifEvt}</span>` : ''}</button>`).join('')}<button onclick="drw(0);doLogout()"><i class="bi bi-box-arrow-right"></i>Keluar</button></div></div>`; go('home')
@@ -640,7 +669,7 @@
       document.querySelectorAll('.drw-p button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === k));
       $('#top').innerHTML = h ? `<div class="prof"><div class="av">${esc((u.nama.trim()[0] || '?').toUpperCase())}</div><div class="flex-fill"><div class="fw-bold">${esc(u.nama)}</div><div class="small">${esc(u.divisi || u.role)}</div></div><button class="ib" onclick="go('akun')"><i class="bi bi-pencil-square"></i></button></div><div class="band"></div>` : '';
       $('#main').classList.toggle('flat', !h); window.scrollTo(0, 0);
-      ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, reg: vReg, evt: vEvt, akun: vAkun })[k]($('#main'))
+      ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, reg: vReg, evt: vEvt, krs: vKrs, nil: vNil, akun: vAkun })[k]($('#main'))
     }
     let cy = null, cmn = 0;
     const BLN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -845,6 +874,91 @@
       if (!ES.size) return toast('Pilih minimal satu anggota.', 1);
       const d = await rpc('add_event_members', { p_id: ED.event.id, p_niks: [...ES], p_peran: $('#ap').value, p_tugas: $('#at').value || null }); if (!d) return;
       toast(d.jumlah + ' anggota ditambahkan'); ES = new Set(); evRefresh()
+    }
+
+    /* ---- E-Learning ---- */
+    let KR = null, KD = null, MD = null, SBL = [], SBA = 0;
+    const stf_ = () => S.user.role !== 'peserta', pel_ = () => S.user.role === 'pelatih';
+    const dtj = t => t ? new Date(t).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+    const bk = (fn, l) => `<button class="btn btn-sm btn-outline-secondary mb-2" onclick="${fn}"><i class="bi bi-chevron-left"></i> ${l}</button>`;
+    const pbar = (a, b) => `<div class="progress mt-2" style="height:6px"><div class="progress-bar" style="width:${b ? Math.round(a * 100 / b) : 0}%;background:var(--navy)"></div></div>`;
+    const tarea = (id, v, r, mx) => `<textarea id="${id}" class="form-control" rows="${r}" maxlength="${mx}" style="border-radius:18px">${esc(v || '')}</textarea>`;
+    const btns = (ok, fn) => `<div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="${fn}">${ok}</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`;
+    const apv = (fn, fn2) => `<div class="d-flex gap-2 mt-2"><button class="btn btn-success flex-fill" onclick="${fn}('setuju')">Setujui</button><button class="btn btn-outline-secondary flex-fill" onclick="${fn}('tolak')">Tolak</button></div>`;
+    const eds = (a, b) => `<div class="d-flex gap-2 mt-2"><button class="btn btn-sm btn-outline-secondary flex-fill" onclick="${a}">Ubah</button><button class="btn btn-sm btn-outline-danger flex-fill" onclick="${b}">Hapus</button></div>`;
+    const sent = d => toast(d.status === 'MENUNGGU' ? 'Diajukan, menunggu persetujuan pelatih' : 'Tersimpan');
+    async function reviewCall(fn, id, a, ok, no) { let r = null; if (a === 'tolak') { r = prompt('Alasan penolakan (opsional):'); if (r === null) return false } return !!(await rpc(fn, { p_id: id, p_aksi: a, p_alasan: r }, a === 'setuju' ? ok : no)) }
+
+    /* kursus */
+    async function vKrs() { const d = await rpc('list_courses'); if (!d) return; KR = d; $('#ttl').textContent = 'Kursus'; drawKrs() }
+    function drawKrs() {
+      const stf = stf_(), P = pel_(), g = {}, t = KR.todo; KR.courses.forEach(c => (g[c.divisi || 'Umum'] = g[c.divisi || 'Umum'] || []).push(c));
+      $('#main').innerHTML = (stf ? `<button class="btn btn-success w-100 mb-2" onclick="krsForm()"><i class="bi bi-plus-lg"></i> ${P ? 'Buat kursus' : 'Ajukan kursus (perlu persetujuan pelatih)'}</button>` : '')
+        + (t && (t.approval || t.nilai) ? card(`<div class="fw-semibold small mb-1">Perlu tindakan</div><div class="small">${t.approval} menunggu persetujuan · ${t.nilai} pengumpulan belum dinilai</div>`) : '')
+        + (Object.keys(g).sort().map(k => `<div class="fw-semibold mt-3 mb-1 px-1">${esc(k)}</div>` + g[k].map(c => `<div class="card card-body mb-2" role="button" onclick="krsOpen(${c.id})"><div class="d-flex justify-content-between gap-2"><b>${esc(c.judul)}</b>${c.status !== 'DISETUJUI' ? `<span class="badge ${evCls(c.status)} align-self-start">${c.status}</span>` : ''}</div><div class="text-secondary small">${c.jumlah} pertemuan${stf && c.menunggu ? ` · ${c.menunggu} belum terbit` : ''}${c.status !== 'DISETUJUI' ? ' · diajukan oleh ' + esc(c.dibuatNama || '-') : ''}</div>${!P && c.status === 'DISETUJUI' ? pbar(c.selesai, c.jumlah) : ''}</div>`).join('')).join('') || '<p class="text-secondary">Belum ada kursus.</p>')
+    }
+    async function krsOpen(id) { const d = await rpc('course_detail', { p_id: id }); if (!d) return; KD = d; drawKd() }
+    function drawKd() {
+      const { course: c, meetings: ms } = KD, P = pel_(), stf = stf_(), ap = ms.filter(m => m.status === 'DISETUJUI'), dn = ap.filter(m => m.done).length;
+      $('#ttl').textContent = c.judul;
+      $('#main').innerHTML = bk('vKrs()', 'Kursus') + card(`<div class="d-flex justify-content-between gap-2"><h5 class="mb-0">${esc(c.judul)}</h5><span class="badge ${evCls(c.status)} align-self-start">${c.status}</span></div><div class="text-secondary small">${esc(c.divisi || 'Umum')}${c.status !== 'DISETUJUI' ? ' · diajukan oleh ' + esc(c.dibuatNama || '-') : ''}</div>${c.deskripsi ? `<p class="small mt-2 mb-0">${esc(c.deskripsi)}</p>` : ''}${c.alasan ? `<div class="small mt-2 text-danger">Ditolak: ${esc(c.alasan)}</div>` : ''}${P && c.status === 'MENUNGGU' ? apv('krsReview') : ''}${c.canEdit ? eds('krsForm(KD.course)', 'krsDel()') : ''}`)
+        + (stf ? `<button class="btn btn-success w-100 mb-2" onclick="mtForm()"><i class="bi bi-plus-lg"></i> ${P ? 'Tambah pertemuan' : 'Ajukan pertemuan'}</button>` : '')
+        + card(`<h6>Pertemuan</h6><div class="cgrid">${ms.map(m => `<div class="mcell ${m.status !== 'DISETUJUI' ? 'lock' : m.done ? 'done' : ''}" onclick="mtOpen(${m.id})">${m.nomor}</div>`).join('') || '<div class="text-secondary small">Belum ada pertemuan.</div>'}</div><div class="small text-secondary mt-2">${P ? '' : 'Biru tua = selesai · '}Putih = terbit${stf ? ' · Abu-abu = belum terbit' : ''}</div>`)
+        + (!P && ap.length ? card(`<div class="d-flex justify-content-between small"><span>Progres</span><b>${dn} / ${ap.length}</b></div>${pbar(dn, ap.length)}`) : '')
+    }
+    async function krsReview(a) { if (await reviewCall('review_course', KD.course.id, a, 'Kursus disetujui', 'Kursus ditolak')) krsOpen(KD.course.id) }
+    async function krsDel() { if (!confirm('Hapus kursus ini beserta semua pertemuan dan tugasnya?')) return; const d = await rpc('delete_course', { p_id: KD.course.id }, 'Kursus dihapus'); if (d) vKrs() }
+    async function krsForm(c) {
+      const dv = await rpc('list_divisions'); if (!dv) return; const P = pel_();
+      modal(`<h5>${c ? 'Ubah kursus' : (P ? 'Buat kursus' : 'Ajukan kursus')}</h5>${!c && !P ? '<div class="alert alert-secondary py-2 small mb-0">Kursus yang diajukan pengurus tampil untuk peserta setelah disetujui pelatih.</div>' : ''}${lbl('Nama kursus')}<input id="kj" class="form-control" maxlength="120" value="${esc(c?.judul || '')}">${lbl('Divisi')}<select id="kd" class="form-select"><option value="">Umum (semua divisi)</option>${dv.map(x => `<option value="${x.id}" ${c && String(c.divisiId) === String(x.id) ? 'selected' : ''}>${esc(x.nama)}</option>`).join('')}</select>${lbl('Deskripsi')}${tarea('kk', c?.deskripsi, 3, 1000)}${btns('Simpan', `krsSave(${c ? c.id : 'null'})`)}`)
+    }
+    async function krsSave(id) { const dd = $('#kd').value, d = await rpc('save_course', { p_judul: $('#kj').value, p_deskripsi: $('#kk').value, p_divisi: dd ? +dd : null, p_id: id }); if (!d) return; sent(d); closeM(); id ? krsOpen(id) : vKrs() }
+
+    /* pertemuan, materi, tugas */
+    async function mtOpen(id) { const d = await rpc('meeting_detail', { p_id: id }); if (!d) return; MD = d; drawMd() }
+    function drawMd() {
+      const { meeting: m, items, tugas, done } = MD, P = pel_(), stf = stf_(), ok = m.status === 'DISETUJUI', can = m.canEdit;
+      $('#ttl').textContent = 'Pertemuan ' + m.nomor;
+      const ic = i => i.jenis === 'TEKS' ? 'file-text' : /youtu/.test(i.url) ? 'youtube' : /google\.com/.test(i.url) ? 'file-earmark' : 'link-45deg';
+      const itm = items.map(i => `<div class="card card-body mb-2"><div class="d-flex align-items-center gap-2"><i class="bi bi-${ic(i)} fs-5"></i><b class="flex-fill">${esc(i.judul)}</b>${i.jenis === 'TAUTAN' ? `<a class="btn btn-sm btn-outline-success" href="${esc(i.url)}" target="_blank" rel="noopener">Buka</a>` : ''}</div>${i.jenis === 'TEKS' ? `<div class="small mt-2" style="white-space:pre-wrap">${esc(i.isi)}</div>` : ''}${can ? eds(`itForm(${i.id})`, `itDel(${i.id})`) : ''}</div>`).join('');
+      const tg = tugas.map(t => {
+        const my = t.my; let body;
+        if (stf) body = `<div class="small mt-2">Terkumpul <b>${t.jml}</b> · Dinilai <b>${t.dinilai}</b></div><button class="btn btn-sm btn-success mt-2" onclick="subOpen(${t.id})">Lihat pengumpulan</button>`;
+        else if (my && my.nilai != null) body = `<div class="mt-2"><span class="badge bg-success">Nilai ${my.nilai}</span> ${my.terlambat ? '<span class="badge bg-warning text-dark">Terlambat</span>' : ''}${my.feedback ? `<div class="small mt-1">${esc(my.feedback)}</div>` : ''}<a class="small d-block mt-1" href="${esc(my.link)}" target="_blank" rel="noopener">Lihat file terkumpul</a></div>`;
+        else body = `${my ? `<div class="small mt-2">Dikumpulkan ${dtj(my.at)} ${my.terlambat ? '<span class="badge bg-warning text-dark">Terlambat</span>' : ''} · <a href="${esc(my.link)}" target="_blank" rel="noopener">lihat file</a></div>` : ''}${lbl('Link file Google Drive')}<input id="tl${t.id}" class="form-control" placeholder="https://drive.google.com/file/d/…/view" value="${esc(my?.link || '')}"><input id="tc${t.id}" class="form-control mt-2" placeholder="Catatan (opsional)" maxlength="300" value="${esc(my?.catatan || '')}"><div class="text-secondary small mt-1">PDF, gambar, atau video: unggah ke Google Drive, atur akses "Siapa saja yang memiliki link", lalu tempel link file (bukan folder).</div><button class="btn btn-warning w-100 mt-2" onclick="subSend(${t.id})">${my ? 'Perbarui pengumpulan' : 'Kumpulkan'}</button>`;
+        return `<div class="card card-body mb-2"><div class="d-flex justify-content-between gap-2"><b>${esc(t.judul)}</b>${t.tenggat ? `<span class="small text-secondary text-nowrap">Tenggat ${dtj(t.tenggat)}</span>` : ''}</div>${t.instruksi ? `<div class="small mt-1" style="white-space:pre-wrap">${esc(t.instruksi)}</div>` : ''}${body}${can ? eds(`tgForm(${t.id})`, `tgDel(${t.id})`) : ''}</div>`
+      }).join('');
+      $('#main').innerHTML = bk(`krsOpen(${m.courseId})`, esc(m.course)) + card(`<div class="d-flex justify-content-between gap-2"><h5 class="mb-0">${esc(m.judul)}</h5><span class="badge ${evCls(m.status)} align-self-start">${m.status}</span></div>${m.deskripsi ? `<p class="small mt-2 mb-0">${esc(m.deskripsi)}</p>` : ''}${!ok ? `<div class="small mt-2">Diajukan oleh ${esc(m.dibuatNama || '-')}</div>` : ''}${m.alasan ? `<div class="small mt-2 text-danger">Ditolak: ${esc(m.alasan)}</div>` : ''}${P && m.status === 'MENUNGGU' ? apv('mtReview') : ''}${can ? eds('mtForm(MD.meeting)', 'mtDel()') : ''}`)
+        + `<div class="fw-semibold mt-3 mb-1 px-1">Materi</div>` + (itm || '<p class="text-secondary small px-1">Belum ada materi.</p>') + (can ? `<button class="btn btn-outline-success w-100 mb-2" onclick="itForm()">+ Materi</button>` : '')
+        + (ok && !P ? `<button class="btn ${done ? 'btn-outline-success' : 'btn-success'} w-100 mb-2" onclick="mtDone(${!done})">${done ? 'Batalkan tanda selesai' : 'Tandai pertemuan selesai'}</button>` : '')
+        + `<div class="fw-semibold mt-3 mb-1 px-1">Tugas</div>` + (tg || '<p class="text-secondary small px-1">Belum ada tugas.</p>') + (can ? `<button class="btn btn-outline-success w-100 mb-2" onclick="tgForm()">+ Tugas</button>` : '')
+    }
+    async function mtDone(v) { const d = await rpc('mark_meeting_done', { p_id: MD.meeting.id, p_done: v }, v ? 'Ditandai selesai' : 'Tanda selesai dibatalkan'); if (d) mtOpen(MD.meeting.id) }
+    async function mtReview(a) { if (await reviewCall('review_meeting', MD.meeting.id, a, 'Pertemuan disetujui', 'Pertemuan ditolak')) mtOpen(MD.meeting.id) }
+    async function mtDel() { if (!confirm('Hapus pertemuan ini beserta materi dan tugasnya?')) return; const d = await rpc('delete_meeting', { p_id: MD.meeting.id }, 'Pertemuan dihapus'); if (d) krsOpen(MD.meeting.courseId) }
+    function mtForm(m) { const P = pel_(); modal(`<h5>${m ? 'Ubah pertemuan' : (P ? 'Tambah pertemuan' : 'Ajukan pertemuan')}</h5>${lbl('Judul pertemuan')}<input id="mj" class="form-control" maxlength="120" value="${esc(m?.judul || '')}">${lbl('Nomor pertemuan' + (m ? '' : ' (kosongkan = otomatis)'))}<input id="mn" type="number" min="1" class="form-control" value="${m ? m.nomor : ''}">${lbl('Deskripsi')}${tarea('md', m?.deskripsi, 3, 1000)}${btns('Simpan', `mtSave(${m ? m.id : 'null'})`)}`) }
+    async function mtSave(id) { const n = $('#mn').value, d = await rpc('save_meeting', { p_course: id ? null : KD.course.id, p_judul: $('#mj').value, p_nomor: n ? +n : null, p_deskripsi: $('#md').value, p_id: id }); if (!d) return; sent(d); closeM(); id ? mtOpen(id) : krsOpen(KD.course.id) }
+    function itForm(id) { const i = id ? MD.items.find(x => x.id === id) : null; modal(`<h5>${i ? 'Ubah materi' : 'Tambah materi'}</h5>${lbl('Jenis')}<select id="xj" class="form-select"><option value="TEKS" ${i?.jenis === 'TEKS' ? 'selected' : ''}>Teks</option><option value="TAUTAN" ${i?.jenis === 'TAUTAN' ? 'selected' : ''}>Tautan (YouTube, Drive, dll.)</option></select>${lbl('Judul')}<input id="xt" class="form-control" maxlength="120" value="${esc(i?.judul || '')}">${lbl('Isi teks (untuk jenis Teks)')}${tarea('xk', i?.isi, 4, 5000)}${lbl('Tautan https:// (untuk jenis Tautan)')}<input id="xu" class="form-control" value="${esc(i?.url || '')}">${btns('Simpan', `itSave(${id || 'null'})`)}`) }
+    async function itSave(id) { const d = await rpc('save_item', { p_meeting: id ? null : MD.meeting.id, p_jenis: $('#xj').value, p_judul: $('#xt').value, p_isi: $('#xk').value, p_url: $('#xu').value, p_id: id }, 'Materi tersimpan'); if (d) { closeM(); mtOpen(MD.meeting.id) } }
+    async function itDel(id) { if (!confirm('Hapus materi ini?')) return; const d = await rpc('delete_item', { p_id: id }, 'Materi dihapus'); if (d) mtOpen(MD.meeting.id) }
+    function tgForm(id) { const t = id ? MD.tugas.find(x => x.id === id) : null, tv = t && t.tenggat ? new Date(t.tenggat).toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' }).slice(0, 16).replace(' ', 'T') : ''; modal(`<h5>${t ? 'Ubah tugas' : 'Tambah tugas'}</h5>${lbl('Judul tugas')}<input id="yj" class="form-control" maxlength="120" value="${esc(t?.judul || '')}">${lbl('Instruksi')}${tarea('yi', t?.instruksi, 3, 2000)}${lbl('Tenggat (opsional, waktu Jakarta)')}<input id="yt" type="datetime-local" class="form-control" value="${tv}">${btns('Simpan', `tgSave(${id || 'null'})`)}`) }
+    async function tgSave(id) { const d = await rpc('save_assignment', { p_meeting: id ? null : MD.meeting.id, p_judul: $('#yj').value, p_instruksi: $('#yi').value, p_tenggat: $('#yt').value, p_id: id }, 'Tugas tersimpan'); if (d) { closeM(); mtOpen(MD.meeting.id) } }
+    async function tgDel(id) { if (!confirm('Hapus tugas ini beserta semua pengumpulannya?')) return; const d = await rpc('delete_assignment', { p_id: id }, 'Tugas dihapus'); if (d) mtOpen(MD.meeting.id) }
+
+    /* pengumpulan & penilaian */
+    async function subSend(id) { const d = await rpc('submit_assignment', { p_id: id, p_link: $('#tl' + id).value, p_catatan: $('#tc' + id).value }, 'Tugas dikumpulkan'); if (d) mtOpen(MD.meeting.id) }
+    async function subOpen(aid) {
+      const d = await rpc('list_submissions', { p_assignment: aid }); if (!d) return; SBL = d; SBA = aid; const P = pel_();
+      modal(`<h5>Pengumpulan tugas</h5><div class="small text-secondary mb-2">${d.filter(x => x.id).length} dari ${d.length} sudah mengumpulkan</div>${d.map((x, i) => `<div class="py-2 border-bottom"><div class="d-flex justify-content-between gap-2"><span>${esc(x.nama)} <span class="text-secondary small">${x.role === 'pengurus' ? 'pengurus · ' : ''}${esc(x.divisi || '')}</span></span>${x.id ? (x.nilai != null ? `<span class="badge bg-success">${x.nilai}</span>` : '<span class="badge bg-warning text-dark">Belum dinilai</span>') : '<span class="badge bg-secondary">Belum</span>'}</div>${x.id ? `<div class="small mt-1">${esc(x.at)} ${x.terlambat ? '<span class="badge bg-warning text-dark">Terlambat</span>' : ''}${x.catatan ? ' · ' + esc(x.catatan) : ''}</div><div class="d-flex gap-2 mt-1"><a class="btn btn-sm btn-outline-success" href="${esc(x.link)}" target="_blank" rel="noopener">Buka file</a>${P ? `<button class="btn btn-sm btn-success" onclick="gradeForm(${i})">${x.nilai != null ? 'Ubah nilai' : 'Nilai'}</button>` : ''}</div>` : ''}</div>`).join('') || '<p class="text-secondary small">Tidak ada anggota di divisi ini.</p>'}<button class="btn btn-outline-secondary w-100 mt-3" onclick="closeM()">Tutup</button>`)
+    }
+    function gradeForm(i) { const x = SBL[i]; modal(`<h5>Nilai: ${esc(x.nama)}</h5><a class="btn btn-sm btn-outline-success mb-1" href="${esc(x.link)}" target="_blank" rel="noopener">Buka file</a>${lbl('Nilai (0–100)')}<input id="gv" type="number" min="0" max="100" class="form-control" value="${x.nilai ?? ''}">${lbl('Catatan untuk peserta (opsional)')}<input id="gf" class="form-control" maxlength="300" value="${esc(x.feedback || '')}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="gradeSave(${x.id})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="subOpen(SBA)">Batal</button></div>`) }
+    async function gradeSave(id) { const v = $('#gv').value; if (v === '') return toast('Isi nilai 0–100.', 1); const d = await rpc('grade_submission', { p_id: id, p_nilai: +v, p_feedback: $('#gf').value }, 'Nilai tersimpan'); if (d) { subOpen(SBA); mtOpen(MD.meeting.id) } }
+
+    /* nilai saya */
+    async function vNil() {
+      const d = await rpc('my_grades'); if (!d) return; $('#ttl').textContent = 'Nilai'; const g = {}; d.rows.forEach(r => (g[r.course] = g[r.course] || []).push(r));
+      $('#main').innerHTML = `<div class="row g-2 mb-2"><div class="col-6"><div class="card card-body"><div class="text-secondary small">Rata-rata nilai</div><b class="fs-4">${d.rataRata ?? '-'}</b></div></div><div class="col-6"><div class="card card-body"><div class="text-secondary small">Tugas dinilai</div><b class="fs-4">${d.dinilai} / ${d.total}</b></div></div></div>`
+        + (Object.keys(g).map(k => `<div class="fw-semibold mt-3 mb-1 px-1">${esc(k)}</div>` + g[k].map(r => `<div class="card card-body mb-2"><div class="d-flex justify-content-between gap-2"><span>Pertemuan ${r.pertemuan} · ${esc(r.tugas)}</span>${r.nilai != null ? `<span class="badge bg-success">${r.nilai}</span>` : r.terkumpul ? '<span class="badge bg-warning text-dark">Menunggu nilai</span>' : '<span class="badge bg-secondary">Belum dikumpulkan</span>'}</div>${r.feedback ? `<div class="small text-secondary">${esc(r.feedback)}</div>` : ''}</div>`).join('')).join('') || '<p class="text-secondary">Belum ada tugas.</p>')
     }
 
     /* ---- Akun ---- */
