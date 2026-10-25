@@ -2,754 +2,760 @@
 <html lang="id">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Absensi & Kas</title>
-    <meta name="theme-color" content="#132234">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-    <style>
-        :root {
-          --navy: #293F59;
-          --ink: #132234;
-          --band: #081F44;
-          --blue: #4D9CBA;
-          --sky: #9BC9E3;
-          --yellow: #F5BA42;
-          --orange: #ED8B34;
-          --bs-body-font-family: 'Poppins', system-ui, sans-serif;
-          --bs-body-color: #293F59;
-          --bs-secondary-color: #5f7088
-        }
-    
-        body {
-          font-family: 'Poppins', system-ui, sans-serif;
-          background: linear-gradient(157deg, #293F59 6%, #fff 43%, #A4A4A4 85%) fixed;
-          min-height: 100vh
-        }
-    
-        .text-secondary {
-          color: #5f7088 !important
-        }
-    
-        .shell {
-          max-width: 640px;
-          margin: 0 auto;
-          min-height: 100vh
-        }
-    
-        .hdr {
-          background: var(--ink);
-          color: #fff;
-          border-radius: 0 0 40px 40px;
-          padding: 18px 20px 22px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          position: sticky;
-          top: 0;
-          z-index: 20
-        }
-    
-        .hdr h1 {
-          font-size: 1rem;
-          font-weight: 700;
-          margin: 0
-        }
-    
-        .ib {
-          background: none;
-          border: 0;
-          color: #fff;
-          font-size: 1.35rem;
-          position: relative;
-          padding: 4px 8px;
-          line-height: 1
-        }
-    
-        .ib.dk {
-          color: var(--navy)
-        }
-    
-        .dot {
-          position: absolute;
-          top: -4px;
-          right: 0;
-          background: var(--orange);
-          color: var(--ink);
-          font-size: .62rem;
-          font-weight: 700;
-          border-radius: 99px;
-          padding: 1px 6px
-        }
-    
-        .prof {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          padding: 22px 24px 12px;
-          color: #fff
-        }
-    
-        .av {
-          width: 68px;
-          height: 68px;
-          border-radius: 50%;
-          background: var(--sky);
-          color: var(--ink);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 700;
-          font-size: 1.5rem;
-          flex: none
-        }
-    
-        .band {
-          background: var(--band);
-          height: 70px;
-          border-radius: 21px 21px 0 0;
-          margin-top: 6px
-        }
-    
-        .sheet {
-          background: linear-gradient(#CED8E3, #89919A);
-          border-radius: 21px 21px 0 0;
-          margin-top: -34px;
-          padding: 18px 16px 40px;
-          min-height: 60vh;
-          position: relative
-        }
-    
-        .sheet.flat {
-          margin-top: 16px
-        }
-    
-        .card {
-          background: linear-gradient(#ECF0F9, #D3D6DD);
-          border: 0;
-          border-radius: 21px;
-          box-shadow: 1px 2px 5px 1.5px rgba(0, 0, 0, .4)
-        }
-    
-        .form-control,
-        .form-select {
-          border-radius: 30px;
-          border: 1px solid rgba(0, 0, 0, .28);
-          padding: .6rem 1rem;
-          background-color: #fff
-        }
-    
-        .form-control:focus,
-        .form-select:focus {
-          border-color: var(--navy);
-          box-shadow: 0 0 0 .2rem rgba(41, 63, 89, .2)
-        }
-    
-        .btn {
-          border-radius: 16px;
-          font-weight: 600
-        }
-    
-        .btn-success {
-          --bs-btn-color: #fff;
-          --bs-btn-bg: var(--navy);
-          --bs-btn-border-color: var(--navy);
-          --bs-btn-hover-color: #fff;
-          --bs-btn-hover-bg: #1b2c40;
-          --bs-btn-hover-border-color: #1b2c40;
-          --bs-btn-active-color: #fff;
-          --bs-btn-active-bg: #1b2c40;
-          --bs-btn-active-border-color: #1b2c40;
-          --bs-btn-disabled-color: #fff;
-          --bs-btn-disabled-bg: var(--navy);
-          --bs-btn-disabled-border-color: var(--navy)
-        }
-    
-        .btn-outline-success {
-          --bs-btn-color: var(--navy);
-          --bs-btn-border-color: var(--navy);
-          --bs-btn-hover-color: #fff;
-          --bs-btn-hover-bg: var(--navy);
-          --bs-btn-hover-border-color: var(--navy);
-          --bs-btn-active-color: #fff;
-          --bs-btn-active-bg: var(--navy);
-          --bs-btn-active-border-color: var(--navy)
-        }
-    
-        .btn-outline-secondary {
-          --bs-btn-color: var(--navy);
-          --bs-btn-border-color: #9fb0c2;
-          --bs-btn-hover-color: var(--navy);
-          --bs-btn-hover-bg: #e1e8ef;
-          --bs-btn-hover-border-color: #9fb0c2;
-          --bs-btn-active-color: var(--navy);
-          --bs-btn-active-bg: #e1e8ef
-        }
-    
-        .btn-warning {
-          --bs-btn-color: var(--ink);
-          --bs-btn-bg: var(--orange);
-          --bs-btn-border-color: var(--orange);
-          --bs-btn-hover-color: var(--ink);
-          --bs-btn-hover-bg: #F19D52;
-          --bs-btn-hover-border-color: #F19D52;
-          --bs-btn-active-color: var(--ink);
-          --bs-btn-active-bg: #F19D52;
-          --bs-btn-active-border-color: #F19D52;
-          --bs-btn-disabled-color: var(--ink);
-          --bs-btn-disabled-bg: var(--orange);
-          --bs-btn-disabled-border-color: var(--orange)
-        }
-    
-        .bg-success {
-          background-color: var(--blue) !important
-        }
-    
-        .badge.bg-success {
-          color: var(--ink)
-        }
-    
-        .bg-warning {
-          background-color: var(--yellow) !important
-        }
-    
-        .bg-info-subtle {
-          background-color: var(--sky) !important
-        }
-    
-        .bg-success-subtle {
-          background-color: #E1EFF7 !important
-        }
-    
-        .border-success {
-          border-color: var(--blue) !important
-        }
-    
-        .text-bg-dark {
-          background-color: var(--ink) !important
-        }
-    
-        .alert-warning {
-          --bs-alert-bg: #FDF1D4;
-          --bs-alert-border-color: var(--yellow);
-          --bs-alert-color: #5A3D00
-        }
-    
-        .pill {
-          background: var(--navy);
-          color: #fff;
-          border-radius: 20px;
-          padding: 8px 0;
-          flex: 1;
-          margin: 0 8px;
-          text-align: center;
-          font-weight: 700;
-          box-shadow: 0 4px 4px rgba(0, 0, 0, .25)
-        }
-    
-        .cg {
-          display: grid;
-          grid-template-columns: repeat(7, 1fr);
-          gap: 6px 0;
-          text-align: center;
-          font-size: .9rem
-        }
-    
-        .cg b {
-          font-weight: 400
-        }
-    
-        .cg .sun {
-          color: #ff0004
-        }
-    
-        .cg .now {
-          background: var(--navy);
-          color: #fff;
-          border-radius: 50%;
-          width: 28px;
-          height: 28px;
-          line-height: 28px;
-          margin: auto
-        }
-    
-        .qm {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 14px 6px;
-          text-align: center
-        }
-    
-        .qm button {
-          background: none;
-          border: 0;
-          color: var(--navy);
-          font-size: .72rem;
-          font-weight: 700;
-          padding: 0
-        }
-    
-        .qc {
-          display: flex;
-          width: 56px;
-          height: 56px;
-          margin: 0 auto 6px;
-          border-radius: 50%;
-          background: var(--navy);
-          color: #fff;
-          align-items: center;
-          justify-content: center;
-          font-size: 1.45rem
-        }
-    
-        .drw {
-          position: fixed;
-          inset: 0;
-          z-index: 60;
-          visibility: hidden
-        }
-    
-        .drw.on {
-          visibility: visible
-        }
-    
-        .drw-bg {
-          position: absolute;
-          inset: 0;
-          background: rgba(19, 34, 52, .55);
-          opacity: 0;
-          transition: .2s
-        }
-    
-        .drw.on .drw-bg {
-          opacity: 1
-        }
-    
-        .drw-p {
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          width: 270px;
-          background: var(--ink);
-          color: #fff;
-          transform: translateX(100%);
-          transition: .2s;
-          padding: 22px 12px;
-          overflow: auto
-        }
-    
-        .drw.on .drw-p {
-          transform: none
-        }
-    
-        .drw-p button {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          width: 100%;
-          background: none;
-          border: 0;
-          color: #fff;
-          padding: 12px 14px;
-          border-radius: 14px;
-          font-weight: 600;
-          text-align: left
-        }
-    
-        .drw-p button.on {
-          background: var(--navy)
-        }
-    
-        .lg {
-          max-width: 480px;
-          margin: 0 auto;
-          min-height: 100vh;
-          background: var(--navy)
-        }
-    
-        .lg-top {
-          background: var(--navy);
-          padding: 36px 24px 80px;
-          text-align: center
-        }
-    
-        .logo-box {
-          width: 160px;
-          height: 160px;
-          border-radius: 50%;
-          background: #fff;
-          margin: 0 auto;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          overflow: hidden;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, .25)
-        }
-    
-        .logo {
-          width: 88%;
-          height: 88%;
-          object-fit: contain
-        }
-    
-        .logo-fb {
-          color: var(--navy);
-          font-weight: 700;
-          font-size: 1.6rem;
-          line-height: 1.1;
-          letter-spacing: .08em;
-          text-align: center
-        }
-    
-        .lg-sheet {
-          background: #fafafa;
-          margin-top: -44px;
-          border-radius: 60px 60px 0 0;
-          padding: 36px 32px 40px;
-          position: relative;
-          min-height: calc(100vh - 232px)
-        }
-    
-        @keyframes rise {
-          from {
-            transform: translateY(80px);
-            opacity: 0
-          }
-    
-          to {
-            transform: none;
-            opacity: 1
-          }
-        }
-    
-        .lg-sheet.rise {
-          animation: rise .7s cubic-bezier(.22, 1, .36, 1) both
-        }
-    
-        @media (prefers-reduced-motion:reduce) {
-          .lg-sheet.rise {
-            animation: none
-          }
-        }
-    
-        .seg {
-          display: flex;
-          gap: 6px;
-          overflow-x: auto
-        }
-    
-        .seg button {
-          flex: 1 0 auto;
-          border: 0;
-          background: #fff;
-          border-radius: 99px;
-          padding: 7px 12px;
-          font-size: .78rem;
-          font-weight: 600;
-          color: var(--navy)
-        }
-    
-        .seg button.on {
-          background: var(--navy);
-          color: #fff
-        }
-    
-        .ov {
-          position: fixed;
-          inset: 0;
-          background: rgba(19, 34, 52, .55);
-          z-index: 80;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 16px
-        }
-    
-        .ov .card {
-          width: 100%;
-          max-width: 420px;
-          max-height: 90vh;
-          overflow: auto
-        }
-    
-        #bar {
-          position: fixed;
-          top: 0;
-          left: 0;
-          height: 3px;
-          width: 100%;
-          background: var(--orange);
-          z-index: 99;
-          display: none
-        }
-    
-        .table {
-          --bs-table-bg: transparent;
-          --bs-table-color: inherit;
-          --bs-table-border-color: rgba(41, 63, 89, .22);
-          --bs-table-accent-bg: transparent;
-          background: transparent
-        }
-    
-        .table thead th {
-          font-weight: 700
-        }
-    
-        @media print {
-    
-          .hdr,
-          .prof,
-          .band,
-          .drw,
-          #bar,
-          #toast,
-          .btn,
-          .no-print,
-          .ov {
-            display: none !important
-          }
-    
-          body {
-            background: #fff
-          }
-    
-          .shell {
-            max-width: none
-          }
-    
-          .sheet {
-            background: #fff !important;
-            border-radius: 0;
-            margin: 0 !important;
-            padding: 0 !important
-          }
-    
-          .card {
-            break-inside: avoid;
-            box-shadow: none;
-            border: 1px solid #ddd
-          }
-    
-          .table-responsive {
-            overflow: visible !important
-          }
-    
-          .text-nowrap {
-            white-space: normal !important
-          }
-    
-          .table {
-            font-size: .8rem
-          }
-        }
-      </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Absensi & Kas</title>
+  <meta name="theme-color" content="#132234">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <style>
+    :root {
+      --navy: #293F59;
+      --ink: #132234;
+      --band: #081F44;
+      --blue: #4D9CBA;
+      --sky: #9BC9E3;
+      --yellow: #F5BA42;
+      --orange: #ED8B34;
+      --bs-body-font-family: 'Poppins', system-ui, sans-serif;
+      --bs-body-color: #293F59;
+      --bs-secondary-color: #5f7088
+    }
+
+    body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      background: linear-gradient(157deg, #293F59 6%, #fff 43%, #A4A4A4 85%) fixed;
+      min-height: 100vh
+    }
+
+    .text-secondary {
+      color: #5f7088 !important
+    }
+
+    .shell {
+      max-width: 640px;
+      margin: 0 auto;
+      min-height: 100vh
+    }
+
+    .hdr {
+      background: var(--ink);
+      color: #fff;
+      border-radius: 0 0 40px 40px;
+      padding: 18px 20px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 20
+    }
+
+    .hdr h1 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0
+    }
+
+    .ib {
+      background: none;
+      border: 0;
+      color: #fff;
+      font-size: 1.35rem;
+      position: relative;
+      padding: 4px 8px;
+      line-height: 1
+    }
+
+    .ib.dk {
+      color: var(--navy)
+    }
+
+    .dot {
+      position: absolute;
+      top: -4px;
+      right: 0;
+      background: var(--orange);
+      color: var(--ink);
+      font-size: .62rem;
+      font-weight: 700;
+      border-radius: 99px;
+      padding: 1px 6px
+    }
+
+    .prof {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 22px 24px 12px;
+      color: #fff
+    }
+
+    .av {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: var(--sky);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.5rem;
+      flex: none
+    }
+
+    .band {
+      background: var(--band);
+      height: 70px;
+      border-radius: 21px 21px 0 0;
+      margin-top: 6px
+    }
+
+    .sheet {
+      background: linear-gradient(#CED8E3, #89919A);
+      border-radius: 21px 21px 0 0;
+      margin-top: -34px;
+      padding: 18px 16px 40px;
+      min-height: 60vh;
+      position: relative
+    }
+
+    .sheet.flat {
+      margin-top: 16px
+    }
+
+    .card {
+      background: linear-gradient(#ECF0F9, #D3D6DD);
+      border: 0;
+      border-radius: 21px;
+      box-shadow: 1px 2px 5px 1.5px rgba(0, 0, 0, .4)
+    }
+
+    .form-control,
+    .form-select {
+      border-radius: 30px;
+      border: 1px solid rgba(0, 0, 0, .28);
+      padding: .6rem 1rem;
+      background-color: #fff
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 .2rem rgba(41, 63, 89, .2)
+    }
+
+    .btn {
+      border-radius: 16px;
+      font-weight: 600
+    }
+
+    .btn-success {
+      --bs-btn-color: #fff;
+      --bs-btn-bg: var(--navy);
+      --bs-btn-border-color: var(--navy);
+      --bs-btn-hover-color: #fff;
+      --bs-btn-hover-bg: #1b2c40;
+      --bs-btn-hover-border-color: #1b2c40;
+      --bs-btn-active-color: #fff;
+      --bs-btn-active-bg: #1b2c40;
+      --bs-btn-active-border-color: #1b2c40;
+      --bs-btn-disabled-color: #fff;
+      --bs-btn-disabled-bg: var(--navy);
+      --bs-btn-disabled-border-color: var(--navy)
+    }
+
+    .btn-outline-success {
+      --bs-btn-color: var(--navy);
+      --bs-btn-border-color: var(--navy);
+      --bs-btn-hover-color: #fff;
+      --bs-btn-hover-bg: var(--navy);
+      --bs-btn-hover-border-color: var(--navy);
+      --bs-btn-active-color: #fff;
+      --bs-btn-active-bg: var(--navy);
+      --bs-btn-active-border-color: var(--navy)
+    }
+
+    .btn-outline-secondary {
+      --bs-btn-color: var(--navy);
+      --bs-btn-border-color: #9fb0c2;
+      --bs-btn-hover-color: var(--navy);
+      --bs-btn-hover-bg: #e1e8ef;
+      --bs-btn-hover-border-color: #9fb0c2;
+      --bs-btn-active-color: var(--navy);
+      --bs-btn-active-bg: #e1e8ef
+    }
+
+    .btn-warning {
+      --bs-btn-color: var(--ink);
+      --bs-btn-bg: var(--orange);
+      --bs-btn-border-color: var(--orange);
+      --bs-btn-hover-color: var(--ink);
+      --bs-btn-hover-bg: #F19D52;
+      --bs-btn-hover-border-color: #F19D52;
+      --bs-btn-active-color: var(--ink);
+      --bs-btn-active-bg: #F19D52;
+      --bs-btn-active-border-color: #F19D52;
+      --bs-btn-disabled-color: var(--ink);
+      --bs-btn-disabled-bg: var(--orange);
+      --bs-btn-disabled-border-color: var(--orange)
+    }
+
+    .bg-success {
+      background-color: var(--blue) !important
+    }
+
+    .badge.bg-success {
+      color: var(--ink)
+    }
+
+    .bg-warning {
+      background-color: var(--yellow) !important
+    }
+
+    .bg-info-subtle {
+      background-color: var(--sky) !important
+    }
+
+    .bg-success-subtle {
+      background-color: #E1EFF7 !important
+    }
+
+    .border-success {
+      border-color: var(--blue) !important
+    }
+
+    .text-bg-dark {
+      background-color: var(--ink) !important
+    }
+
+    .alert-warning {
+      --bs-alert-bg: #FDF1D4;
+      --bs-alert-border-color: var(--yellow);
+      --bs-alert-color: #5A3D00
+    }
+
+    .pill {
+      background: var(--navy);
+      color: #fff;
+      border-radius: 20px;
+      padding: 8px 0;
+      flex: 1;
+      margin: 0 8px;
+      text-align: center;
+      font-weight: 700;
+      box-shadow: 0 4px 4px rgba(0, 0, 0, .25)
+    }
+
+    .cg {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px 0;
+      text-align: center;
+      font-size: .9rem
+    }
+
+    .cg b {
+      font-weight: 400
+    }
+
+    .cg .sun {
+      color: #ff0004
+    }
+
+    .cg .now {
+      background: var(--navy);
+      color: #fff;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+      margin: auto
+    }
+
+    .qm {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px 6px;
+      text-align: center
+    }
+
+    .qm button {
+      background: none;
+      border: 0;
+      color: var(--navy);
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      line-height: 1.25
+    }
+
+    .qc {
+      display: flex;
+      flex: none;
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 6px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: #fff;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.45rem
+    }
+
+    .drw {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      visibility: hidden
+    }
+
+    .drw.on {
+      visibility: visible
+    }
+
+    .drw-bg {
+      position: absolute;
+      inset: 0;
+      background: rgba(19, 34, 52, .55);
+      opacity: 0;
+      transition: .2s
+    }
+
+    .drw.on .drw-bg {
+      opacity: 1
+    }
+
+    .drw-p {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 270px;
+      background: var(--ink);
+      color: #fff;
+      transform: translateX(100%);
+      transition: .2s;
+      padding: 22px 12px;
+      overflow: auto
+    }
+
+    .drw.on .drw-p {
+      transform: none
+    }
+
+    .drw-p button {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      background: none;
+      border: 0;
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-weight: 600;
+      text-align: left
+    }
+
+    .drw-p button.on {
+      background: var(--navy)
+    }
+
+    .lg {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--navy)
+    }
+
+    .lg-top {
+      background: var(--navy);
+      padding: 36px 24px 80px;
+      text-align: center
+    }
+
+    .logo-box {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: #fff;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, .25)
+    }
+
+    .logo {
+      width: 88%;
+      height: 88%;
+      object-fit: contain
+    }
+
+    .logo-fb {
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 1.6rem;
+      line-height: 1.1;
+      letter-spacing: .08em;
+      text-align: center
+    }
+
+    .lg-sheet {
+      background: #fafafa;
+      margin-top: -44px;
+      border-radius: 60px 60px 0 0;
+      padding: 36px 32px 40px;
+      position: relative;
+      min-height: calc(100vh - 232px)
+    }
+
+    @keyframes rise {
+      from {
+        transform: translateY(80px);
+        opacity: 0
+      }
+
+      to {
+        transform: none;
+        opacity: 1
+      }
+    }
+
+    .lg-sheet.rise {
+      animation: rise .7s cubic-bezier(.22, 1, .36, 1) both
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      .lg-sheet.rise {
+        animation: none
+      }
+    }
+
+    .seg {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto
+    }
+
+    .seg button {
+      flex: 1 0 auto;
+      border: 0;
+      background: #fff;
+      border-radius: 99px;
+      padding: 7px 12px;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--navy)
+    }
+
+    .seg button.on {
+      background: var(--navy);
+      color: #fff
+    }
+
+    .ov {
+      position: fixed;
+      inset: 0;
+      background: rgba(19, 34, 52, .55);
+      z-index: 80;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px
+    }
+
+    .ov .card {
+      width: 100%;
+      max-width: 420px;
+      max-height: 90vh;
+      overflow: auto
+    }
+
+    #bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: var(--orange);
+      z-index: 99;
+      display: none
+    }
+
+    .table {
+      --bs-table-bg: transparent;
+      --bs-table-color: inherit;
+      --bs-table-border-color: rgba(41, 63, 89, .22);
+      --bs-table-accent-bg: transparent;
+      background: transparent
+    }
+
+    .table thead th {
+      font-weight: 700
+    }
+
+    @media print {
+
+      .hdr,
+      .prof,
+      .band,
+      .drw,
+      #bar,
+      #toast,
+      .btn,
+      .no-print,
+      .ov {
+        display: none !important
+      }
+
+      body {
+        background: #fff
+      }
+
+      .shell {
+        max-width: none
+      }
+
+      .sheet {
+        background: #fff !important;
+        border-radius: 0;
+        margin: 0 !important;
+        padding: 0 !important
+      }
+
+      .card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd
+      }
+
+      .table-responsive {
+        overflow: visible !important
+      }
+
+      .text-nowrap {
+        white-space: normal !important
+      }
+
+      .table {
+        font-size: .8rem
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <div id="bar"></div>
-    <div id="app"></div>
-    <div id="toast" class="toast align-items-center text-bg-dark border-0 position-fixed start-50 translate-middle-x"
-        style="bottom:90px;z-index:99">
-        <div class="toast-body" id="tmsg"></div>
-    </div>
-    <script>
-        /* ====== ISI: alamat proxy (Cloudflare Worker). URL & key Supabase TIDAK ada di file ini ====== */
-        const API_URL = 'https://tight-sun-0f6d.askhacking.workers.dev';
-        /* ================================================================================================ */
-        const sb = supabase.createClient(API_URL, 'public-anon-key-placeholder'); // key asli hanya ada di Worker
-        const $ = s => document.querySelector(s), esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])), rp = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
-        let dev = localStorage.getItem('dev'); if (!dev) { dev = crypto.randomUUID(); localStorage.setItem('dev', dev) }
-        let S = null, tab = 'home', LR = [], LU = [], LP = null, hd = '', mode = 0;
-        const busy = x => $('#bar').style.display = x ? 'block' : 'none';
-        function toast(m, e) { const t = $('#toast'); t.className = 'toast show align-items-center border-0 position-fixed start-50 translate-middle-x text-bg-' + (e ? 'danger' : 'dark'); $('#tmsg').textContent = m; clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3200) }
-        async function rpc(fn, args, msg) {
-            busy(1); const { data, error } = await sb.rpc(fn, { p_device: dev, ...(args || {}) }); busy(0);
-            if (error) { const m = error.message; if (m === 'AUTH' || m === 'DEVICE') { await sb.auth.signOut(); logoutLocal(m === 'DEVICE' ? 'Perangkat ini tidak lagi terdaftar. Silakan login ulang.' : 'Sesi berakhir. Silakan login ulang.'); return null } toast(m, 1); return null }
-            if (msg) toast(msg); return data
-        }
-        function modal(h, lock) { closeM(); const o = document.createElement('div'); o.className = 'ov'; o.id = 'ov'; o.innerHTML = `<div class="card card-body">${h}</div>`; if (!lock) o.onclick = e => { if (e.target === o) closeM() }; document.body.appendChild(o) }
-        const closeM = () => { const o = $('#ov'); o && o.remove() };
-        const lbl = t => `<label class="form-label fw-semibold small mt-2 mb-1">${t}</label>`;
+  <div id="bar"></div>
+  <div id="app"></div>
+  <div id="toast" class="toast align-items-center text-bg-dark border-0 position-fixed start-50 translate-middle-x"
+    style="bottom:90px;z-index:99">
+    <div class="toast-body" id="tmsg"></div>
+  </div>
+  <script>
+    /* ====== ISI: alamat proxy (Cloudflare Worker). URL & key Supabase TIDAK ada di file ini ====== */
+    const API_URL = 'https://tight-sun-0f6d.askhacking.workers.dev';
+    /* ================================================================================================ */
+    const sb = supabase.createClient(API_URL, 'public-anon-key-placeholder'); // key asli hanya ada di Worker
+    const $ = s => document.querySelector(s), esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])), rp = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+    let dev = localStorage.getItem('dev'); if (!dev) { dev = crypto.randomUUID(); localStorage.setItem('dev', dev) }
+    let S = null, tab = 'home', LR = [], LU = [], LP = null, hd = '', mode = 0;
+    const busy = x => $('#bar').style.display = x ? 'block' : 'none';
+    function toast(m, e) { const t = $('#toast'); t.className = 'toast show align-items-center border-0 position-fixed start-50 translate-middle-x text-bg-' + (e ? 'danger' : 'dark'); $('#tmsg').textContent = m; clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3200) }
+    async function rpc(fn, args, msg) {
+      busy(1); const { data, error } = await sb.rpc(fn, { p_device: dev, ...(args || {}) }); busy(0);
+      if (error) { const m = error.message; if (m === 'AUTH' || m === 'DEVICE') { await sb.auth.signOut(); logoutLocal(m === 'DEVICE' ? 'Perangkat ini tidak lagi terdaftar. Silakan login ulang.' : 'Sesi berakhir. Silakan login ulang.'); return null } toast(m, 1); return null }
+      if (msg) toast(msg); return data
+    }
+    function modal(h, lock) { closeM(); const o = document.createElement('div'); o.className = 'ov'; o.id = 'ov'; o.innerHTML = `<div class="card card-body">${h}</div>`; if (!lock) o.onclick = e => { if (e.target === o) closeM() }; document.body.appendChild(o) }
+    const closeM = () => { const o = $('#ov'); o && o.remove() };
+    const lbl = t => `<label class="form-label fw-semibold small mt-2 mb-1">${t}</label>`;
 
-        /* ---- Login & pendaftaran anggota ---- */
-        const LOGO = `<div class="logo-box"><img src="assets/logo.png" alt="ICT Club" class="logo" onerror="this.style.display='none';document.getElementById('lgfb').style.display='block'"><div id="lgfb" class="logo-fb" style="display:none">ICT<br>CLUB</div></div>`;
-        let riseOnce = true;
-        const lgWrap = h => { const r = riseOnce ? ' rise' : ''; riseOnce = false; return `<div class="lg"><div class="lg-top">${LOGO}</div><div class="lg-sheet${r}">${h}</div></div>` };
-        function viewLogin(msg) { closeM(); $('#app').innerHTML = lgWrap(`<h5 class="fw-bold mb-3">Masuk ke akun Anda</h5>${msg ? `<div class="alert alert-warning">${esc(msg)}</div>` : ''}${lbl('NIK')}<input id="nik" class="form-control" inputmode="numeric" autocomplete="username" placeholder="NIK">${lbl('Password')}<input id="pw" type="password" class="form-control" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"><button class="btn btn-success w-100 mt-4 py-2" onclick="doLogin()">Masuk</button><p class="text-secondary small text-center mt-3 mb-1">Lupa password? Hubungi pelatih atau pengurus.</p><p class="text-center small mt-4">Belum menjadi anggota? <a href="#" onclick="viewDaftar();return false">Daftar sebagai anggota</a></p><p class="text-secondary small text-center">Satu akun hanya dapat dipakai di satu perangkat.</p>`) }
-        async function viewDaftar() {
-            busy(1); const { data } = await sb.rpc('public_divisions'); busy(0); const dv = data || [];
-            $('#app').innerHTML = lgWrap(`<h5 class="fw-bold mb-1">Pendaftaran anggota</h5><p class="text-secondary small">Pendaftaran disetujui pelatih, lalu akun diaktifkan pengurus. NIK dan password dikirim ke WhatsApp Anda setelah akun aktif.</p>${lbl('Nama lengkap')}<input id="dn" class="form-control" maxlength="100">${lbl('No. WhatsApp')}<input id="dh" class="form-control" inputmode="tel" placeholder="08xxxxxxxxxx">${lbl('Divisi')}<select id="dd" class="form-select"><option value="">Pilih divisi</option>${dv.map(x => `<option value="${x.id}">${esc(x.nama)}</option>`).join('')}</select>${lbl('Catatan (opsional)')}<input id="dc" class="form-control" maxlength="300"><input id="dw" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"><button class="btn btn-success w-100 mt-4 py-2" onclick="doDaftar()">Kirim pendaftaran</button><p class="text-center small mt-3"><a href="#" onclick="viewLogin();return false">Kembali ke login</a></p>`)
-        }
-        async function doDaftar() {
-            const dd = $('#dd').value; if (!dd) return toast('Pilih divisi.', 1); busy(1);
-            const { error } = await sb.rpc('submit_registration', { p_nama: $('#dn').value, p_hp: $('#dh').value, p_divisi: +dd, p_catatan: $('#dc').value || null, p_website: $('#dw').value || null }); busy(0);
-            if (error) return toast(error.message, 1);
-            $('#app').innerHTML = lgWrap(`<div class="text-center"><div class="display-4"><i class="bi bi-check-circle" style="color:var(--blue)"></i></div><h5 class="fw-bold">Pendaftaran terkirim</h5><p class="text-secondary small">Menunggu persetujuan pelatih, lalu aktivasi oleh pengurus. Informasi NIK dan password akan dikirim ke WhatsApp Anda.</p><button class="btn btn-success w-100" onclick="viewLogin()">Kembali ke login</button></div>`)
-        }
-        async function doLogin() {
-            busy(1); const { error } = await sb.auth.signInWithPassword({ email: $('#nik').value.trim() + '@kas.local', password: $('#pw').value }); busy(0);
-            if (error) return toast('NIK atau password salah.', 1);
-            const d = await rpc('claim_device'); if (!d) { await sb.auth.signOut(); return } S = d; start()
-        }
-        function logoutLocal(m) { S = null; viewLogin(m) }
-        async function doLogout() { await sb.auth.signOut(); logoutLocal() }
-        function start() { shell(); if (S.user.mustChange) modal(`<h5>Ganti password</h5><p class="text-secondary small">Demi keamanan, ganti password sementara Anda.</p>${lbl('Password saat ini')}<input id="fa" type="password" class="form-control">${lbl('Password baru (min. 6)')}<input id="fb" type="password" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="doForce()">Simpan</button>`, true) }
-        async function doForce() { const d = await rpc('change_password', { p_old: $('#fa').value, p_new: $('#fb').value }, 'Password diganti'); if (d) { S.user.mustChange = false; closeM() } }
+    /* ---- Login & pendaftaran anggota ---- */
+    const LOGO = `<div class="logo-box"><img src="assets/logo.png" alt="ICT Club" class="logo" onerror="this.style.display='none';document.getElementById('lgfb').style.display='block'"><div id="lgfb" class="logo-fb" style="display:none">ICT<br>CLUB</div></div>`;
+    let riseOnce = true;
+    const lgWrap = h => { const r = riseOnce ? ' rise' : ''; riseOnce = false; return `<div class="lg"><div class="lg-top">${LOGO}</div><div class="lg-sheet${r}">${h}</div></div>` };
+    function viewLogin(msg) { closeM(); $('#app').innerHTML = lgWrap(`<h5 class="fw-bold mb-3">Masuk ke akun Anda</h5>${msg ? `<div class="alert alert-warning">${esc(msg)}</div>` : ''}${lbl('NIK')}<input id="nik" class="form-control" inputmode="numeric" autocomplete="username" placeholder="NIK">${lbl('Password')}<input id="pw" type="password" class="form-control" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"><button class="btn btn-success w-100 mt-4 py-2" onclick="doLogin()">Masuk</button><p class="text-secondary small text-center mt-3 mb-1">Lupa password? Hubungi pelatih atau pengurus.</p><p class="text-center small mt-4">Belum menjadi anggota? <a href="#" onclick="viewDaftar();return false">Daftar sebagai anggota</a></p><p class="text-secondary small text-center">Satu akun hanya dapat dipakai di satu perangkat.</p>`) }
+    async function viewDaftar() {
+      busy(1); const { data } = await sb.rpc('public_divisions'); busy(0); const dv = data || [];
+      $('#app').innerHTML = lgWrap(`<h5 class="fw-bold mb-1">Pendaftaran anggota</h5><p class="text-secondary small">Pendaftaran disetujui pelatih, lalu akun diaktifkan pengurus. NIK dan password dikirim ke WhatsApp Anda setelah akun aktif.</p>${lbl('Nama lengkap')}<input id="dn" class="form-control" maxlength="100">${lbl('No. WhatsApp')}<input id="dh" class="form-control" inputmode="tel" placeholder="08xxxxxxxxxx">${lbl('Divisi')}<select id="dd" class="form-select"><option value="">Pilih divisi</option>${dv.map(x => `<option value="${x.id}">${esc(x.nama)}</option>`).join('')}</select>${lbl('Catatan (opsional)')}<input id="dc" class="form-control" maxlength="300"><input id="dw" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"><button class="btn btn-success w-100 mt-4 py-2" onclick="doDaftar()">Kirim pendaftaran</button><p class="text-center small mt-3"><a href="#" onclick="viewLogin();return false">Kembali ke login</a></p>`)
+    }
+    async function doDaftar() {
+      const dd = $('#dd').value; if (!dd) return toast('Pilih divisi.', 1); busy(1);
+      const { error } = await sb.rpc('submit_registration', { p_nama: $('#dn').value, p_hp: $('#dh').value, p_divisi: +dd, p_catatan: $('#dc').value || null, p_website: $('#dw').value || null }); busy(0);
+      if (error) return toast(error.message, 1);
+      $('#app').innerHTML = lgWrap(`<div class="text-center"><div class="display-4"><i class="bi bi-check-circle" style="color:var(--blue)"></i></div><h5 class="fw-bold">Pendaftaran terkirim</h5><p class="text-secondary small">Menunggu persetujuan pelatih, lalu aktivasi oleh pengurus. Informasi NIK dan password akan dikirim ke WhatsApp Anda.</p><button class="btn btn-success w-100" onclick="viewLogin()">Kembali ke login</button></div>`)
+    }
+    async function doLogin() {
+      busy(1); const { error } = await sb.auth.signInWithPassword({ email: $('#nik').value.trim() + '@kas.local', password: $('#pw').value }); busy(0);
+      if (error) return toast('NIK atau password salah.', 1);
+      const d = await rpc('claim_device'); if (!d) { await sb.auth.signOut(); return } S = d; start()
+    }
+    function logoutLocal(m) { S = null; viewLogin(m) }
+    async function doLogout() { await sb.auth.signOut(); logoutLocal() }
+    function start() { shell(); if (S.user.mustChange) modal(`<h5>Ganti password</h5><p class="text-secondary small">Demi keamanan, ganti password sementara Anda.</p>${lbl('Password saat ini')}<input id="fa" type="password" class="form-control">${lbl('Password baru (min. 6)')}<input id="fb" type="password" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="doForce()">Simpan</button>`, true) }
+    async function doForce() { const d = await rpc('change_password', { p_old: $('#fa').value, p_new: $('#fb').value }, 'Password diganti'); if (d) { S.user.mustChange = false; closeM() } }
 
-        /* ---- Shell: header, menu samping, kalender, menu cepat ---- */
-        const M = { home: ['Beranda', 'house'], hadir: ['Hadir & Kas', 'cash-coin'], grp: ['Kelompok', 'people'], lap: ['Laporan Kas', 'graph-up'], rh: ['Laporan Hadir', 'calendar-check'], usr: ['Anggota', 'person-lines-fill'], reg: ['Pendaftaran', 'person-plus'], kas: ['Kas Saya', 'wallet2'], akun: ['Akun', 'person-circle'] };
-        const ROLEMENU = { pelatih: ['home', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'akun'], pengurus: ['home', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'kas', 'akun'], peserta: ['home', 'kas', 'akun'] };
-        function shell() {
-            const u = S.user, st = u.role !== 'peserta';
-            $('#app').innerHTML = `<div class="shell"><div class="hdr"><button class="ib" onclick="go('${st ? 'reg' : 'home'}')"><i class="bi bi-${st ? 'bell' : 'house'}"></i>${S.notif > 0 ? `<span class="dot">${S.notif}</span>` : ''}</button><h1 id="ttl"></h1><button class="ib" onclick="drw(1)"><i class="bi bi-list"></i></button></div><div id="top"></div><main class="sheet" id="main"></main></div><div class="drw" id="drw"><div class="drw-bg" onclick="drw(0)"></div><div class="drw-p"><div class="mb-3 px-2"><b>${esc(u.nama)}</b><div class="small" style="opacity:.7">${u.role}${u.divisi ? ' · ' + esc(u.divisi) : ''}</div></div>${ROLEMENU[u.role].map(k => `<button data-k="${k}" onclick="drw(0);go('${k}')"><i class="bi bi-${M[k][1]}"></i>${M[k][0]}${k === 'reg' && S.notif > 0 ? `<span class="badge bg-warning text-dark ms-auto">${S.notif}</span>` : ''}</button>`).join('')}<button onclick="drw(0);doLogout()"><i class="bi bi-box-arrow-right"></i>Keluar</button></div></div>`; go('home')
-        }
-        const drw = o => $('#drw').classList.toggle('on', !!o);
-        function go(k) {
-            tab = k; const u = S.user, h = k === 'home'; $('#ttl').textContent = M[k][0];
-            document.querySelectorAll('.drw-p button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === k));
-            $('#top').innerHTML = h ? `<div class="prof"><div class="av">${esc((u.nama.trim()[0] || '?').toUpperCase())}</div><div class="flex-fill"><div class="fw-bold">${esc(u.nama)}</div><div class="small">${esc(u.divisi || u.role)}</div></div><button class="ib" onclick="go('akun')"><i class="bi bi-pencil-square"></i></button></div><div class="band"></div>` : '';
-            $('#main').classList.toggle('flat', !h); window.scrollTo(0, 0);
-            ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, reg: vReg, akun: vAkun })[k]($('#main'))
-        }
-        let cy = null, cmn = 0;
-        const BLN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-        function calHTML() {
-            const t = S.today.split('-').map(Number); if (cy == null) { cy = t[0]; cmn = t[1] - 1 }
-            const first = (new Date(cy, cmn, 1).getDay() + 6) % 7, n = new Date(cy, cmn + 1, 0).getDate(), now = cy === t[0] && cmn === t[1] - 1; let c = '';
-            for (let i = 0; i < first; i++)c += '<span></span>';
-            for (let d = 1; d <= n; d++) { const w = (first + d - 1) % 7; c += `<span class="${w === 6 ? 'sun' : ''}${now && d === t[2] ? ' now' : ''}">${d}</span>` }
-            return `<div class="card card-body mb-3"><div class="d-flex align-items-center justify-content-between mb-3"><button class="ib dk" onclick="calGo(-1)"><i class="bi bi-chevron-left"></i></button><div class="pill">${BLN[cmn]} - ${cy}</div><button class="ib dk" onclick="calGo(1)"><i class="bi bi-chevron-right"></i></button></div><div class="cg">${['SN', 'SL', 'RB', 'KM', 'JM', 'SB', 'MG'].map(x => `<b>${x}</b>`).join('')}${c}</div></div>`
-        }
-        function calGo(n) { cmn += n; if (cmn < 0) { cmn = 11; cy-- } if (cmn > 11) { cmn = 0; cy++ } $('#cal').innerHTML = calHTML() }
-        const calWrap = () => `<div id="cal">${calHTML()}</div>`;
-        const menuCard = () => `<div class="card card-body mb-3"><div class="qm">${ROLEMENU[S.user.role].filter(k => k !== 'home' && k !== 'akun').map(k => `<button onclick="go('${k}')"><span class="qc"><i class="bi bi-${M[k][1]}"></i></span>${M[k][0]}</button>`).join('')}</div></div>`;
+    /* ---- Shell: header, menu samping, kalender, menu cepat ---- */
+    const M = { home: ['Beranda', 'house'], hadir: ['Hadir & Kas', 'cash-coin'], grp: ['Kelompok', 'people'], lap: ['Laporan Kas', 'graph-up'], rh: ['Laporan Hadir', 'calendar-check'], usr: ['Anggota', 'person-lines-fill'], reg: ['Pendaftaran', 'person-plus'], kas: ['Kas Saya', 'wallet2'], akun: ['Akun', 'person-circle'] };
+    const ROLEMENU = { pelatih: ['home', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'akun'], pengurus: ['home', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'kas', 'akun'], peserta: ['home', 'kas', 'akun'] };
+    function shell() {
+      const u = S.user, st = u.role !== 'peserta';
+      $('#app').innerHTML = `<div class="shell"><div class="hdr"><button class="ib" onclick="go('${st ? 'reg' : 'home'}')"><i class="bi bi-${st ? 'bell' : 'house'}"></i>${S.notif > 0 ? `<span class="dot">${S.notif}</span>` : ''}</button><h1 id="ttl"></h1><button class="ib" onclick="drw(1)"><i class="bi bi-list"></i></button></div><div id="top"></div><main class="sheet" id="main"></main></div><div class="drw" id="drw"><div class="drw-bg" onclick="drw(0)"></div><div class="drw-p"><div class="mb-3 px-2"><b>${esc(u.nama)}</b><div class="small" style="opacity:.7">${u.role}${u.divisi ? ' · ' + esc(u.divisi) : ''}</div></div>${ROLEMENU[u.role].map(k => `<button data-k="${k}" onclick="drw(0);go('${k}')"><i class="bi bi-${M[k][1]}"></i>${M[k][0]}${k === 'reg' && S.notif > 0 ? `<span class="badge bg-warning text-dark ms-auto">${S.notif}</span>` : ''}</button>`).join('')}<button onclick="drw(0);doLogout()"><i class="bi bi-box-arrow-right"></i>Keluar</button></div></div>`; go('home')
+    }
+    const drw = o => $('#drw').classList.toggle('on', !!o);
+    function go(k) {
+      tab = k; const u = S.user, h = k === 'home'; $('#ttl').textContent = M[k][0];
+      document.querySelectorAll('.drw-p button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === k));
+      $('#top').innerHTML = h ? `<div class="prof"><div class="av">${esc((u.nama.trim()[0] || '?').toUpperCase())}</div><div class="flex-fill"><div class="fw-bold">${esc(u.nama)}</div><div class="small">${esc(u.divisi || u.role)}</div></div><button class="ib" onclick="go('akun')"><i class="bi bi-pencil-square"></i></button></div><div class="band"></div>` : '';
+      $('#main').classList.toggle('flat', !h); window.scrollTo(0, 0);
+      ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, reg: vReg, akun: vAkun })[k]($('#main'))
+    }
+    let cy = null, cmn = 0;
+    const BLN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    function calHTML() {
+      const t = S.today.split('-').map(Number); if (cy == null) { cy = t[0]; cmn = t[1] - 1 }
+      const first = (new Date(cy, cmn, 1).getDay() + 6) % 7, n = new Date(cy, cmn + 1, 0).getDate(), now = cy === t[0] && cmn === t[1] - 1; let c = '';
+      for (let i = 0; i < first; i++)c += '<span></span>';
+      for (let d = 1; d <= n; d++) { const w = (first + d - 1) % 7; c += `<span class="${w === 6 ? 'sun' : ''}${now && d === t[2] ? ' now' : ''}">${d}</span>` }
+      return `<div class="card card-body mb-3"><div class="d-flex align-items-center justify-content-between mb-3"><button class="ib dk" onclick="calGo(-1)"><i class="bi bi-chevron-left"></i></button><div class="pill">${BLN[cmn]} - ${cy}</div><button class="ib dk" onclick="calGo(1)"><i class="bi bi-chevron-right"></i></button></div><div class="cg">${['SN', 'SL', 'RB', 'KM', 'JM', 'SB', 'MG'].map(x => `<b>${x}</b>`).join('')}${c}</div></div>`
+    }
+    function calGo(n) { cmn += n; if (cmn < 0) { cmn = 11; cy-- } if (cmn > 11) { cmn = 0; cy++ } $('#cal').innerHTML = calHTML() }
+    const calWrap = () => `<div id="cal">${calHTML()}</div>`;
+    const menuCard = () => `<div class="card card-body mb-3"><div class="qm">${ROLEMENU[S.user.role].filter(k => k !== 'home' && k !== 'akun').map(k => `<button onclick="go('${k}')"><span class="qc"><i class="bi bi-${M[k][1]}"></i></span>${M[k][0]}</button>`).join('')}</div></div>`;
 
-        /* ---- Pendaftaran anggota (pelatih setujui, pengurus aktifkan) ---- */
-        let RG = [], rs = '';
-        const RS = [['MENUNGGU', 'Menunggu'], ['DISETUJUI', 'Disetujui'], ['AKTIF', 'Aktif'], ['DITOLAK', 'Ditolak']];
-        async function vReg(m) { const d = await rpc('list_registrations'); if (!d) return; RG = d; if (!rs) rs = S.user.role === 'pelatih' ? 'MENUNGGU' : 'DISETUJUI'; drawReg() }
-        function drawReg() {
-            const P = S.user.role === 'pelatih', n = k => RG.filter(x => x.status === k).length, L = RG.filter(x => x.status === rs);
-            $('#main').innerHTML = `<div class="seg mb-2">${RS.map(([k, l]) => `<button class="${k === rs ? 'on' : ''}" onclick="rs='${k}';drawReg()">${l} (${n(k)})</button>`).join('')}</div><p class="text-secondary small">${P ? 'Pelatih menyetujui atau menolak pendaftaran. Setelah disetujui, pengurus mengaktifkan akun.' : 'Pengurus mengaktifkan akun untuk pendaftaran yang sudah disetujui pelatih.'}</p>` +
-                (L.map(x => `<div class="card card-body mb-2"><div class="d-flex justify-content-between"><b>${esc(x.nama)}</b><span class="badge ${x.status === 'AKTIF' ? 'bg-success' : x.status === 'DITOLAK' ? 'bg-secondary' : 'bg-warning text-dark'}">${x.status}</span></div><div class="text-secondary small">${esc(x.divisi || '-')} · ${esc(x.hp)} · ${x.created}</div>${x.catatan ? `<div class="small mt-1">${esc(x.catatan)}</div>` : ''}${x.angkatan ? `<div class="small mt-1">Angkatan ${esc(x.angkatan)} · disetujui ${esc(x.reviewedBy || '')}</div>` : ''}${x.alasan ? `<div class="small mt-1 text-danger">Ditolak: ${esc(x.alasan)}</div>` : ''}${x.nik ? `<div class="small mt-1">NIK <b>${esc(x.nik)}</b> · diaktifkan ${esc(x.activatedBy || '')}</div>` : ''}
+    /* ---- Pendaftaran anggota (pelatih setujui, pengurus aktifkan) ---- */
+    let RG = [], rs = '';
+    const RS = [['MENUNGGU', 'Menunggu'], ['DISETUJUI', 'Disetujui'], ['AKTIF', 'Aktif'], ['DITOLAK', 'Ditolak']];
+    async function vReg(m) { const d = await rpc('list_registrations'); if (!d) return; RG = d; if (!rs) rs = S.user.role === 'pelatih' ? 'MENUNGGU' : 'DISETUJUI'; drawReg() }
+    function drawReg() {
+      const P = S.user.role === 'pelatih', n = k => RG.filter(x => x.status === k).length, L = RG.filter(x => x.status === rs);
+      $('#main').innerHTML = `<div class="seg mb-2">${RS.map(([k, l]) => `<button class="${k === rs ? 'on' : ''}" onclick="rs='${k}';drawReg()">${l} (${n(k)})</button>`).join('')}</div><p class="text-secondary small">${P ? 'Pelatih menyetujui atau menolak pendaftaran. Setelah disetujui, pengurus mengaktifkan akun.' : 'Pengurus mengaktifkan akun untuk pendaftaran yang sudah disetujui pelatih.'}</p>` +
+        (L.map(x => `<div class="card card-body mb-2"><div class="d-flex justify-content-between"><b>${esc(x.nama)}</b><span class="badge ${x.status === 'AKTIF' ? 'bg-success' : x.status === 'DITOLAK' ? 'bg-secondary' : 'bg-warning text-dark'}">${x.status}</span></div><div class="text-secondary small">${esc(x.divisi || '-')} · ${esc(x.hp)} · ${x.created}</div>${x.catatan ? `<div class="small mt-1">${esc(x.catatan)}</div>` : ''}${x.angkatan ? `<div class="small mt-1">Angkatan ${esc(x.angkatan)} · disetujui ${esc(x.reviewedBy || '')}</div>` : ''}${x.alasan ? `<div class="small mt-1 text-danger">Ditolak: ${esc(x.alasan)}</div>` : ''}${x.nik ? `<div class="small mt-1">NIK <b>${esc(x.nik)}</b> · diaktifkan ${esc(x.activatedBy || '')}</div>` : ''}
  ${x.status === 'MENUNGGU' && P ? `<div class="d-flex gap-2 mt-2"><button class="btn btn-success flex-fill" onclick="regOk(${x.id})">Setujui</button><button class="btn btn-outline-secondary flex-fill" onclick="regNo(${x.id})">Tolak</button></div>` : ''}${x.status === 'DISETUJUI' && !P ? `<button class="btn btn-success w-100 mt-2" onclick="regAct(${x.id})">Aktifkan akun</button>` : ''}</div>`).join('') || '<p class="text-secondary">Tidak ada data.</p>')
-        }
-        function regOk(id) { modal(`<h5>Setujui pendaftaran</h5>${lbl('Angkatan (2 digit)')}<input id="ra" class="form-control" inputmode="numeric" maxlength="2" placeholder="mis. 20" value="${esc(localStorage.getItem('ang') || '')}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="regSave(${id},'setuju')">Setujui</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
-        function regNo(id) { modal(`<h5>Tolak pendaftaran</h5>${lbl('Alasan (opsional)')}<input id="rb" class="form-control" maxlength="200"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="regSave(${id},'tolak')">Tolak</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
-        async function regSave(id, a) {
-            const p = { p_id: id, p_aksi: a }; if (a === 'setuju') { p.p_angkatan = $('#ra').value.trim(); localStorage.setItem('ang', p.p_angkatan) } else p.p_alasan = $('#rb').value;
-            const d = await rpc('review_registration', p, a === 'setuju' ? 'Pendaftaran disetujui' : 'Pendaftaran ditolak'); if (d) { closeM(); vReg($('#main')) }
-        }
-        async function regAct(id) {
-            if (!confirm('Aktifkan akun untuk pendaftar ini?')) return; const d = await rpc('activate_registration', { p_id: id }); if (!d) return;
-            const msg = `Halo ${d.nama}, akun ICT Club Anda sudah aktif.\nNIK: ${d.nik}\nPassword sementara: ${d.password}\nLogin: ${location.origin + location.pathname}\nSilakan ganti password setelah login.`;
-            modal(`<h5>Akun diaktifkan</h5><p>${esc(d.nama)}<br>NIK (untuk login): <b class="fs-5">${esc(d.nik)}</b><br>Password sementara: <b class="fs-5">${esc(d.password)}</b></p><a class="btn btn-success w-100 mb-2" target="_blank" rel="noopener" href="https://wa.me/${esc(d.hp)}?text=${encodeURIComponent(msg)}"><i class="bi bi-whatsapp"></i> Kirim lewat WhatsApp</a><button class="btn btn-outline-secondary w-100" onclick="closeM()">Tutup</button>`); vReg($('#main'))
-        }
+    }
+    function regOk(id) { modal(`<h5>Setujui pendaftaran</h5>${lbl('Angkatan (2 digit)')}<input id="ra" class="form-control" inputmode="numeric" maxlength="2" placeholder="mis. 20" value="${esc(localStorage.getItem('ang') || '')}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="regSave(${id},'setuju')">Setujui</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
+    function regNo(id) { modal(`<h5>Tolak pendaftaran</h5>${lbl('Alasan (opsional)')}<input id="rb" class="form-control" maxlength="200"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="regSave(${id},'tolak')">Tolak</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
+    async function regSave(id, a) {
+      const p = { p_id: id, p_aksi: a }; if (a === 'setuju') { p.p_angkatan = $('#ra').value.trim(); localStorage.setItem('ang', p.p_angkatan) } else p.p_alasan = $('#rb').value;
+      const d = await rpc('review_registration', p, a === 'setuju' ? 'Pendaftaran disetujui' : 'Pendaftaran ditolak'); if (d) { closeM(); vReg($('#main')) }
+    }
+    async function regAct(id) {
+      if (!confirm('Aktifkan akun untuk pendaftar ini?')) return; const d = await rpc('activate_registration', { p_id: id }); if (!d) return;
+      const msg = `Halo ${d.nama}, akun ICT Club Anda sudah aktif.\nNIK: ${d.nik}\nPassword sementara: ${d.password}\nLogin: ${location.origin + location.pathname}\nSilakan ganti password setelah login.`;
+      modal(`<h5>Akun diaktifkan</h5><p>${esc(d.nama)}<br>NIK (untuk login): <b class="fs-5">${esc(d.nik)}</b><br>Password sementara: <b class="fs-5">${esc(d.password)}</b></p><a class="btn btn-success w-100 mb-2" target="_blank" rel="noopener" href="https://wa.me/${esc(d.hp)}?text=${encodeURIComponent(msg)}"><i class="bi bi-whatsapp"></i> Kirim lewat WhatsApp</a><button class="btn btn-outline-secondary w-100" onclick="closeM()">Tutup</button>`); vReg($('#main'))
+    }
 
-        /* ---- Beranda & absen ---- */
-        const st = g => g === 'OPEN' ? '<span class="badge bg-success">Dibuka</span>' : g === 'CLOSED' ? '<span class="badge bg-secondary">Ditutup</span>' : '<span class="badge bg-light text-dark border">Belum dibuka</span>';
-        const card = h => `<div class="card card-body mb-2">${h}</div>`, cardNP = h => `<div class="card card-body mb-2 no-print">${h}</div>`;
-        function absenCard() {
-            if (S.sudahAbsen) return `<div class="card card-body mb-2 border-success bg-success-subtle"><h6>✓ Sudah absen hari ini</h6><div class="text-secondary small">${esc(S.sudahAbsen)}</div></div>`;
-            return card(`<h6>Absen hari ini</h6>${S.canAbsen ? '' : `<p class="text-secondary small">${S.user.role === 'pengurus' ? 'Menunggu pelatih membuka akses absen.' : 'Menunggu pengurus membuka akses absen.'}</p>`}<button class="btn btn-warning btn-lg fw-bold" ${S.canAbsen ? '' : 'disabled'} onclick="doAbsen()">Absen Sekarang</button>`)
-        }
-        async function vHome(m) {
-            const d = await rpc('get_state'); if (d) S = d; const s = S.sesi, u = S.user;
-            let h = calWrap() + menuCard() + card(`<div class="text-secondary small">${S.today}</div><h5 class="mb-1">${s ? esc(s.judul) : 'Belum ada sesi hari ini'}</h5>${s ? `<div class="text-secondary small">Kas per kehadiran: <b>${rp(s.nominal)}</b></div>` : ''}`);
-            if (u.role !== 'peserta') h += card(`<div class="d-flex justify-content-between"><span>Hadir pengurus: <b>${S.hadirPengurus}</b></span><span>Hadir peserta: <b>${S.hadirPeserta}</b></span></div>`);
-            if (u.role === 'pelatih') h += card(`<h6>Akses absen pengurus ${st(s?.gate_pengurus)}</h6>${lbl('Judul sesi')}<input id="jd" class="form-control" value="${esc(s?.judul || 'Latihan')}">${lbl('Nominal kas per peserta (Rp)')}<input id="nm" type="number" inputmode="numeric" class="form-control" value="${s?.nominal ?? 0}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="gate('open_gate','pengurus')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','pengurus')">Tutup</button></div>`) + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6><p class="text-secondary small">Dibuka oleh pengurus. Pelatih dapat menutupnya kapan saja.</p><button class="btn btn-outline-success" onclick="gate('close_gate','peserta')">Tutup akses peserta</button>`);
-            if (u.role === 'pengurus') h += absenCard() + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6>${S.canOpenPeserta ? '' : '<p class="text-secondary small">Dapat dibuka setelah pelatih membuka sesi dan Anda sudah absen.</p>'}<div class="d-flex gap-2"><button class="btn btn-success flex-fill" ${S.canOpenPeserta ? '' : 'disabled'} onclick="gate('open_gate','peserta')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','peserta')">Tutup</button></div>`);
-            if (u.role === 'peserta') h += absenCard();
-            m.innerHTML = h + `<button class="btn btn-secondary w-100" onclick="go('home')">Perbarui</button>`
-        }
-        async function gate(fn, t) { const a = { p_target: t }; if (fn === 'open_gate' && t === 'pengurus') { a.p_judul = $('#jd').value; a.p_nominal = $('#nm').value === '' ? null : +$('#nm').value } const d = await rpc(fn, a, 'Berhasil'); if (d) { S = d; go('home') } }
-        async function doAbsen() { const d = await rpc('do_absen', {}, 'Absen berhasil'); if (d) { S = d; go('home') } }
+    /* ---- Beranda & absen ---- */
+    const st = g => g === 'OPEN' ? '<span class="badge bg-success">Dibuka</span>' : g === 'CLOSED' ? '<span class="badge bg-secondary">Ditutup</span>' : '<span class="badge bg-light text-dark border">Belum dibuka</span>';
+    const card = h => `<div class="card card-body mb-2">${h}</div>`, cardNP = h => `<div class="card card-body mb-2 no-print">${h}</div>`;
+    function absenCard() {
+      if (S.sudahAbsen) return `<div class="card card-body mb-2 border-success bg-success-subtle"><h6>✓ Sudah absen hari ini</h6><div class="text-secondary small">${esc(S.sudahAbsen)}</div></div>`;
+      return card(`<h6>Absen hari ini</h6>${S.canAbsen ? '' : `<p class="text-secondary small">${S.user.role === 'pengurus' ? 'Menunggu pelatih membuka akses absen.' : 'Menunggu pengurus membuka akses absen.'}</p>`}<button class="btn btn-warning btn-lg fw-bold" ${S.canAbsen ? '' : 'disabled'} onclick="doAbsen()">Absen Sekarang</button>`)
+    }
+    async function vHome(m) {
+      const d = await rpc('get_state'); if (d) S = d; const s = S.sesi, u = S.user;
+      let h = calWrap() + menuCard() + card(`<div class="text-secondary small">${S.today}</div><h5 class="mb-1">${s ? esc(s.judul) : 'Belum ada sesi hari ini'}</h5>${s ? `<div class="text-secondary small">Kas per kehadiran: <b>${rp(s.nominal)}</b></div>` : ''}`);
+      if (u.role !== 'peserta') h += card(`<div class="d-flex justify-content-between"><span>Hadir pengurus: <b>${S.hadirPengurus}</b></span><span>Hadir peserta: <b>${S.hadirPeserta}</b></span></div>`);
+      if (u.role === 'pelatih') h += card(`<h6>Akses absen pengurus ${st(s?.gate_pengurus)}</h6>${lbl('Judul sesi')}<input id="jd" class="form-control" value="${esc(s?.judul || 'Latihan')}">${lbl('Nominal kas per peserta (Rp)')}<input id="nm" type="number" inputmode="numeric" class="form-control" value="${s?.nominal ?? 0}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="gate('open_gate','pengurus')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','pengurus')">Tutup</button></div>`) + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6><p class="text-secondary small">Dibuka oleh pengurus. Pelatih dapat menutupnya kapan saja.</p><button class="btn btn-outline-success" onclick="gate('close_gate','peserta')">Tutup akses peserta</button>`);
+      if (u.role === 'pengurus') h += absenCard() + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6>${S.canOpenPeserta ? '' : '<p class="text-secondary small">Dapat dibuka setelah pelatih membuka sesi dan Anda sudah absen.</p>'}<div class="d-flex gap-2"><button class="btn btn-success flex-fill" ${S.canOpenPeserta ? '' : 'disabled'} onclick="gate('open_gate','peserta')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','peserta')">Tutup</button></div>`);
+      if (u.role === 'peserta') h += absenCard();
+      m.innerHTML = h + `<button class="btn btn-secondary w-100" onclick="go('home')">Perbarui</button>`
+    }
+    async function gate(fn, t) { const a = { p_target: t }; if (fn === 'open_gate' && t === 'pengurus') { a.p_judul = $('#jd').value; a.p_nominal = $('#nm').value === '' ? null : +$('#nm').value } const d = await rpc(fn, a, 'Berhasil'); if (d) { S = d; go('home') } }
+    async function doAbsen() { const d = await rpc('do_absen', {}, 'Absen berhasil'); if (d) { S = d; go('home') } }
 
-        /* ---- Kehadiran & Kas ---- */
-        function vHadir(m) { hd = hd || S.today; m.innerHTML = card(`${lbl('Tanggal')}<input type="date" id="hd" class="form-control" value="${hd}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="loadH(0)">Tampilkan</button><button class="btn btn-outline-success flex-fill" onclick="loadH(1)">Semua tunggakan</button></div>`) + '<div id="hl"></div>'; loadH(0) }
-        async function loadH(un) {
-            mode = un; hd = $('#hd').value || hd; const d = await rpc(un ? 'list_unpaid' : 'list_attendance', un ? {} : { p_tanggal: hd }); if (!d) return; LR = d;
-            $('#hl').innerHTML = d.length ? d.map((r, i) => `<div class="card card-body mb-2 flex-row justify-content-between align-items-center"><div><b>${esc(r.nama)}</b> <span class="badge bg-light text-dark border">${r.role}</span><div class="text-secondary small">${un ? r.tanggal : esc(r.waktu)}${r.billId ? ` · ${rp(r.dibayar)} / ${rp(r.tagihan)}` : ''}</div></div><div>${r.status ? `<span class="badge ${r.status === 'LUNAS' ? 'bg-success' : 'bg-warning text-dark'}">${r.status}</span>` : ''}${r.billId && r.status !== 'LUNAS' ? `<button class="btn btn-sm btn-success ms-2" onclick="pay(${i})">Bayar</button>` : ''}</div></div>`).join('') : '<p class="text-secondary">Tidak ada data.</p>'
-        }
-        function pay(i) { const r = LR[i], sisa = r.tagihan - r.dibayar; modal(`<h5>Catat pembayaran kas</h5><p><b>${esc(r.nama)}</b> · ${r.tanggal}<br>Sisa tagihan ${rp(sisa)}</p>${lbl('Jumlah (Rp)')}<input id="pj" type="number" class="form-control" value="${sisa}">${lbl('Metode')}<select id="pm" class="form-select"><option>Tunai</option><option>Transfer</option><option>QRIS</option></select>${lbl('Catatan')}<input id="pc" class="form-control"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="savePay(${r.billId})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
-        async function savePay(id) { const d = await rpc('pay_bill', { p_bill: id, p_jumlah: +$('#pj').value, p_metode: $('#pm').value, p_catatan: $('#pc').value }, 'Pembayaran tercatat'); if (d) { closeM(); loadH(mode) } }
+    /* ---- Kehadiran & Kas ---- */
+    function vHadir(m) { hd = hd || S.today; m.innerHTML = card(`${lbl('Tanggal')}<input type="date" id="hd" class="form-control" value="${hd}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="loadH(0)">Tampilkan</button><button class="btn btn-outline-success flex-fill" onclick="loadH(1)">Semua tunggakan</button></div>`) + '<div id="hl"></div>'; loadH(0) }
+    async function loadH(un) {
+      mode = un; hd = $('#hd').value || hd; const d = await rpc(un ? 'list_unpaid' : 'list_attendance', un ? {} : { p_tanggal: hd }); if (!d) return; LR = d;
+      $('#hl').innerHTML = d.length ? d.map((r, i) => `<div class="card card-body mb-2 flex-row justify-content-between align-items-center"><div><b>${esc(r.nama)}</b> <span class="badge bg-light text-dark border">${r.role}</span><div class="text-secondary small">${un ? r.tanggal : esc(r.waktu)}${r.billId ? ` · ${rp(r.dibayar)} / ${rp(r.tagihan)}` : ''}</div></div><div>${r.status ? `<span class="badge ${r.status === 'LUNAS' ? 'bg-success' : 'bg-warning text-dark'}">${r.status}</span>` : ''}${r.billId && r.status !== 'LUNAS' ? `<button class="btn btn-sm btn-success ms-2" onclick="pay(${i})">Bayar</button>` : ''}</div></div>`).join('') : '<p class="text-secondary">Tidak ada data.</p>'
+    }
+    function pay(i) { const r = LR[i], sisa = r.tagihan - r.dibayar; modal(`<h5>Catat pembayaran kas</h5><p><b>${esc(r.nama)}</b> · ${r.tanggal}<br>Sisa tagihan ${rp(sisa)}</p>${lbl('Jumlah (Rp)')}<input id="pj" type="number" class="form-control" value="${sisa}">${lbl('Metode')}<select id="pm" class="form-select"><option>Tunai</option><option>Transfer</option><option>QRIS</option></select>${lbl('Catatan')}<input id="pc" class="form-control"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="savePay(${r.billId})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
+    async function savePay(id) { const d = await rpc('pay_bill', { p_bill: id, p_jumlah: +$('#pj').value, p_metode: $('#pm').value, p_catatan: $('#pc').value }, 'Pembayaran tercatat'); if (d) { closeM(); loadH(mode) } }
 
-        /* ---- Kas saya ---- */
-        async function vKas(m) { const d = await rpc('my_bills'); if (!d) return; m.innerHTML = card(`<div class="text-secondary small">Total tunggakan</div><h4>${rp(d.tunggakan)}</h4>`) + (d.rows.map(r => `<div class="card card-body mb-2 flex-row justify-content-between align-items-center"><div><b>${r.tanggal}</b><div class="text-secondary small">${rp(r.dibayar)} / ${rp(r.tagihan)}</div></div><span class="badge ${r.status === 'LUNAS' ? 'bg-success' : 'bg-warning text-dark'}">${r.status}</span></div>`).join('') || '<p class="text-secondary">Belum ada data kas.</p>') }
+    /* ---- Kas saya ---- */
+    async function vKas(m) { const d = await rpc('my_bills'); if (!d) return; m.innerHTML = card(`<div class="text-secondary small">Total tunggakan</div><h4>${rp(d.tunggakan)}</h4>`) + (d.rows.map(r => `<div class="card card-body mb-2 flex-row justify-content-between align-items-center"><div><b>${r.tanggal}</b><div class="text-secondary small">${rp(r.dibayar)} / ${rp(r.tagihan)}</div></div><span class="badge ${r.status === 'LUNAS' ? 'bg-success' : 'bg-warning text-dark'}">${r.status}</span></div>`).join('') || '<p class="text-secondary">Belum ada data kas.</p>') }
 
-        /* ---- Laporan ---- */
-        function vLap(m) { const t = S.today; m.innerHTML = cardNP(`<div class="row g-2"><div class="col">${lbl('Dari')}<input type="date" id="lf" class="form-control" value="${t.slice(0, 8)}01"></div><div class="col">${lbl('Sampai')}<input type="date" id="lt" class="form-control" value="${t}"></div></div><button class="btn btn-success w-100 mt-3" onclick="loadLap()">Tampilkan laporan</button>`) + '<div id="lr"></div>'; loadLap() }
-        async function loadLap() {
-            const d = await rpc('report', { p_from: $('#lf').value || null, p_to: $('#lt').value || null }); if (!d) return; LP = d;
-            const T = (h, rows) => `<div class="table-responsive"><table class="table table-sm small"><thead><tr>${h.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(x => `<td class="text-nowrap">${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`, c = (l, v) => `<div class="col-6"><div class="card card-body"><div class="text-secondary small">${l}</div><b>${rp(v)}</b></div></div>`;
-            $('#lr').innerHTML = `<div class="d-none d-print-block mb-2"><h5 class="mb-0">Laporan Kas</h5>${d.from} s/d ${d.to}</div><div class="row g-2 mb-2">${c('Tagihan', d.tagihan)}${c('Terbayar', d.dibayar)}${c('Tunggakan', d.tagihan - d.dibayar)}${c('Pemasukan periode', d.pemasukan)}</div>${card(`<div class="text-secondary small">Saldo kas keseluruhan</div><h4>${rp(d.saldo)}</h4><div class="text-secondary small">Per metode: ${Object.keys(d.metode).map(k => `${esc(k)} ${rp(d.metode[k])}`).join(' · ') || '-'}</div>`)}${card('<h6>Per tanggal</h6>' + T(['Tanggal', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], d.perHari.map(r => [r.tanggal, r.hadir, rp(r.tagihan), rp(r.dibayar), rp(r.tagihan - r.dibayar)])))}${card('<h6>Per anggota</h6>' + T(['Nama', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], d.perPeserta.map(r => [esc(r.nama), r.hadir, rp(r.tagihan), rp(r.dibayar), rp(r.tagihan - r.dibayar)])))}<div class="d-flex gap-2"><button class="btn btn-success flex-fill" onclick="csv()">Unduh CSV</button><button class="btn btn-success flex-fill" onclick="print()">Cetak</button></div>`
-        }
-        function csv() { const q = v => '"' + String(v).replace(/"/g, '""') + '"', R = [['NIK', 'Nama', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], ...LP.perPeserta.map(r => [r.nik, r.nama, r.hadir, r.tagihan, r.dibayar, r.tagihan - r.dibayar])], a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + R.map(r => r.map(q).join(',')).join('\n')], { type: 'text/csv' })); a.download = `laporan-kas_${LP.from}_${LP.to}.csv`; a.click() }
+    /* ---- Laporan ---- */
+    function vLap(m) { const t = S.today; m.innerHTML = cardNP(`<div class="row g-2"><div class="col">${lbl('Dari')}<input type="date" id="lf" class="form-control" value="${t.slice(0, 8)}01"></div><div class="col">${lbl('Sampai')}<input type="date" id="lt" class="form-control" value="${t}"></div></div><button class="btn btn-success w-100 mt-3" onclick="loadLap()">Tampilkan laporan</button>`) + '<div id="lr"></div>'; loadLap() }
+    async function loadLap() {
+      const d = await rpc('report', { p_from: $('#lf').value || null, p_to: $('#lt').value || null }); if (!d) return; LP = d;
+      const T = (h, rows) => `<div class="table-responsive"><table class="table table-sm small"><thead><tr>${h.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(x => `<td class="text-nowrap">${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`, c = (l, v) => `<div class="col-6"><div class="card card-body"><div class="text-secondary small">${l}</div><b>${rp(v)}</b></div></div>`;
+      $('#lr').innerHTML = `<div class="d-none d-print-block mb-2"><h5 class="mb-0">Laporan Kas</h5>${d.from} s/d ${d.to}</div><div class="row g-2 mb-2">${c('Tagihan', d.tagihan)}${c('Terbayar', d.dibayar)}${c('Tunggakan', d.tagihan - d.dibayar)}${c('Pemasukan periode', d.pemasukan)}</div>${card(`<div class="text-secondary small">Saldo kas keseluruhan</div><h4>${rp(d.saldo)}</h4><div class="text-secondary small">Per metode: ${Object.keys(d.metode).map(k => `${esc(k)} ${rp(d.metode[k])}`).join(' · ') || '-'}</div>`)}${card('<h6>Per tanggal</h6>' + T(['Tanggal', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], d.perHari.map(r => [r.tanggal, r.hadir, rp(r.tagihan), rp(r.dibayar), rp(r.tagihan - r.dibayar)])))}${card('<h6>Per anggota</h6>' + T(['Nama', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], d.perPeserta.map(r => [esc(r.nama), r.hadir, rp(r.tagihan), rp(r.dibayar), rp(r.tagihan - r.dibayar)])))}<div class="d-flex gap-2"><button class="btn btn-success flex-fill" onclick="csv()">Unduh CSV</button><button class="btn btn-success flex-fill" onclick="print()">Cetak</button></div>`
+    }
+    function csv() { const q = v => '"' + String(v).replace(/"/g, '""') + '"', R = [['NIK', 'Nama', 'Hadir', 'Tagihan', 'Terbayar', 'Sisa'], ...LP.perPeserta.map(r => [r.nik, r.nama, r.hadir, r.tagihan, r.dibayar, r.tagihan - r.dibayar])], a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + R.map(r => r.map(q).join(',')).join('\n')], { type: 'text/csv' })); a.download = `laporan-kas_${LP.from}_${LP.to}.csv`; a.click() }
 
-        /* ---- Laporan kehadiran ---- */
-        let LH = null;
-        const tb = (h, rows) => `<div class="table-responsive"><table class="table table-sm small"><thead><tr>${h.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(x => `<td class="text-nowrap">${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
-        const pc = (h, n) => n ? Math.round(h * 100 / n) + '%' : '-';
-        function vRh(m) { const t = S.today; m.innerHTML = cardNP(`<div class="row g-2"><div class="col">${lbl('Dari')}<input type="date" id="hf" class="form-control" value="${t.slice(0, 8)}01"></div><div class="col">${lbl('Sampai')}<input type="date" id="ht" class="form-control" value="${t}"></div></div><button class="btn btn-success w-100 mt-3" onclick="loadRh()">Tampilkan laporan</button>`) + '<div id="hr"></div>'; loadRh() }
-        async function loadRh() {
-            const d = await rpc('report_kehadiran', { p_from: $('#hf').value || null, p_to: $('#ht').value || null }); if (!d) return; LH = d;
-            const A = d.perAnggota, sh = A.reduce((a, x) => a + x.hadir, 0), ss = A.reduce((a, x) => a + x.sesi, 0), nol = A.filter(x => x.sesi > 0 && x.hadir === 0).length, dv = {};
-            A.forEach(x => { const o = dv[x.divisi] = dv[x.divisi] || { n: 0, h: 0, s: 0 }; o.n++; o.h += x.hadir; o.s += x.sesi });
-            const c = (l, v) => `<div class="col-6"><div class="card card-body"><div class="text-secondary small">${l}</div><b>${v}</b></div></div>`;
-            $('#hr').innerHTML = `<div class="d-none d-print-block mb-2"><h5 class="mb-0">Laporan Kehadiran</h5>${d.from} s/d ${d.to}</div><div class="row g-2 mb-2">${c('Total sesi', d.totalSesi)}${c('Total kehadiran', d.hadirTotal)}${c('Rata-rata kehadiran', pc(sh, ss))}${c('Belum pernah hadir', nol)}</div>
+    /* ---- Laporan kehadiran ---- */
+    let LH = null;
+    const tb = (h, rows) => `<div class="table-responsive"><table class="table table-sm small"><thead><tr>${h.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(x => `<td class="text-nowrap">${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    const pc = (h, n) => n ? Math.round(h * 100 / n) + '%' : '-';
+    function vRh(m) { const t = S.today; m.innerHTML = cardNP(`<div class="row g-2"><div class="col">${lbl('Dari')}<input type="date" id="hf" class="form-control" value="${t.slice(0, 8)}01"></div><div class="col">${lbl('Sampai')}<input type="date" id="ht" class="form-control" value="${t}"></div></div><button class="btn btn-success w-100 mt-3" onclick="loadRh()">Tampilkan laporan</button>`) + '<div id="hr"></div>'; loadRh() }
+    async function loadRh() {
+      const d = await rpc('report_kehadiran', { p_from: $('#hf').value || null, p_to: $('#ht').value || null }); if (!d) return; LH = d;
+      const A = d.perAnggota, sh = A.reduce((a, x) => a + x.hadir, 0), ss = A.reduce((a, x) => a + x.sesi, 0), nol = A.filter(x => x.sesi > 0 && x.hadir === 0).length, dv = {};
+      A.forEach(x => { const o = dv[x.divisi] = dv[x.divisi] || { n: 0, h: 0, s: 0 }; o.n++; o.h += x.hadir; o.s += x.sesi });
+      const c = (l, v) => `<div class="col-6"><div class="card card-body"><div class="text-secondary small">${l}</div><b>${v}</b></div></div>`;
+      $('#hr').innerHTML = `<div class="d-none d-print-block mb-2"><h5 class="mb-0">Laporan Kehadiran</h5>${d.from} s/d ${d.to}</div><div class="row g-2 mb-2">${c('Total sesi', d.totalSesi)}${c('Total kehadiran', d.hadirTotal)}${c('Rata-rata kehadiran', pc(sh, ss))}${c('Belum pernah hadir', nol)}</div>
  ${card('<h6>Per tanggal</h6>' + tb(['Tanggal', 'Sesi', 'Pengurus', 'Peserta', 'Total'], d.perHari.map(r => [r.tanggal, esc(r.judul), r.pengurus, r.peserta, r.pengurus + r.peserta])))}
  ${card('<h6>Per divisi</h6>' + tb(['Divisi', 'Anggota', 'Hadir', 'Kehadiran'], Object.keys(dv).sort().map(k => [esc(k), dv[k].n, dv[k].h, pc(dv[k].h, dv[k].s)])))}
  ${card('<h6>Per anggota</h6>' + tb(['Nama', 'Role', 'Divisi', 'Hadir', 'Sesi', '%'], A.map(x => [esc(x.nama), x.role, esc(x.divisi), x.hadir, x.sesi, `<span class="${x.sesi && x.hadir * 2 < x.sesi ? 'text-danger' : ''}">${pc(x.hadir, x.sesi)}</span>`])))}
  <div class="d-flex gap-2"><button class="btn btn-success flex-fill" onclick="csvH()">Unduh CSV</button><button class="btn btn-success flex-fill" onclick="print()">Cetak</button></div>`}
-        function csvH() { const q = v => '"' + String(v).replace(/"/g, '""') + '"', R = [['NIK', 'Nama', 'Role', 'Divisi', 'Hadir', 'Sesi', 'Persen'], ...LH.perAnggota.map(x => [x.nik, x.nama, x.role, x.divisi, x.hadir, x.sesi, pc(x.hadir, x.sesi)])], a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + R.map(r => r.map(q).join(',')).join('\n')], { type: 'text/csv' })); a.download = `laporan-kehadiran_${LH.from}_${LH.to}.csv`; a.click() }
+    function csvH() { const q = v => '"' + String(v).replace(/"/g, '""') + '"', R = [['NIK', 'Nama', 'Role', 'Divisi', 'Hadir', 'Sesi', 'Persen'], ...LH.perAnggota.map(x => [x.nik, x.nama, x.role, x.divisi, x.hadir, x.sesi, pc(x.hadir, x.sesi)])], a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + R.map(r => r.map(q).join(',')).join('\n')], { type: 'text/csv' })); a.download = `laporan-kehadiran_${LH.from}_${LH.to}.csv`; a.click() }
 
-        /* ---- Anggota & Divisi ---- */
-        let LD = [];
-        const divOpt = sel => '<option value="">(Tanpa divisi)</option>' + LD.map(x => `<option value="${x.id}" ${String(x.id) === String(sel) ? 'selected' : ''}>${esc(x.nama)}</option>`).join('');
-        async function vUsr(m) {
-            const [d, dv] = await Promise.all([rpc('list_members'), rpc('list_divisions')]); if (!d || !dv) return; LU = d; LD = dv; const P = S.user.role === 'pelatih';
-            m.innerHTML = (P ? card(`<h6>Divisi</h6>${LD.map(x => `<div class="d-flex justify-content-between align-items-center border-bottom py-1"><span>${esc(x.nama)} <span class="text-secondary small">(${x.jumlah} anggota)</span></span><span class="text-nowrap"><button class="btn btn-sm btn-outline-secondary" onclick="divForm(${x.id})">Ubah</button> <button class="btn btn-sm btn-outline-danger" onclick="divDel(${x.id})">Hapus</button></span></div>`).join('') || '<div class="text-secondary small">Belum ada divisi.</div>'}<button class="btn btn-sm btn-success mt-2" onclick="divForm()">+ Tambah divisi</button>`) : '')
-                + `<button class="btn btn-success w-100 mb-2" onclick="userForm()">+ Tambah anggota</button>` + d.map((x, i) => `<div class="card card-body mb-2"><div><b>${esc(x.nama)}</b> <span class="badge bg-light text-dark border">${x.role}</span> <span class="badge bg-info-subtle text-dark">${esc(x.divisi || 'Tanpa divisi')}</span></div><div class="text-secondary small">${esc(x.nik)} · ${x.active ? 'Aktif' : 'Nonaktif'} · ${x.device ? 'Perangkat terikat' : 'Belum ada perangkat'}</div><div class="d-flex gap-2 flex-wrap mt-2"><button class="btn btn-sm btn-success" onclick="divPick(${i})">Ubah divisi</button><button class="btn btn-sm btn-outline-success" onclick="userForm(${i})">Ubah data</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'resetDevice')">Reset perangkat</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'resetPassword')">Reset password</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'toggle')">${x.active ? 'Nonaktifkan' : 'Aktifkan'}</button></div></div>`).join('')
-        }
-        function divForm(id) { const x = LD.find(y => y.id === id); modal(`<h5>${x ? 'Ubah' : 'Tambah'} divisi</h5>${lbl('Nama divisi')}<input id="dn" class="form-control" value="${esc(x?.nama || '')}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveDiv(${x ? x.id : 'null'})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
-        async function saveDiv(id) { const d = await rpc('save_division', { p_nama: $('#dn').value, p_id: id }, 'Divisi tersimpan'); if (d) { closeM(); vUsr($('#main')) } }
-        async function divDel(id) { const x = LD.find(y => y.id === id); if (!confirm('Hapus divisi "' + x.nama + '"? Anggotanya menjadi tanpa divisi.')) return; const d = await rpc('delete_division', { p_id: id }, 'Divisi dihapus'); if (d) vUsr($('#main')) }
-        function divPick(i) { const x = LU[i]; modal(`<h5>Ubah divisi</h5><p><b>${esc(x.nama)}</b> <span class="text-secondary small">(${x.role})</span></p>${lbl('Divisi')}<select id="dp" class="form-select">${divOpt(x.divisiId)}</select><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveDivPick('${esc(x.nik)}')">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
-        async function saveDivPick(nik) { const v = $('#dp').value, d = await rpc('set_divisi', { p_nik: nik, p_divisi: v ? +v : null }, 'Divisi diperbarui'); if (d) { closeM(); vUsr($('#main')) } }
-        const pwBox = (t, n, pw, nik) => modal(`<h5>${t}</h5><p>${esc(n)}${nik ? `<br>NIK (untuk login): <b class="fs-5">${esc(nik)}</b>` : ''}<br>Password sementara:<br><b class="fs-3">${esc(pw)}</b></p><p class="text-secondary small">Berikan ke pengguna. Wajib diganti saat login.</p><button class="btn btn-success" onclick="closeM()">Tutup</button>`);
-        async function uAct(i, a) { const x = LU[i]; if (!confirm('Lanjutkan untuk ' + x.nama + '?')) return; const d = await rpc('member_action', { p_nik: x.nik, p_act: a }, 'Berhasil'); if (d) { if (d.password) pwBox('Password direset', x.nama, d.password); vUsr($('#main')) } }
-        function userForm(i) { const x = i == null ? null : LU[i], P = S.user.role === 'pelatih'; modal(`<h5>${x ? 'Ubah data anggota' : 'Tambah anggota'}</h5>${x ? `<div class="text-secondary small">NIK <b>${esc(x.nik)}</b> (tidak dapat diubah)</div>` : `<div class="alert alert-secondary py-2 small mb-0 mt-2">NIK dibuat otomatis: tahun daftar + angkatan + nomor urut.</div>${lbl('Angkatan (2 digit)')}<input id="ua" class="form-control" inputmode="numeric" maxlength="2" placeholder="mis. 20">`}${lbl('Nama')}<input id="uc" class="form-control" value="${esc(x?.nama || '')}">${lbl('Role')}<select id="ur" class="form-select">${(P ? ['peserta', 'pengurus', 'pelatih'] : ['peserta']).map(r => `<option ${x && x.role === r ? 'selected' : ''}>${r}</option>`).join('')}</select>${lbl('Divisi')}<select id="ud" class="form-select">${divOpt(x?.divisiId || '')}</select>${x ? '' : `${lbl('Password awal (kosongkan = acak)')}<input id="up" class="form-control">`}<div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveU(${x ? `'${esc(x.nik)}'` : 'null'})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
-        async function saveU(nik) {
-            const n = $('#uc').value, dv = $('#ud').value, a = { p_nama: n, p_role: $('#ur').value, p_divisi: dv ? +dv : null }; if (nik) a.p_nik = nik; else { a.p_angkatan = $('#ua').value.trim(); a.p_password = $('#up').value || null }
-            const d = await rpc('save_member', a, 'Tersimpan'); if (!d) return; closeM(); if (d.nik) pwBox('Anggota ditambahkan', n, d.password, d.nik); vUsr($('#main'))
-        }
+    /* ---- Anggota & Divisi ---- */
+    let LD = [];
+    const divOpt = sel => '<option value="">(Tanpa divisi)</option>' + LD.map(x => `<option value="${x.id}" ${String(x.id) === String(sel) ? 'selected' : ''}>${esc(x.nama)}</option>`).join('');
+    async function vUsr(m) {
+      const [d, dv] = await Promise.all([rpc('list_members'), rpc('list_divisions')]); if (!d || !dv) return; LU = d; LD = dv; const P = S.user.role === 'pelatih';
+      m.innerHTML = (P ? card(`<h6>Divisi</h6>${LD.map(x => `<div class="d-flex justify-content-between align-items-center border-bottom py-1"><span>${esc(x.nama)} <span class="text-secondary small">(${x.jumlah} anggota)</span></span><span class="text-nowrap"><button class="btn btn-sm btn-outline-secondary" onclick="divForm(${x.id})">Ubah</button> <button class="btn btn-sm btn-outline-danger" onclick="divDel(${x.id})">Hapus</button></span></div>`).join('') || '<div class="text-secondary small">Belum ada divisi.</div>'}<button class="btn btn-sm btn-success mt-2" onclick="divForm()">+ Tambah divisi</button>`) : '')
+        + `<button class="btn btn-success w-100 mb-2" onclick="userForm()">+ Tambah anggota</button>` + d.map((x, i) => `<div class="card card-body mb-2"><div><b>${esc(x.nama)}</b> <span class="badge bg-light text-dark border">${x.role}</span> <span class="badge bg-info-subtle text-dark">${esc(x.divisi || 'Tanpa divisi')}</span></div><div class="text-secondary small">${esc(x.nik)} · ${x.active ? 'Aktif' : 'Nonaktif'} · ${x.device ? 'Perangkat terikat' : 'Belum ada perangkat'}</div><div class="d-flex gap-2 flex-wrap mt-2"><button class="btn btn-sm btn-success" onclick="divPick(${i})">Ubah divisi</button><button class="btn btn-sm btn-outline-success" onclick="userForm(${i})">Ubah data</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'resetDevice')">Reset perangkat</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'resetPassword')">Reset password</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'toggle')">${x.active ? 'Nonaktifkan' : 'Aktifkan'}</button></div></div>`).join('')
+    }
+    function divForm(id) { const x = LD.find(y => y.id === id); modal(`<h5>${x ? 'Ubah' : 'Tambah'} divisi</h5>${lbl('Nama divisi')}<input id="dn" class="form-control" value="${esc(x?.nama || '')}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveDiv(${x ? x.id : 'null'})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
+    async function saveDiv(id) { const d = await rpc('save_division', { p_nama: $('#dn').value, p_id: id }, 'Divisi tersimpan'); if (d) { closeM(); vUsr($('#main')) } }
+    async function divDel(id) { const x = LD.find(y => y.id === id); if (!confirm('Hapus divisi "' + x.nama + '"? Anggotanya menjadi tanpa divisi.')) return; const d = await rpc('delete_division', { p_id: id }, 'Divisi dihapus'); if (d) vUsr($('#main')) }
+    function divPick(i) { const x = LU[i]; modal(`<h5>Ubah divisi</h5><p><b>${esc(x.nama)}</b> <span class="text-secondary small">(${x.role})</span></p>${lbl('Divisi')}<select id="dp" class="form-select">${divOpt(x.divisiId)}</select><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveDivPick('${esc(x.nik)}')">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
+    async function saveDivPick(nik) { const v = $('#dp').value, d = await rpc('set_divisi', { p_nik: nik, p_divisi: v ? +v : null }, 'Divisi diperbarui'); if (d) { closeM(); vUsr($('#main')) } }
+    const pwBox = (t, n, pw, nik) => modal(`<h5>${t}</h5><p>${esc(n)}${nik ? `<br>NIK (untuk login): <b class="fs-5">${esc(nik)}</b>` : ''}<br>Password sementara:<br><b class="fs-3">${esc(pw)}</b></p><p class="text-secondary small">Berikan ke pengguna. Wajib diganti saat login.</p><button class="btn btn-success" onclick="closeM()">Tutup</button>`);
+    async function uAct(i, a) { const x = LU[i]; if (!confirm('Lanjutkan untuk ' + x.nama + '?')) return; const d = await rpc('member_action', { p_nik: x.nik, p_act: a }, 'Berhasil'); if (d) { if (d.password) pwBox('Password direset', x.nama, d.password); vUsr($('#main')) } }
+    function userForm(i) { const x = i == null ? null : LU[i], P = S.user.role === 'pelatih'; modal(`<h5>${x ? 'Ubah data anggota' : 'Tambah anggota'}</h5>${x ? `<div class="text-secondary small">NIK <b>${esc(x.nik)}</b> (tidak dapat diubah)</div>` : `<div class="alert alert-secondary py-2 small mb-0 mt-2">NIK dibuat otomatis: tahun daftar + angkatan + nomor urut.</div>${lbl('Angkatan (2 digit)')}<input id="ua" class="form-control" inputmode="numeric" maxlength="2" placeholder="mis. 20">`}${lbl('Nama')}<input id="uc" class="form-control" value="${esc(x?.nama || '')}">${lbl('Role')}<select id="ur" class="form-select">${(P ? ['peserta', 'pengurus', 'pelatih'] : ['peserta']).map(r => `<option ${x && x.role === r ? 'selected' : ''}>${r}</option>`).join('')}</select>${lbl('Divisi')}<select id="ud" class="form-select">${divOpt(x?.divisiId || '')}</select>${x ? '' : `${lbl('Password awal (kosongkan = acak)')}<input id="up" class="form-control">`}<div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveU(${x ? `'${esc(x.nik)}'` : 'null'})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
+    async function saveU(nik) {
+      const n = $('#uc').value, dv = $('#ud').value, a = { p_nama: n, p_role: $('#ur').value, p_divisi: dv ? +dv : null }; if (nik) a.p_nik = nik; else { a.p_angkatan = $('#ua').value.trim(); a.p_password = $('#up').value || null }
+      const d = await rpc('save_member', a, 'Tersimpan'); if (!d) return; closeM(); if (d.nik) pwBox('Anggota ditambahkan', n, d.password, d.nik); vUsr($('#main'))
+    }
 
-        /* ---- Kelompok (memakai daftar yang hadir hari ini) ---- */
-        function vGrp(m) { m.innerHTML = cardNP(`<h6>Pembagian kelompok</h6><p class="text-secondary small mb-2">Selalu memakai daftar yang hadir hari ini. Tekan lagi untuk mengacak ulang.</p><div class="form-check"><input class="form-check-input" type="checkbox" id="gp" checked><label class="form-check-label" for="gp">Sertakan pengurus yang hadir</label></div>${lbl('Jenis pembagian')}<select id="gm" class="form-select" onchange="$('#gl').textContent=this.value==='div_ukuran'?'Maks. anggota per kelompok':'Jumlah kelompok'"><option value="div_jumlah">Per divisi — tentukan jumlah kelompok per divisi</option><option value="div_ukuran">Per divisi — tentukan maks. anggota per kelompok</option><option value="games">Games — kelompok seimbang antar divisi</option></select><label id="gl" class="form-label fw-semibold small mt-2 mb-1">Jumlah kelompok</label><input id="gn" type="number" min="1" value="2" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="doGrp()">Acak kelompok</button>`) + '<div class="d-none d-print-block mb-2"><h5 class="mb-0">Pembagian Kelompok</h5>' + S.today + '</div><div id="gr"></div>' }
-        const li = a => a.map(x => `<li>${esc(x.nama)}${x.role === 'pengurus' ? ' <span class="badge bg-light text-dark border">pengurus</span>' : ''}${x.divisi ? ` <span class="text-secondary small">· ${esc(x.divisi)}</span>` : ''}</li>`).join('');
-        async function doGrp() {
-            const t = $('#gm').value, n = +$('#gn').value, p = $('#gp').checked; if (!(n >= 1)) return toast('Isi angka minimal 1.', 1);
-            if (t === 'games') {
-                const d = await rpc('group_games', { p_jumlah: n, p_pengurus: p }); if (!d) return;
-                $('#gr').innerHTML = d.map(g => { const c = {}; g.anggota.forEach(x => c[x.divisi] = (c[x.divisi] || 0) + 1); return card(`<h6>Kelompok ${g.kelompok} <span class="text-secondary small">(${g.anggota.length} orang)</span></h6><div class="text-secondary small mb-1">Komposisi: ${Object.keys(c).map(k => esc(k) + ' ' + c[k]).join(' · ')}</div><ul class="mb-0">${li(g.anggota)}</ul>`) }).join('') + '<button class="btn btn-success w-100" onclick="print()">Cetak</button>'
-            }
-            else {
-                const d = await rpc('group_by_divisi', { p_mode: t === 'div_ukuran' ? 'ukuran' : 'jumlah', p_n: n, p_pengurus: p }); if (!d) return;
-                $('#gr').innerHTML = d.map(v => card(`<h6>${esc(v.divisi)}</h6>` + v.kelompok.map(g => `<div class="mb-2"><b class="small">Kelompok ${g.kelompok}</b> <span class="text-secondary small">(${g.anggota.length} orang)</span><ul class="mb-0">${li(g.anggota)}</ul></div>`).join(''))).join('') + '<button class="btn btn-success w-100" onclick="print()">Cetak</button>'
-            }
-        }
+    /* ---- Kelompok (memakai daftar yang hadir hari ini) ---- */
+    function vGrp(m) { m.innerHTML = cardNP(`<h6>Pembagian kelompok</h6><p class="text-secondary small mb-2">Selalu memakai daftar yang hadir hari ini. Tekan lagi untuk mengacak ulang.</p><div class="form-check"><input class="form-check-input" type="checkbox" id="gp" checked><label class="form-check-label" for="gp">Sertakan pengurus yang hadir</label></div>${lbl('Jenis pembagian')}<select id="gm" class="form-select" onchange="$('#gl').textContent=this.value==='div_ukuran'?'Maks. anggota per kelompok':'Jumlah kelompok'"><option value="div_jumlah">Per divisi — tentukan jumlah kelompok per divisi</option><option value="div_ukuran">Per divisi — tentukan maks. anggota per kelompok</option><option value="games">Games — kelompok seimbang antar divisi</option></select><label id="gl" class="form-label fw-semibold small mt-2 mb-1">Jumlah kelompok</label><input id="gn" type="number" min="1" value="2" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="doGrp()">Acak kelompok</button>`) + '<div class="d-none d-print-block mb-2"><h5 class="mb-0">Pembagian Kelompok</h5>' + S.today + '</div><div id="gr"></div>' }
+    const li = a => a.map(x => `<li>${esc(x.nama)}${x.role === 'pengurus' ? ' <span class="badge bg-light text-dark border">pengurus</span>' : ''}${x.divisi ? ` <span class="text-secondary small">· ${esc(x.divisi)}</span>` : ''}</li>`).join('');
+    async function doGrp() {
+      const t = $('#gm').value, n = +$('#gn').value, p = $('#gp').checked; if (!(n >= 1)) return toast('Isi angka minimal 1.', 1);
+      if (t === 'games') {
+        const d = await rpc('group_games', { p_jumlah: n, p_pengurus: p }); if (!d) return;
+        $('#gr').innerHTML = d.map(g => { const c = {}; g.anggota.forEach(x => c[x.divisi] = (c[x.divisi] || 0) + 1); return card(`<h6>Kelompok ${g.kelompok} <span class="text-secondary small">(${g.anggota.length} orang)</span></h6><div class="text-secondary small mb-1">Komposisi: ${Object.keys(c).map(k => esc(k) + ' ' + c[k]).join(' · ')}</div><ul class="mb-0">${li(g.anggota)}</ul>`) }).join('') + '<button class="btn btn-success w-100" onclick="print()">Cetak</button>'
+      }
+      else {
+        const d = await rpc('group_by_divisi', { p_mode: t === 'div_ukuran' ? 'ukuran' : 'jumlah', p_n: n, p_pengurus: p }); if (!d) return;
+        $('#gr').innerHTML = d.map(v => card(`<h6>${esc(v.divisi)}</h6>` + v.kelompok.map(g => `<div class="mb-2"><b class="small">Kelompok ${g.kelompok}</b> <span class="text-secondary small">(${g.anggota.length} orang)</span><ul class="mb-0">${li(g.anggota)}</ul></div>`).join(''))).join('') + '<button class="btn btn-success w-100" onclick="print()">Cetak</button>'
+      }
+    }
 
-        /* ---- Akun ---- */
-        function vAkun(m) { const u = S.user; m.innerHTML = card(`<h6>${esc(u.nama)}</h6><div class="text-secondary small">NIK ${esc(u.nik)} · ${u.role}</div>`) + card(`<h6>Ganti password</h6>${lbl('Password lama')}<input id="pa" type="password" class="form-control">${lbl('Password baru (min. 6)')}<input id="pb" type="password" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="chPw()">Simpan</button>`) + `<button class="btn btn-danger w-100" onclick="doLogout()">Keluar</button>` }
-        async function chPw() { const d = await rpc('change_password', { p_old: $('#pa').value, p_new: $('#pb').value }, 'Password diganti'); if (d) { $('#pa').value = ''; $('#pb').value = '' } }
+    /* ---- Akun ---- */
+    function vAkun(m) { const u = S.user; m.innerHTML = card(`<h6>${esc(u.nama)}</h6><div class="text-secondary small">NIK ${esc(u.nik)} · ${u.role}</div>`) + card(`<h6>Ganti password</h6>${lbl('Password lama')}<input id="pa" type="password" class="form-control">${lbl('Password baru (min. 6)')}<input id="pb" type="password" class="form-control"><button class="btn btn-success w-100 mt-3" onclick="chPw()">Simpan</button>`) + `<button class="btn btn-danger w-100" onclick="doLogout()">Keluar</button>` }
+    async function chPw() { const d = await rpc('change_password', { p_old: $('#pa').value, p_new: $('#pb').value }, 'Password diganti'); if (d) { $('#pa').value = ''; $('#pb').value = '' } }
 
-        /* ---- Init ---- */
-        (async () => { const { data: { session } } = await sb.auth.getSession(); if (!session) return viewLogin(); const d = await rpc('get_state'); if (d) { S = d; start() } else if (!$('.lg')) viewLogin() })();
-    </script>
+    /* ---- Init ---- */
+    (async () => { const { data: { session } } = await sb.auth.getSession(); if (!session) return viewLogin(); const d = await rpc('get_state'); if (d) { S = d; start() } else if (!$('.lg')) viewLogin() })();
+  </script>
 </body>
 
 </html>
