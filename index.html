@@ -505,6 +505,27 @@
       font-weight: 700
     }
 
+    .cg .ev {
+      position: relative;
+      cursor: pointer
+    }
+
+    .cg .ev::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -4px;
+      width: 6px;
+      height: 6px;
+      margin-left: -3px;
+      border-radius: 50%;
+      background: var(--orange)
+    }
+
+    .cg .now.ev::after {
+      bottom: -5px
+    }
+
     @media print {
 
       .hdr,
@@ -607,11 +628,11 @@
     async function doForce() { const d = await rpc('change_password', { p_old: $('#fa').value, p_new: $('#fb').value }, 'Password diganti'); if (d) { S.user.mustChange = false; closeM() } }
 
     /* ---- Shell: header, menu samping, kalender, menu cepat ---- */
-    const M = { home: ['Beranda', 'house'], hadir: ['Hadir & Kas', 'cash-coin'], grp: ['Kelompok', 'people'], lap: ['Laporan Kas', 'graph-up'], rh: ['Laporan Hadir', 'calendar-check'], usr: ['Anggota', 'person-lines-fill'], reg: ['Pendaftaran', 'person-plus'], kas: ['Kas Saya', 'wallet2'], akun: ['Akun', 'person-circle'] };
-    const ROLEMENU = { pelatih: ['home', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'akun'], pengurus: ['home', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'kas', 'akun'], peserta: ['home', 'kas', 'akun'] };
+    const M = { home: ['Beranda', 'house'], hadir: ['Hadir & Kas', 'cash-coin'], grp: ['Kelompok', 'people'], lap: ['Laporan Kas', 'graph-up'], rh: ['Laporan Hadir', 'calendar-check'], usr: ['Anggota', 'person-lines-fill'], reg: ['Pendaftaran', 'person-plus'], kas: ['Kas Saya', 'wallet2'], evt: ['Event', 'calendar-event'], akun: ['Akun', 'person-circle'] };
+    const ROLEMENU = { pelatih: ['home', 'evt', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'akun'], pengurus: ['home', 'evt', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'kas', 'akun'], peserta: ['home', 'evt', 'kas', 'akun'] };
     function shell() {
       const u = S.user, st = u.role !== 'peserta';
-      $('#app').innerHTML = `<div class="shell"><div class="hdr"><button class="ib" onclick="go('${st ? 'reg' : 'home'}')"><i class="bi bi-${st ? 'bell' : 'house'}"></i>${S.notif > 0 ? `<span class="dot">${S.notif}</span>` : ''}</button><h1 id="ttl"></h1><button class="ib" onclick="drw(1)"><i class="bi bi-list"></i></button></div><div id="top"></div><main class="sheet" id="main"></main></div><div class="drw" id="drw"><div class="drw-bg" onclick="drw(0)"></div><div class="drw-p"><div class="mb-3 px-2"><b>${esc(u.nama)}</b><div class="small" style="opacity:.7">${u.role}${u.divisi ? ' · ' + esc(u.divisi) : ''}</div></div>${ROLEMENU[u.role].map(k => `<button data-k="${k}" onclick="drw(0);go('${k}')"><i class="bi bi-${M[k][1]}"></i>${M[k][0]}${k === 'reg' && S.notif > 0 ? `<span class="badge bg-warning text-dark ms-auto">${S.notif}</span>` : ''}</button>`).join('')}<button onclick="drw(0);doLogout()"><i class="bi bi-box-arrow-right"></i>Keluar</button></div></div>`; go('home')
+      $('#app').innerHTML = `<div class="shell"><div class="hdr"><button class="ib" onclick="go('${st ? 'reg' : 'home'}')"><i class="bi bi-${st ? 'bell' : 'house'}"></i>${S.notif > 0 ? `<span class="dot">${S.notif}</span>` : ''}</button><h1 id="ttl"></h1><button class="ib" onclick="drw(1)"><i class="bi bi-list"></i></button></div><div id="top"></div><main class="sheet" id="main"></main></div><div class="drw" id="drw"><div class="drw-bg" onclick="drw(0)"></div><div class="drw-p"><div class="mb-3 px-2"><b>${esc(u.nama)}</b><div class="small" style="opacity:.7">${u.role}${u.divisi ? ' · ' + esc(u.divisi) : ''}</div></div>${ROLEMENU[u.role].map(k => `<button data-k="${k}" onclick="drw(0);go('${k}')"><i class="bi bi-${M[k][1]}"></i>${M[k][0]}${(k === 'reg' ? S.notif : k === 'evt' ? S.notifEvt : 0) > 0 ? `<span class="badge bg-warning text-dark ms-auto">${k === 'reg' ? S.notif : S.notifEvt}</span>` : ''}</button>`).join('')}<button onclick="drw(0);doLogout()"><i class="bi bi-box-arrow-right"></i>Keluar</button></div></div>`; go('home')
     }
     const drw = o => $('#drw').classList.toggle('on', !!o);
     function go(k) {
@@ -619,18 +640,29 @@
       document.querySelectorAll('.drw-p button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === k));
       $('#top').innerHTML = h ? `<div class="prof"><div class="av">${esc((u.nama.trim()[0] || '?').toUpperCase())}</div><div class="flex-fill"><div class="fw-bold">${esc(u.nama)}</div><div class="small">${esc(u.divisi || u.role)}</div></div><button class="ib" onclick="go('akun')"><i class="bi bi-pencil-square"></i></button></div><div class="band"></div>` : '';
       $('#main').classList.toggle('flat', !h); window.scrollTo(0, 0);
-      ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, reg: vReg, akun: vAkun })[k]($('#main'))
+      ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, reg: vReg, evt: vEvt, akun: vAkun })[k]($('#main'))
     }
     let cy = null, cmn = 0;
     const BLN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    let CE = [];
+    const fd = (a, b) => { const f = x => { const [, m, d] = x.split('-'); return +d + ' ' + BLN[+m - 1].slice(0, 3) }; return b && b !== a ? f(a) + ' – ' + f(b) : f(a) };
     function calHTML() {
       const t = S.today.split('-').map(Number); if (cy == null) { cy = t[0]; cmn = t[1] - 1 }
-      const first = (new Date(cy, cmn, 1).getDay() + 6) % 7, n = new Date(cy, cmn + 1, 0).getDate(), now = cy === t[0] && cmn === t[1] - 1; let c = '';
+      const first = (new Date(cy, cmn, 1).getDay() + 6) % 7, n = new Date(cy, cmn + 1, 0).getDate(), now = cy === t[0] && cmn === t[1] - 1, pm = String(cmn + 1).padStart(2, '0'); let c = '';
       for (let i = 0; i < first; i++)c += '<span></span>';
-      for (let d = 1; d <= n; d++) { const w = (first + d - 1) % 7; c += `<span class="${w === 6 ? 'sun' : ''}${now && d === t[2] ? ' now' : ''}">${d}</span>` }
-      return `<div class="card card-body mb-3"><div class="d-flex align-items-center justify-content-between mb-3"><button class="ib dk" onclick="calGo(-1)"><i class="bi bi-chevron-left"></i></button><div class="pill">${BLN[cmn]} - ${cy}</div><button class="ib dk" onclick="calGo(1)"><i class="bi bi-chevron-right"></i></button></div><div class="cg">${['SN', 'SL', 'RB', 'KM', 'JM', 'SB', 'MG'].map(x => `<b>${x}</b>`).join('')}${c}</div></div>`
+      for (let d = 1; d <= n; d++) { const w = (first + d - 1) % 7, key = `${cy}-${pm}-${String(d).padStart(2, '0')}`, ev = CE.some(e => e.mulai <= key && (e.selesai || e.mulai) >= key); c += `<span class="${w === 6 ? 'sun' : ''}${now && d === t[2] ? ' now' : ''}${ev ? ' ev' : ''}"${ev ? ` onclick="calDay('${key}')"` : ''}>${d}</span>` }
+      const lst = CE.length ? `<div class="mt-3 pt-2 border-top small">${CE.slice(0, 5).map(e => `<div class="d-flex justify-content-between gap-2 py-1" role="button" onclick="evOpen(${e.id})"><span><i class="bi bi-calendar-event"></i> ${esc(e.judul)}</span><span class="text-secondary text-nowrap">${fd(e.mulai, e.selesai)}</span></div>`).join('')}${CE.length > 5 ? `<div class="text-secondary">+${CE.length - 5} event lainnya</div>` : ''}</div>` : '';
+      return `<div class="card card-body mb-3"><div class="d-flex align-items-center justify-content-between mb-3"><button class="ib dk" onclick="calGo(-1)"><i class="bi bi-chevron-left"></i></button><div class="pill">${BLN[cmn]} - ${cy}</div><button class="ib dk" onclick="calGo(1)"><i class="bi bi-chevron-right"></i></button></div><div class="cg">${['SN', 'SL', 'RB', 'KM', 'JM', 'SB', 'MG'].map(x => `<b>${x}</b>`).join('')}${c}</div>${lst}</div>`
     }
-    function calGo(n) { cmn += n; if (cmn < 0) { cmn = 11; cy-- } if (cmn > 11) { cmn = 0; cy++ } $('#cal').innerHTML = calHTML() }
+    async function loadCE() {
+      const pm = String(cmn + 1).padStart(2, '0'), d = await rpc('events_range', { p_from: `${cy}-${pm}-01`, p_to: `${cy}-${pm}-${new Date(cy, cmn + 1, 0).getDate()}` });
+      if (d) { CE = d; const c = $('#cal'); if (c) c.innerHTML = calHTML() }
+    }
+    function calGo(n) { cmn += n; if (cmn < 0) { cmn = 11; cy-- } if (cmn > 11) { cmn = 0; cy++ } CE = []; $('#cal').innerHTML = calHTML(); loadCE() }
+    function calDay(k) {
+      const l = CE.filter(e => e.mulai <= k && (e.selesai || e.mulai) >= k); if (l.length === 1) return evOpen(l[0].id);
+      modal(`<h5>Event ${fd(k)}</h5>${l.map(e => `<div class="d-flex justify-content-between align-items-center py-2 border-bottom" role="button" onclick="evOpen(${e.id})"><span>${esc(e.judul)}<div class="text-secondary small">${esc(e.lokasi || '')}</div></span><i class="bi bi-chevron-right"></i></div>`).join('')}<button class="btn btn-outline-secondary w-100 mt-3" onclick="closeM()">Tutup</button>`)
+    }
     const calWrap = () => `<div id="cal">${calHTML()}</div>`;
     const menuCard = () => `<div class="card card-body mb-3"><div class="qm">${ROLEMENU[S.user.role].filter(k => k !== 'home' && k !== 'akun').map(k => `<button onclick="go('${k}')"><span class="qc"><i class="bi bi-${M[k][1]}"></i></span>${M[k][0]}</button>`).join('')}</div></div>`;
 
@@ -670,7 +702,7 @@
       if (u.role === 'pelatih') h += card(`<h6>Akses absen pengurus ${st(s?.gate_pengurus)}</h6>${lbl('Judul sesi')}<input id="jd" class="form-control" value="${esc(s?.judul || 'Latihan')}">${lbl('Nominal kas per peserta (Rp)')}<input id="nm" type="number" inputmode="numeric" class="form-control" value="${s?.nominal ?? 0}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="gate('open_gate','pengurus')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','pengurus')">Tutup</button></div>`) + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6><p class="text-secondary small">Dibuka oleh pengurus. Pelatih dapat menutupnya kapan saja.</p><button class="btn btn-outline-success" onclick="gate('close_gate','peserta')">Tutup akses peserta</button>`);
       if (u.role === 'pengurus') h += absenCard() + card(`<h6>Akses absen peserta ${st(s?.gate_peserta)}</h6>${S.canOpenPeserta ? '' : '<p class="text-secondary small">Dapat dibuka setelah pelatih membuka sesi dan Anda sudah absen.</p>'}<div class="d-flex gap-2"><button class="btn btn-success flex-fill" ${S.canOpenPeserta ? '' : 'disabled'} onclick="gate('open_gate','peserta')">Buka</button><button class="btn btn-outline-success flex-fill" onclick="gate('close_gate','peserta')">Tutup</button></div>`);
       if (u.role === 'peserta') h += absenCard();
-      m.innerHTML = h + `<button class="btn btn-secondary w-100" onclick="go('home')">Perbarui</button>`
+      m.innerHTML = h + `<button class="btn btn-secondary w-100" onclick="go('home')">Perbarui</button>`; loadCE()
     }
     async function gate(fn, t) { const a = { p_target: t }; if (fn === 'open_gate' && t === 'pengurus') { a.p_judul = $('#jd').value; a.p_nominal = $('#nm').value === '' ? null : +$('#nm').value } const d = await rpc(fn, a, 'Berhasil'); if (d) { S = d; go('home') } }
     async function doAbsen() { const d = await rpc('do_absen', {}, 'Absen berhasil'); if (d) { S = d; go('home') } }
@@ -716,10 +748,16 @@
     /* ---- Anggota & Divisi ---- */
     let LD = [];
     const divOpt = sel => '<option value="">(Tanpa divisi)</option>' + LD.map(x => `<option value="${x.id}" ${String(x.id) === String(sel) ? 'selected' : ''}>${esc(x.nama)}</option>`).join('');
+    let uq = '';
     async function vUsr(m) {
       const [d, dv] = await Promise.all([rpc('list_members'), rpc('list_divisions')]); if (!d || !dv) return; LU = d; LD = dv; const P = S.user.role === 'pelatih';
       m.innerHTML = (P ? card(`<h6>Divisi</h6>${LD.map(x => `<div class="d-flex justify-content-between align-items-center border-bottom py-1"><span>${esc(x.nama)} <span class="text-secondary small">(${x.jumlah} anggota)</span></span><span class="text-nowrap"><button class="btn btn-sm btn-outline-secondary" onclick="divForm(${x.id})">Ubah</button> <button class="btn btn-sm btn-outline-danger" onclick="divDel(${x.id})">Hapus</button></span></div>`).join('') || '<div class="text-secondary small">Belum ada divisi.</div>'}<button class="btn btn-sm btn-success mt-2" onclick="divForm()">+ Tambah divisi</button>`) : '')
-        + `<button class="btn btn-success w-100 mb-2" onclick="userForm()">+ Tambah anggota</button>` + d.map((x, i) => `<div class="card card-body mb-2"><div><b>${esc(x.nama)}</b> <span class="badge bg-light text-dark border">${x.role}</span> <span class="badge bg-info-subtle text-dark">${esc(x.divisi || 'Tanpa divisi')}</span></div><div class="text-secondary small">${esc(x.nik)} · ${x.active ? 'Aktif' : 'Nonaktif'} · ${x.device ? 'Perangkat terikat' : 'Belum ada perangkat'}</div><div class="d-flex gap-2 flex-wrap mt-2"><button class="btn btn-sm btn-success" onclick="divPick(${i})">Ubah divisi</button><button class="btn btn-sm btn-outline-success" onclick="userForm(${i})">Ubah data</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'resetDevice')">Reset perangkat</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'resetPassword')">Reset password</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'toggle')">${x.active ? 'Nonaktifkan' : 'Aktifkan'}</button></div></div>`).join('')
+        + `<button class="btn btn-success w-100 mb-2" onclick="userForm()">+ Tambah anggota</button><input id="uq" class="form-control mb-2" placeholder="Cari nama atau NIK" value="${esc(uq)}" oninput="uq=this.value;drawUsrList()"><div id="ul"></div>`;
+      drawUsrList()
+    }
+    function drawUsrList() {
+      const q = uq.trim().toLowerCase(), L = LU.map((x, i) => [x, i]).filter(([x]) => !q || x.nama.toLowerCase().includes(q) || String(x.nik).includes(q));
+      $('#ul').innerHTML = (q ? `<div class="text-secondary small mb-2">${L.length} dari ${LU.length} anggota</div>` : '') + (L.map(([x, i]) => `<div class="card card-body mb-2"><div><b>${esc(x.nama)}</b> <span class="badge bg-light text-dark border">${x.role}</span> <span class="badge bg-info-subtle text-dark">${esc(x.divisi || 'Tanpa divisi')}</span></div><div class="text-secondary small">${esc(x.nik)} · ${x.active ? 'Aktif' : 'Nonaktif'} · ${x.device ? 'Perangkat terikat' : 'Belum ada perangkat'}</div><div class="d-flex gap-2 flex-wrap mt-2"><button class="btn btn-sm btn-success" onclick="divPick(${i})">Ubah divisi</button><button class="btn btn-sm btn-outline-success" onclick="userForm(${i})">Ubah data</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'resetDevice')">Reset perangkat</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'resetPassword')">Reset password</button><button class="btn btn-sm btn-outline-success" onclick="uAct(${i},'toggle')">${x.active ? 'Nonaktifkan' : 'Aktifkan'}</button></div></div>`).join('') || '<p class="text-secondary">Tidak ada anggota yang cocok.</p>')
     }
     function divForm(id) { const x = LD.find(y => y.id === id); modal(`<h5>${x ? 'Ubah' : 'Tambah'} divisi</h5>${lbl('Nama divisi')}<input id="dn" class="form-control" value="${esc(x?.nama || '')}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveDiv(${x ? x.id : 'null'})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
     async function saveDiv(id) { const d = await rpc('save_division', { p_nama: $('#dn').value, p_id: id }, 'Divisi tersimpan'); if (d) { closeM(); vUsr($('#main')) } }
@@ -747,6 +785,66 @@
         const d = await rpc('group_by_divisi', { p_mode: t === 'div_ukuran' ? 'ukuran' : 'jumlah', p_n: n, p_pengurus: p }); if (!d) return;
         $('#gr').innerHTML = d.map(v => card(`<h6>${esc(v.divisi)}</h6>` + v.kelompok.map(g => `<div class="mb-2"><b class="small">Kelompok ${g.kelompok}</b> <span class="text-secondary small">(${g.anggota.length} orang)</span><ul class="mb-0">${li(g.anggota)}</ul></div>`).join(''))).join('') + '<button class="btn btn-success w-100" onclick="print()">Cetak</button>'
       }
+    }
+
+    /* ---- Event ---- */
+    let EV = [], et = 'UP', ED = null, ES = new Set(), EC = [];
+    const evPast = e => (e.selesai || e.mulai) < S.today;
+    const evCls = x => x === 'DISETUJUI' ? 'bg-success' : x === 'DITOLAK' ? 'bg-secondary' : 'bg-warning text-dark';
+    const myTxt = m => m === 'TIDAK' ? 'Tidak ikut' : m === 'PANITIA' ? 'Panitia' : m === 'PESERTA' ? 'Peserta' : '';
+    const EF = { UP: e => e.status === 'DISETUJUI' && !evPast(e), PAST: e => e.status === 'DISETUJUI' && evPast(e), PEND: e => e.status === 'MENUNGGU', REJ: e => e.status === 'DITOLAK' };
+    async function vEvt(m) { const d = await rpc('list_events'); if (!d) return; EV = d; drawEvt() }
+    function drawEvt() {
+      const stf = S.user.role !== 'peserta', P = S.user.role === 'pelatih', T = [['UP', 'Mendatang'], ['PAST', 'Selesai'], ...(stf ? [['PEND', 'Menunggu'], ['REJ', 'Ditolak']] : [])];
+      if (!EF[et] || (!stf && et !== 'UP' && et !== 'PAST')) et = 'UP';
+      const L = EV.filter(EF[et]).sort((a, b) => et === 'UP' ? a.mulai.localeCompare(b.mulai) : b.mulai.localeCompare(a.mulai));
+      $('#main').innerHTML = (stf ? `<button class="btn btn-success w-100 mb-2" onclick="evForm()"><i class="bi bi-plus-lg"></i> ${P ? 'Buat event' : 'Ajukan event (perlu persetujuan pelatih)'}</button>` : '') +
+        `<div class="seg mb-2">${T.map(([k, l]) => `<button class="${k === et ? 'on' : ''}" onclick="et='${k}';drawEvt()">${l} (${EV.filter(EF[k]).length})</button>`).join('')}</div>` +
+        (L.map(e => `<div class="card card-body mb-2" role="button" onclick="evOpen(${e.id})"><div class="d-flex justify-content-between gap-2"><b>${esc(e.judul)}</b>${e.status !== 'DISETUJUI' ? `<span class="badge ${evCls(e.status)} align-self-start">${e.status}</span>` : ''}</div><div class="text-secondary small"><i class="bi bi-calendar-event"></i> ${fd(e.mulai, e.selesai)}${e.lokasi ? ` · <i class="bi bi-geo-alt"></i> ${esc(e.lokasi)}` : ''}</div>${e.status !== 'DISETUJUI' ? `<div class="text-secondary small">Diajukan oleh ${esc(e.dibuatNama || '-')}</div>` : ''}${e.alasan ? `<div class="small text-danger">Ditolak: ${esc(e.alasan)}</div>` : ''}<div class="d-flex justify-content-between align-items-center mt-1 small"><span>Panitia <b>${e.panitia}</b> · Peserta <b>${e.peserta}</b></span>${e.my ? `<span class="badge ${e.my === 'TIDAK' ? 'bg-secondary' : 'bg-info-subtle text-dark'}">${myTxt(e.my)}</span>` : ''}</div></div>`).join('') || '<p class="text-secondary">Belum ada event.</p>')
+    }
+    async function evOpen(id) { const d = await rpc('event_detail', { p_id: id }); if (!d) return; ED = d; drawEd() }
+    function drawEd() {
+      const { event: e, my, members } = ED, stf = S.user.role !== 'peserta', P = S.user.role === 'pelatih', ok = e.status === 'DISETUJUI', canEdit = P || (e.mine && !ok);
+      const ik = members.filter(x => x.status === 'IKUT'), pan = ik.filter(x => x.peran === 'PANITIA'), pes = ik.filter(x => x.peran === 'PESERTA'), tdk = members.filter(x => x.status === 'TIDAK');
+      const mc = x => `<div class="d-flex justify-content-between align-items-center py-1 border-bottom"><span>${esc(x.nama)} <span class="text-secondary small">${x.role === 'pengurus' ? 'pengurus · ' : ''}${esc(x.divisi || '')}${x.tugas ? ' · ' + esc(x.tugas) : ''}</span></span>${stf && ok ? `<button class="btn btn-sm btn-outline-secondary" onclick="evRm('${esc(x.nik)}')"><i class="bi bi-x-lg"></i></button>` : ''}</div>`;
+      const sec = (t, l) => `<h6 class="mt-3 mb-1">${t} (${l.length})</h6>${l.map(mc).join('') || '<div class="text-secondary small">Belum ada.</div>'}`;
+      modal(`<div class="d-flex justify-content-between gap-2"><h5>${esc(e.judul)}</h5><span class="badge ${evCls(e.status)} align-self-start">${e.status}</span></div><div class="text-secondary small"><i class="bi bi-calendar-event"></i> ${fd(e.mulai, e.selesai)}${e.lokasi ? ` · <i class="bi bi-geo-alt"></i> ${esc(e.lokasi)}` : ''}</div>${e.deskripsi ? `<p class="small mt-2 mb-0">${esc(e.deskripsi)}</p>` : ''}${e.status === 'MENUNGGU' ? `<div class="small mt-2">Diajukan oleh ${esc(e.dibuatNama || '-')}, menunggu persetujuan pelatih.</div>` : ''}${e.alasan ? `<div class="small mt-2 text-danger">Ditolak: ${esc(e.alasan)}</div>` : ''}`
+        + (ok ? `<div class="mt-3"><div class="small fw-semibold mb-1">Pilihan Anda: ${my ? (my.status === 'TIDAK' ? 'Tidak ikut' : 'Ikut sebagai ' + (my.peran === 'PANITIA' ? 'panitia' : 'peserta')) : 'belum memilih'}</div><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm btn-success" onclick="evPick('peserta')">Ikut sebagai peserta</button><button class="btn btn-sm btn-success" onclick="evPick('panitia')">Ikut sebagai panitia</button><button class="btn btn-sm btn-outline-secondary" onclick="evPick('tidak')">Tidak ikut</button></div></div>` : '')
+        + (P && e.status === 'MENUNGGU' ? `<div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="evReview('setuju')">Setujui</button><button class="btn btn-outline-secondary flex-fill" onclick="evReview('tolak')">Tolak</button></div>` : '')
+        + (ok ? sec('Panitia', pan) + sec('Peserta', pes) + (stf ? sec('Tidak ikut', tdk) : '') : '')
+        + (stf && ok ? `<button class="btn btn-success w-100 mt-3" onclick="evAdd()"><i class="bi bi-person-plus"></i> Tambah panitia / peserta</button>` : '')
+        + `<div class="d-flex gap-2 mt-2">${canEdit ? `<button class="btn btn-outline-secondary flex-fill" onclick="evForm(ED.event)">Ubah</button><button class="btn btn-outline-danger flex-fill" onclick="evDel()">Hapus</button>` : ''}<button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Tutup</button></div>`)
+    }
+    async function evRefresh() { const id = ED.event.id; await evOpen(id); loadCE(); if (tab === 'evt') { const d = await rpc('list_events'); if (d) { EV = d; drawEvt() } } }
+    async function evPick(p) { const d = await rpc('event_choice', { p_id: ED.event.id, p_pilihan: p }, 'Pilihan disimpan'); if (d) evRefresh() }
+    async function evReview(a) {
+      let r = null; if (a === 'tolak') { r = prompt('Alasan penolakan (opsional):'); if (r === null) return }
+      const d = await rpc('review_event', { p_id: ED.event.id, p_aksi: a, p_alasan: r }, a === 'setuju' ? 'Event disetujui' : 'Event ditolak'); if (d) { const x = await rpc('get_state'); if (x) S = x; evRefresh() }
+    }
+    async function evDel() { if (!confirm('Hapus event ini beserta data panitia/pesertanya?')) return; const d = await rpc('delete_event', { p_id: ED.event.id }, 'Event dihapus'); if (d) { closeM(); loadCE(); if (tab === 'evt') vEvt($('#main')) } }
+    async function evRm(nik) { if (!confirm('Keluarkan dari event ini?')) return; const d = await rpc('remove_event_member', { p_id: ED.event.id, p_nik: nik }, 'Dikeluarkan'); if (d) evRefresh() }
+    function evForm(e) {
+      const P = S.user.role === 'pelatih';
+      modal(`<h5>${e ? 'Ubah event' : (P ? 'Buat event' : 'Ajukan event')}</h5>${!e && !P ? '<div class="alert alert-secondary py-2 small mb-0">Event yang diajukan pengurus tampil untuk semua setelah disetujui pelatih.</div>' : ''}${lbl('Nama event')}<input id="ej" class="form-control" maxlength="120" value="${esc(e?.judul || '')}"><div class="row g-2"><div class="col">${lbl('Mulai')}<input id="em" type="date" class="form-control" value="${e?.mulai || S.today}"></div><div class="col">${lbl('Selesai (opsional)')}<input id="es" type="date" class="form-control" value="${e?.selesai || ''}"></div></div>${lbl('Lokasi')}<input id="el" class="form-control" maxlength="150" value="${esc(e?.lokasi || '')}">${lbl('Deskripsi')}<textarea id="ed" class="form-control" rows="3" maxlength="1000" style="border-radius:18px">${esc(e?.deskripsi || '')}</textarea><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="evSave(${e ? e.id : 'null'})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="${e ? 'drawEd()' : 'closeM()'}">Batal</button></div>`)
+    }
+    async function evSave(id) {
+      const d = await rpc('save_event', { p_judul: $('#ej').value, p_mulai: $('#em').value || null, p_selesai: $('#es').value || null, p_lokasi: $('#el').value, p_deskripsi: $('#ed').value, p_id: id }); if (!d) return;
+      toast(d.status === 'MENUNGGU' ? 'Event diajukan, menunggu persetujuan pelatih' : 'Event tersimpan'); closeM(); loadCE(); if (tab === 'evt') vEvt($('#main'))
+    }
+    async function evAdd() {
+      const d = await rpc('event_candidates'); if (!d) return; EC = d; ES = new Set();
+      modal(`<h5>Tambah ke event</h5>${lbl('Peran')}<select id="ap" class="form-select"><option value="PESERTA">Peserta</option><option value="PANITIA">Panitia</option></select>${lbl('Tugas / seksi (opsional)')}<input id="at" class="form-control" maxlength="100" placeholder="mis. Dokumentasi">${lbl('Cari anggota')}<input id="aq" class="form-control" placeholder="Nama atau NIK" oninput="evCand()"><div id="ac" class="mt-2" style="max-height:38vh;overflow:auto"></div><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" id="ab" onclick="evAddSave()">Tambahkan</button><button class="btn btn-outline-secondary flex-fill" onclick="drawEd()">Batal</button></div>`); evCand()
+    }
+    function evCand() {
+      const q = ($('#aq').value || '').trim().toLowerCase(), ex = new Set(ED.members.filter(x => x.status === 'IKUT').map(x => x.nik));
+      const L = EC.filter(x => !q || x.nama.toLowerCase().includes(q) || String(x.nik).includes(q)).slice(0, 80);
+      $('#ac').innerHTML = L.map(x => `<label class="d-flex align-items-center gap-2 py-1 border-bottom"><input type="checkbox" class="form-check-input mt-0" ${ES.has(x.nik) ? 'checked' : ''} onchange="evTog('${esc(x.nik)}',this.checked)"><span class="flex-fill">${esc(x.nama)} <span class="text-secondary small">${x.role === 'pengurus' ? 'pengurus · ' : ''}${esc(x.divisi || '')}</span></span>${ex.has(x.nik) ? '<span class="badge bg-info-subtle text-dark">sudah ikut</span>' : ''}</label>`).join('') || '<div class="text-secondary small">Tidak ada anggota yang cocok.</div>'
+    }
+    function evTog(n, c) { c ? ES.add(n) : ES.delete(n); $('#ab').textContent = ES.size ? `Tambahkan (${ES.size})` : 'Tambahkan' }
+    async function evAddSave() {
+      if (!ES.size) return toast('Pilih minimal satu anggota.', 1);
+      const d = await rpc('add_event_members', { p_id: ED.event.id, p_niks: [...ES], p_peran: $('#ap').value, p_tugas: $('#at').value || null }); if (!d) return;
+      toast(d.jumlah + ' anggota ditambahkan'); ES = new Set(); evRefresh()
     }
 
     /* ---- Akun ---- */
