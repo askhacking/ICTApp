@@ -487,6 +487,83 @@
       overflow: auto
     }
 
+    /* Full-page loading state for navigation and network operations */
+    #page-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(242, 245, 249, .94);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .2s ease, visibility .2s ease;
+    }
+    #page-loader.on {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .loader-panel {
+      width: min(100%, 360px);
+      padding: 32px 26px;
+      border: 1px solid #e0e7ef;
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: 0 18px 55px rgba(19, 34, 52, .12);
+      text-align: center;
+    }
+    .loader-mark {
+      display: grid;
+      place-items: center;
+      width: 62px;
+      height: 62px;
+      margin: 0 auto 20px;
+      border-radius: 19px;
+      background: var(--ink);
+      color: var(--yellow);
+      font-size: 1.8rem;
+      animation: loader-float 1.6s ease-in-out infinite;
+    }
+    .loader-ring {
+      width: 36px;
+      height: 36px;
+      margin: 0 auto;
+      border: 3px solid #e6edf4;
+      border-top-color: var(--blue);
+      border-right-color: var(--navy);
+      border-radius: 50%;
+      animation: loader-spin .75s linear infinite;
+    }
+    .loader-progress {
+      height: 5px;
+      margin-top: 22px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: #edf1f6;
+    }
+    .loader-progress::after {
+      content: "";
+      display: block;
+      width: 38%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), var(--yellow));
+      animation: loader-progress 1.4s ease-in-out infinite;
+    }
+    #loader-title { color: var(--ink); font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+    #loader-message { color: #607286; font-size: .82rem; margin: 0; }
+    @keyframes loader-spin { to { transform: rotate(360deg); } }
+    @keyframes loader-float { 50% { transform: translateY(-4px); } }
+    @keyframes loader-progress { 0% { transform: translateX(-110%); } 100% { transform: translateX(290%); } }
+    @media (prefers-reduced-motion: reduce) {
+      .loader-mark, .loader-ring, .loader-progress::after { animation-duration: 3s; }
+    }
+
     #bar {
       position: fixed;
       top: 0;
@@ -680,6 +757,15 @@
 
 <body>
   <div id="bar"></div>
+  <div id="page-loader" role="status" aria-live="polite" aria-atomic="true">
+    <div class="loader-panel">
+      <div class="loader-mark"><i class="bi bi-mortarboard-fill"></i></div>
+      <div class="loader-ring" aria-hidden="true"></div>
+      <div id="loader-title" class="mt-4">Memuat ICT Club</div>
+      <p id="loader-message">Mohon tunggu, kami sedang menyiapkan halaman.</p>
+      <div class="loader-progress" aria-hidden="true"></div>
+    </div>
+  </div>
   <div id="app"></div>
   <div id="toast" class="toast align-items-center text-bg-dark border-0 position-fixed start-50 translate-middle-x"
     style="bottom:90px;z-index:99">
@@ -697,12 +783,33 @@
     const $ = s => document.querySelector(s), esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])), rp = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
     let dev = localStorage.getItem('dev'); if (!dev) { dev = crypto.randomUUID(); localStorage.setItem('dev', dev) }
     let S = null, tab = 'home', LR = [], LU = [], LP = null, hd = '', mode = 0;
-    const busy = x => $('#bar').style.display = x ? 'block' : 'none';
+    let busyCount = 0, busyFallback = null;
+    function busy(x, message) {
+      busyCount = Math.max(0, busyCount + (x ? 1 : -1));
+      const loader = $('#page-loader');
+      if (message && $('#loader-message')) $('#loader-message').textContent = message;
+      if (loader) loader.classList.toggle('on', busyCount > 0);
+      $('#bar').style.display = busyCount > 0 ? 'block' : 'none';
+      if (busyCount > 0) {
+        clearTimeout(busyFallback);
+        busyFallback = setTimeout(() => {
+          busyCount = 0;
+          if (loader) loader.classList.remove('on');
+          $('#bar').style.display = 'none';
+        }, 45000);
+      } else clearTimeout(busyFallback);
+    }
     function toast(m, e) { const t = $('#toast'); t.className = 'toast show align-items-center border-0 position-fixed start-50 translate-middle-x text-bg-' + (e ? 'danger' : 'dark'); $('#tmsg').textContent = m; clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3200) }
     async function rpc(fn, args, msg) {
-      busy(1); const { data, error } = await sb.rpc(fn, { p_device: dev, ...(args || {}) }); busy(0);
-      if (error) { const m = error.message; if (m === 'AUTH' || m === 'DEVICE') { await sb.auth.signOut(); logoutLocal(m === 'DEVICE' ? 'Perangkat ini tidak lagi terdaftar. Silakan login ulang.' : 'Sesi berakhir. Silakan login ulang.'); return null } toast(m, 1); return null }
-      if (msg) toast(msg); return data
+      busy(1, 'Memproses permintaan…');
+      try {
+        const { data, error } = await sb.rpc(fn, { p_device: dev, ...(args || {}) });
+        if (error) { const m = error.message; if (m === 'AUTH' || m === 'DEVICE') { await sb.auth.signOut(); logoutLocal(m === 'DEVICE' ? 'Perangkat ini tidak lagi terdaftar. Silakan login ulang.' : 'Sesi berakhir. Silakan login ulang.'); return null } toast(m, 1); return null }
+        if (msg) toast(msg); return data;
+      } catch (e) {
+        toast('Terjadi kendala koneksi. Silakan coba lagi.', 1);
+        return null;
+      } finally { busy(0); }
     }
     function modal(h, lock) { closeM(); const o = document.createElement('div'); o.className = 'ov'; o.id = 'ov'; o.innerHTML = `<div class="card card-body">${h}</div>`; if (!lock) o.onclick = e => { if (e.target === o) closeM() }; document.body.appendChild(o) }
     const closeM = () => { const o = $('#ov'); o && o.remove() };
@@ -756,6 +863,9 @@
     }
     const drw = o => $('#drw').classList.toggle('on', !!o);
     function go(k) {
+      const title = M[k]?.[0] || 'ICT Club';
+      if ($('#loader-title')) $('#loader-title').textContent = 'Memuat ' + title;
+      if ($('#loader-message')) $('#loader-message').textContent = 'Menyiapkan data halaman, mohon tunggu.';
       tab = k; const u = S.user, h = k === 'home'; $('#ttl').textContent = M[k][0];
       document.querySelectorAll('button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === k));
       $('#top').innerHTML = h ? `<div class="prof"><div class="av">${esc((u.nama.trim()[0] || '?').toUpperCase())}</div><div class="flex-fill"><div class="fw-bold">${esc(u.nama)}</div><div class="small">${esc(u.divisi || u.role)}</div></div><button class="ib" onclick="go('akun')"><i class="bi bi-pencil-square"></i></button></div><div class="band"></div>` : '';
@@ -1059,7 +1169,9 @@
     /* ---- Init ---- */
     const withTimeout = (p, ms) => Promise.race([p, new Promise((_, r) => setTimeout(() => r(new Error('timeout')), ms))]);
     async function init() {
-      $('#app').innerHTML = '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#293F59"><div class="spinner-border"></div><div class="small">Memuat…</div></div>';
+      busy(1, 'Menghubungkan ke server dan memeriksa sesi Anda…');
+      $('#loader-title').textContent = 'Memuat ICT Club';
+      $('#app').innerHTML = '<div style="min-height:100vh"></div>';
       let session = null;
       try { ({ data: { session } } = await withTimeout(sb.auth.getSession(), 8000)) }
       catch (e) {
@@ -1071,7 +1183,8 @@
       sessionStorage.removeItem('rl');
       if (!session) return viewLogin();
       const d = await withTimeout(rpc('get_state'), 12000).catch(() => null);
-      if (d) { S = d; start() } else if (!$('.lg')) viewLogin('Gagal memuat data. Silakan masuk kembali.')
+      if (d) { S = d; start() } else if (!$('.lg')) viewLogin('Gagal memuat data. Silakan masuk kembali.');
+      busy(0);
     }
     init();
   </script>
