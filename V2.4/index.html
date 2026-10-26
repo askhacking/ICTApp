@@ -8,7 +8,7 @@
   <meta name="application-name" content="ICT App">
   <meta name="apple-mobile-web-app-title" content="ICT App">
   <meta name="theme-color" content="#132234">
-  <meta name="app-version" content="2.4.2">
+  <meta name="app-version" content="2.4.3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -1562,6 +1562,7 @@
         + (P && e.status === 'MENUNGGU' ? `<div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="evReview('setuju')">Setujui</button><button class="btn btn-outline-secondary flex-fill" onclick="evReview('tolak')">Tolak</button></div>` : '')
         + (ok ? sec('Panitia', pan) + sec('Peserta', pes) + (stf ? sec('Tidak ikut', tdk) : '') : '')
         + (stf && ok ? `<button class="btn btn-success w-100 mt-3" onclick="evAdd()"><i class="bi bi-person-plus"></i> Tambah panitia / peserta</button>` : '')
+        + (stf && ok ? `<button class="btn btn-outline-success w-100 mt-2" onclick="evReport()"><i class="bi bi-printer"></i> Laporan event / cetak daftar</button>` : '')
         + `<div class="d-flex gap-2 mt-2">${canEdit ? `<button class="btn btn-outline-secondary flex-fill" onclick="evForm(ED.event)">Ubah</button><button class="btn btn-outline-danger flex-fill" onclick="evDel()">Hapus</button>` : ''}<button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Tutup</button></div>`)
     }
     async function evRefresh(cal) { const id = ED.event.id; await evOpen(id); if (cal) { CEC = {}; loadCE() } if (tab === 'evt') { const d = await rpc('list_events'); if (d) { EV = d; drawEvt() } } }
@@ -1594,6 +1595,29 @@
       if (!ES.size) return toast('Pilih minimal satu anggota.', 1);
       const d = await rpc('add_event_members', { p_id: ED.event.id, p_niks: [...ES], p_peran: $('#ap').value, p_tugas: $('#at').value || null }); if (!d) return;
       toast(d.jumlah + ' anggota ditambahkan'); ES = new Set(); evRefresh()
+    }
+
+    /* ---- Laporan event ---- */
+    function evReport() {
+      const { event: e, members } = ED, srt = (a, b) => a.nama.localeCompare(b.nama, 'id'), ik = members.filter(x => x.status === 'IKUT'),
+        pan = ik.filter(x => x.peran === 'PANITIA').sort(srt), pes = ik.filter(x => x.peran === 'PESERTA').sort(srt),
+        nm = x => esc(x.nama) + (x.role === 'pengurus' ? ' <span class="badge bg-light text-dark border">pengurus</span>' : ''),
+        c = (l, v) => `<div class="col-4"><div class="card card-body text-center py-2"><div class="text-secondary small">${l}</div><b>${v}</b></div></div>`;
+      closeM(); tab = 'evt'; $('#ttl').textContent = 'Laporan Event'; $('#top').innerHTML = ''; $('#main').classList.add('flat');
+      document.querySelectorAll('button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === 'evt')); window.scrollTo(0, 0);
+      $('#main').innerHTML = `<div class="no-print">${bk('evOpen(' + e.id + ')', 'Detail event')}</div><div class="d-none d-print-block mb-2"><h5 class="mb-0">Laporan Event</h5><div class="small">Dicetak ${S.today} oleh ${esc(S.user.nama)}</div></div>`
+        + card(`<h5 class="mb-1">${esc(e.judul)}</h5><div class="text-secondary small"><i class="bi bi-calendar-event"></i> ${fd(e.mulai, e.selesai)}${e.lokasi ? ` · <i class="bi bi-geo-alt"></i> ${esc(e.lokasi)}` : ''}</div>${e.deskripsi ? `<div class="small mt-2">${esc(e.deskripsi)}</div>` : ''}`)
+        + `<div class="row g-2 mb-2">${c('Panitia', pan.length)}${c('Peserta', pes.length)}${c('Total', ik.length)}</div>`
+        + card('<h6>Panitia (' + pan.length + ')</h6>' + (pan.length ? tb(['No', 'Nama', 'Divisi', 'Tugas'], pan.map((x, i) => [i + 1, nm(x), esc(x.divisi || '-'), esc(x.tugas || '-')])) : '<div class="text-secondary small">Belum ada panitia.</div>'))
+        + card('<h6>Peserta (' + pes.length + ')</h6>' + (pes.length ? tb(['No', 'Nama', 'Divisi'], pes.map((x, i) => [i + 1, nm(x), esc(x.divisi || '-')])) : '<div class="text-secondary small">Belum ada peserta.</div>'))
+        + `<div class="d-flex gap-2 no-print"><button class="btn btn-success flex-fill" onclick="print()"><i class="bi bi-printer"></i> Cetak</button><button class="btn btn-outline-success flex-fill" onclick="csvE()">Unduh CSV</button></div>`
+    }
+    function csvE() {
+      const { event: e, members } = ED, rk = x => x.peran === 'PANITIA' ? 0 : 1,
+        rows = members.filter(x => x.status === 'IKUT').sort((a, b) => rk(a) - rk(b) || a.nama.localeCompare(b.nama, 'id')).map(x => [x.peran === 'PANITIA' ? 'Panitia' : 'Peserta', x.nik, x.nama, x.role, x.divisi || '', x.tugas || '']),
+        R = [['Peran', 'NIK', 'Nama', 'Role', 'Divisi', 'Tugas'], ...rows], a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob(['\ufeff' + R.map(r => r.map(cell).join(',')).join('\n')], { type: 'text/csv' }));
+      a.download = 'laporan-event_' + e.mulai + '_' + e.judul.replace(/[^\w-]+/g, '-').slice(0, 40) + '.csv'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000)
     }
 
     /* ---- E-Learning ---- */
