@@ -1564,6 +1564,33 @@
         + (stf && ok ? `<button class="btn btn-success w-100 mt-3" onclick="evAdd()"><i class="bi bi-person-plus"></i> Tambah panitia / peserta</button>` : '')
         + `<div class="d-flex gap-2 mt-2">${canEdit ? `<button class="btn btn-outline-secondary flex-fill" onclick="evForm(ED.event)">Ubah</button><button class="btn btn-outline-danger flex-fill" onclick="evDel()">Hapus</button>` : ''}<button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Tutup</button></div>`)
     }
+    function eventReport() {
+      if (!ED || !ED.event || S.user.role === 'peserta') return toast('Laporan event hanya tersedia untuk pengelola.', 1);
+      const e = ED.event, members = ED.members || [];
+      const ik = members.filter(x => x.status === 'IKUT');
+      const pan = ik.filter(x => x.peran === 'PANITIA');
+      const pes = ik.filter(x => x.peran === 'PESERTA');
+      const no = members.filter(x => x.status === 'TIDAK');
+      const waiting = members.filter(x => x.status === 'MENUNGGU');
+      const rows = members.slice().sort((a,b) => String(a.nama || '').localeCompare(String(b.nama || ''), 'id'));
+      const cellCsv = v => { let t = String(v ?? ''); if (/^[=+\-@\t\r]/.test(t)) t = "'" + t; return '"' + t.replace(/"/g, '""') + '"' };
+      const table = rows.map(x => '<tr><td>' + esc(x.nama) + '</td><td>' + esc(x.nik || '-') + '</td><td>' + esc(x.divisi || '-') + '</td><td>' + esc(x.status || '-') + '</td><td>' + esc(x.peran || '-') + '</td><td>' + esc(x.tugas || '-') + '</td></tr>').join('');
+      modal('<div class="d-flex align-items-start justify-content-between gap-2"><div><h5 class="mb-1">Report Event</h5><div class="text-secondary small">' + esc(e.judul) + '</div><div class="text-secondary small">' + fd(e.mulai, e.selesai) + '</div></div><button class="btn btn-sm btn-outline-secondary" onclick="drawEd()">Kembali</button></div>'
+        + '<div class="row g-2 mt-2"><div class="col-6"><div class="card card-body"><div class="small text-secondary">Total terdata</div><b class="fs-4">' + members.length + '</b></div></div><div class="col-6"><div class="card card-body"><div class="small text-secondary">Ikut</div><b class="fs-4">' + ik.length + '</b></div></div><div class="col-6"><div class="card card-body"><div class="small text-secondary">Panitia</div><b class="fs-4">' + pan.length + '</b></div></div><div class="col-6"><div class="card card-body"><div class="small text-secondary">Peserta</div><b class="fs-4">' + pes.length + '</b></div></div><div class="col-6"><div class="card card-body"><div class="small text-secondary">Tidak ikut</div><b class="fs-4">' + no.length + '</b></div></div><div class="col-6"><div class="card card-body"><div class="small text-secondary">Menunggu / lainnya</div><b class="fs-4">' + (members.length - ik.length - no.length) + '</b></div></div></div>'
+        + '<div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="exportEventReport()">Unduh CSV</button><button class="btn btn-outline-success flex-fill" onclick="print()">Cetak</button></div>'
+        + '<h6 class="mt-3">Daftar anggota</h6><div class="table-responsive"><table class="table table-sm small"><thead><tr><th>Nama</th><th>NIK</th><th>Divisi</th><th>Status</th><th>Peran</th><th>Tugas</th></tr></thead><tbody>' + (table || '<tr><td colspan="6" class="text-secondary">Belum ada data anggota.</td></tr>') + '</tbody></table></div>');
+      window._eventReportRows = rows;
+      window._eventReportMeta = { title:e.judul, id:e.id, from:e.mulai, to:e.selesai || e.mulai };
+    }
+    function exportEventReport() {
+      const rows = window._eventReportRows || [], meta = window._eventReportMeta || {};
+      const cellCsv = v => { let t = String(v ?? ''); if (/^[=+\\-@\\t\\r]/.test(t)) t = "'" + t; return '"' + t.replace(/"/g, '""') + '"' };
+      const data = [['Event', meta.title || ''], ['Tanggal mulai', meta.from || ''], ['Tanggal selesai', meta.to || ''], [], ['Nama', 'NIK', 'Divisi', 'Status', 'Peran', 'Tugas'], ...rows.map(x => [x.nama, x.nik, x.divisi, x.status, x.peran, x.tugas])];
+      const blob = new Blob(['\\ufeff' + data.map(r => r.map(cellCsv).join(',')).join('\\r\\n')], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = 'report-event-' + String(meta.id || 'ict').replace(/[^a-zA-Z0-9_-]/g, '') + '.csv'; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
     async function evRefresh(cal) { const id = ED.event.id; await evOpen(id); if (cal) { CEC = {}; loadCE() } if (tab === 'evt') { const d = await rpc('list_events'); if (d) { EV = d; drawEvt() } } }
     async function evPick(p) { const d = await rpc('event_choice', { p_id: ED.event.id, p_pilihan: p }, 'Pilihan disimpan'); if (d) evRefresh() }
     async function evReview(a) {
