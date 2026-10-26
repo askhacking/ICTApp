@@ -8,7 +8,7 @@
   <meta name="application-name" content="ICT App">
   <meta name="apple-mobile-web-app-title" content="ICT App">
   <meta name="theme-color" content="#132234">
-  <meta name="app-version" content="2.4.3">
+  <meta name="app-version" content="2.5.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -826,6 +826,9 @@
       .workspace { width: 100% !important }
       #top, .sheet, .sheet.flat { max-width: none !important }
     }
+  
+    /* v2.5: lonceng notifikasi tampil juga di desktop */
+    @media (min-width: 992px) { .hdr .ib:first-child { display: block; order: 3; font-size: 1.5rem } .hdr h1 { order: 1 } }
   </style>
 </head>
 
@@ -921,11 +924,12 @@
     async function doForce() { const d = await rpc('change_password', { p_old: $('#fa').value, p_new: $('#fb').value }, 'Password diganti'); if (d) { S.user.mustChange = false; closeM() } }
 
     /* ---- Shell: header, menu samping, kalender, menu cepat ---- */
-    const M = { home: ['Beranda', 'house'], hadir: ['Hadir & Kas', 'cash-coin'], grp: ['Kelompok', 'people'], lap: ['Laporan Kas', 'graph-up'], rh: ['Laporan Hadir', 'calendar-check'], usr: ['Anggota', 'person-lines-fill'], reg: ['Pendaftaran', 'person-plus'], kas: ['Kas Saya', 'wallet2'], evt: ['Event', 'calendar-event'], krs: ['Kursus', 'mortarboard'], nil: ['Nilai', 'award'], akun: ['Akun', 'person-circle'] };
-    const ROLEMENU = { pelatih: ['home', 'evt', 'krs', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'akun'], pengurus: ['home', 'evt', 'krs', 'nil', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'kas', 'akun'], peserta: ['home', 'evt', 'krs', 'nil', 'kas', 'akun'] };
+    const M = { home: ['Beranda', 'house'], ntf: ['Notifikasi', 'bell'], hadir: ['Hadir & Kas', 'cash-coin'], grp: ['Kelompok', 'people'], lap: ['Laporan Kas', 'graph-up'], rh: ['Laporan Hadir', 'calendar-check'], usr: ['Anggota', 'person-lines-fill'], reg: ['Pendaftaran', 'person-plus'], kas: ['Kas Saya', 'wallet2'], evt: ['Event', 'calendar-event'], krs: ['Kursus', 'mortarboard'], nil: ['Nilai', 'award'], akun: ['Akun', 'person-circle'] };
+    const ROLEMENU = { pelatih: ['home', 'ntf', 'evt', 'krs', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'akun'], pengurus: ['home', 'ntf', 'evt', 'krs', 'nil', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'kas', 'akun'], peserta: ['home', 'ntf', 'evt', 'krs', 'nil', 'kas', 'akun'] };
+    const bdg = k => (k === 'reg' ? S.notif : k === 'evt' ? S.notifEvt : k === 'ntf' ? S.unread : 0) || 0;
     function shell() {
       const u = S.user, st = u.role !== 'peserta';
-      const nav = ROLEMENU[u.role].map(k => `<button data-k="${k}" onclick="drw(0);go('${k}')"><i class="bi bi-${M[k][1]}"></i><span>${M[k][0]}</span>${(k === 'reg' ? S.notif : k === 'evt' ? S.notifEvt : 0) > 0 ? `<span class="badge bg-warning text-dark ms-auto">${k === 'reg' ? S.notif : S.notifEvt}</span>` : ''}</button>`).join('');
+      const nav = ROLEMENU[u.role].map(k => `<button data-k="${k}" onclick="drw(0);go('${k}')"><i class="bi bi-${M[k][1]}"></i><span>${M[k][0]}</span>${bdg(k) > 0 ? `<span class="badge bg-warning text-dark ms-auto">${bdg(k)}</span>` : ''}</button>`).join('');
       $('#app').innerHTML = `<div class="shell">
         <aside class="desk-side">
           <div class="desk-brand"><div class="desk-brand-mark"><i class="bi bi-mortarboard-fill"></i></div><div><strong>ICT CLUB</strong><small>Management System</small></div></div>
@@ -935,7 +939,7 @@
           <button class="desk-logout mt-3" onclick="doLogout()"><i class="bi bi-box-arrow-right"></i>Keluar</button>
         </aside>
         <div class="workspace">
-          <div class="hdr"><button class="ib" onclick="go('${st ? 'reg' : 'home'}')" aria-label="${st ? 'Pendaftaran' : 'Beranda'}"><i class="bi bi-${st ? 'bell' : 'house'}"></i>${S.notif > 0 ? `<span class="dot">${S.notif}</span>` : ''}</button><h1 id="ttl"></h1><button class="ib" onclick="drw(1)" aria-label="Buka menu"><i class="bi bi-list"></i></button></div>
+          <div class="hdr"><button class="ib" onclick="go('ntf')" aria-label="Notifikasi"><i class="bi bi-bell"></i>${S.unread > 0 ? `<span class="dot">${S.unread}</span>` : ''}</button><h1 id="ttl"></h1><button class="ib" onclick="drw(1)" aria-label="Buka menu"><i class="bi bi-list"></i></button></div>
           <div id="top"></div><main class="sheet" id="main"></main>
         </div>
       </div>
@@ -950,7 +954,7 @@
       document.querySelectorAll('button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === k));
       $('#top').innerHTML = h ? `<div class="prof"><div class="av">${esc((u.nama.trim()[0] || '?').toUpperCase())}</div><div class="flex-fill"><div class="fw-bold">${esc(u.nama)}</div><div class="small">${esc(u.divisi || u.role)}</div></div><button class="ib" onclick="go('akun')"><i class="bi bi-pencil-square"></i></button></div><div class="band"></div>` : '';
       $('#main').classList.toggle('flat', !h); window.scrollTo(0, 0);
-      ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, reg: vReg, evt: vEvt, krs: vKrs, nil: vNil, akun: vAkun })[k]($('#main'))
+      ({ ntf: vNtf, home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, reg: vReg, evt: vEvt, krs: vKrs, nil: vNil, akun: vAkun })[k]($('#main'))
     }
     let cy = null, cmn = 0;
     const BLN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -979,7 +983,7 @@
     const calWrap = () => `<div id="cal">${calHTML()}</div>`;
     const menuCard = () => `<div class="card card-body mb-3 menu-card"><div class="qm">${ROLEMENU[S.user.role].filter(k => k !== 'home' && k !== 'akun').map(k => `<button onclick="go('${k}')"><span class="qc"><i class="bi bi-${M[k][1]}"></i></span>${M[k][0]}</button>`).join('')}</div></div>`;
 
-    function applyBadges() { const m = { reg: S.notif, evt: S.notifEvt }; document.querySelectorAll('button[data-k]').forEach(b => { const n = m[b.dataset.k] || 0; let x = b.querySelector('.badge'); if (n > 0) { if (!x) { x = document.createElement('span'); x.className = 'badge bg-warning text-dark ms-auto'; b.appendChild(x) } x.textContent = n } else if (x) x.remove() }); const bell = document.querySelector('.hdr > .ib'); if (bell) { let d = bell.querySelector('.dot'); if (S.notif > 0) { if (!d) { d = document.createElement('span'); d.className = 'dot'; bell.appendChild(d) } d.textContent = S.notif } else if (d) d.remove() } }
+    function applyBadges() { const m = { reg: S.notif, evt: S.notifEvt, ntf: S.unread }; document.querySelectorAll('button[data-k]').forEach(b => { const n = m[b.dataset.k] || 0; let x = b.querySelector('.badge'); if (n > 0) { if (!x) { x = document.createElement('span'); x.className = 'badge bg-warning text-dark ms-auto'; b.appendChild(x) } x.textContent = n } else if (x) x.remove() }); const bell = document.querySelector('.hdr > .ib'); if (bell) { let d = bell.querySelector('.dot'); if (S.unread > 0) { if (!d) { d = document.createElement('span'); d.className = 'dot'; bell.appendChild(d) } d.textContent = S.unread } else if (d) d.remove() } }
     async function refreshNotif() { const d = await rpc('get_state'); if (d) { setS(d); applyBadges() } }
     /* ---- Pendaftaran anggota (pelatih setujui, pengurus aktifkan) ---- */
     let RG = [], rs = '';
@@ -1124,7 +1128,7 @@
       const mc = x => `<div class="d-flex justify-content-between align-items-center py-1 border-bottom"><span>${esc(x.nama)} <span class="text-secondary small">${x.role === 'pengurus' ? 'pengurus · ' : ''}${esc(x.divisi || '')}${x.tugas ? ' · ' + esc(x.tugas) : ''}</span></span>${stf && ok ? `<button class="btn btn-sm btn-outline-secondary" onclick="evRm(${members.indexOf(x)})"><i class="bi bi-x-lg"></i></button>` : ''}</div>`;
       const sec = (t, l) => `<h6 class="mt-3 mb-1">${t} (${l.length})</h6>${l.map(mc).join('') || '<div class="text-secondary small">Belum ada.</div>'}`;
       modal(`<div class="d-flex justify-content-between gap-2"><h5>${esc(e.judul)}</h5><span class="badge ${evCls(e.status)} align-self-start">${e.status}</span></div><div class="text-secondary small"><i class="bi bi-calendar-event"></i> ${fd(e.mulai, e.selesai)}${e.lokasi ? ` · <i class="bi bi-geo-alt"></i> ${esc(e.lokasi)}` : ''}</div>${e.deskripsi ? `<p class="small mt-2 mb-0">${esc(e.deskripsi)}</p>` : ''}${e.status === 'MENUNGGU' ? `<div class="small mt-2">Diajukan oleh ${esc(e.dibuatNama || '-')}, menunggu persetujuan pelatih.</div>` : ''}${e.alasan ? `<div class="small mt-2 text-danger">Ditolak: ${esc(e.alasan)}</div>` : ''}`
-        + (ok ? `<div class="mt-3"><div class="small fw-semibold mb-1">Pilihan Anda: ${my ? (my.status === 'TIDAK' ? 'Tidak ikut' : 'Ikut sebagai ' + (my.peran === 'PANITIA' ? 'panitia' : 'peserta')) : 'belum memilih'}</div><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm btn-success" onclick="evPick('peserta')">Ikut sebagai peserta</button><button class="btn btn-sm btn-success" onclick="evPick('panitia')">Ikut sebagai panitia</button><button class="btn btn-sm btn-outline-secondary" onclick="evPick('tidak')">Tidak ikut</button></div></div>` : '')
+        + (ok ? `<div class="mt-3"><div class="small fw-semibold mb-1">Pilihan Anda: ${my ? (my.status === 'TIDAK' ? 'Tidak ikut' : 'Ikut sebagai ' + (my.peran === 'PANITIA' ? 'panitia' + ((x => x && x.tugas ? ' (' + esc(x.tugas) + ')' : '')(members.find(z => z.nik === S.user.nik))) : 'peserta')) : 'belum memilih'}</div><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm btn-success" onclick="evPick('peserta')">Ikut sebagai peserta</button><button class="btn btn-sm btn-success" onclick="evPanitia()">Ikut sebagai panitia</button><button class="btn btn-sm btn-outline-secondary" onclick="evPick('tidak')">Tidak ikut</button></div></div>` : '')
         + (P && e.status === 'MENUNGGU' ? `<div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="evReview('setuju')">Setujui</button><button class="btn btn-outline-secondary flex-fill" onclick="evReview('tolak')">Tolak</button></div>` : '')
         + (ok ? sec('Panitia', pan) + sec('Peserta', pes) + (stf ? sec('Tidak ikut', tdk) : '') : '')
         + (stf && ok ? `<button class="btn btn-success w-100 mt-3" onclick="evAdd()"><i class="bi bi-person-plus"></i> Tambah panitia / peserta</button>` : '')
@@ -1132,7 +1136,11 @@
         + `<div class="d-flex gap-2 mt-2">${canEdit ? `<button class="btn btn-outline-secondary flex-fill" onclick="evForm(ED.event)">Ubah</button><button class="btn btn-outline-danger flex-fill" onclick="evDel()">Hapus</button>` : ''}<button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Tutup</button></div>`)
     }
     async function evRefresh(cal) { const id = ED.event.id; await evOpen(id); if (cal) { CEC = {}; loadCE() } if (tab === 'evt') { const d = await rpc('list_events'); if (d) { EV = d; drawEvt() } } }
-    async function evPick(p) { const d = await rpc('event_choice', { p_id: ED.event.id, p_pilihan: p }, 'Pilihan disimpan'); if (d) evRefresh() }
+    async function evPick(p, t) { const a = { p_id: ED.event.id, p_pilihan: p }; if (t) a.p_tugas = t; const d = await rpc('event_choice', a, 'Pilihan disimpan'); if (d) evRefresh() }
+    function evPanitia() {
+      const m = ED.members.find(x => x.nik === S.user.nik), cur = m && m.status === 'IKUT' && m.peran === 'PANITIA' ? (m.tugas || '') : '';
+      modal(`<h5>Ikut sebagai panitia</h5><div class="text-secondary small">${esc(ED.event.judul)}</div>${lbl('Tugas / seksi (opsional)')}<input id="pt" class="form-control" maxlength="100" placeholder="mis. Dokumentasi" value="${esc(cur)}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="evPick('panitia', $('#pt').value.trim())">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="drawEd()">Batal</button></div>`)
+    }
     async function evReview(a) {
       let r = null; if (a === 'tolak') { r = await askReason(drawEd); if (r === null) return }
       const d = await rpc('review_event', { p_id: ED.event.id, p_aksi: a, p_alasan: r }, a === 'setuju' ? 'Event disetujui' : 'Event ditolak'); if (d) { const x = await rpc('get_state'); if (x) { setS(x); applyBadges() } evRefresh(1) }
@@ -1162,6 +1170,37 @@
       const d = await rpc('add_event_members', { p_id: ED.event.id, p_niks: [...ES], p_peran: $('#ap').value, p_tugas: $('#at').value || null }); if (!d) return;
       toast(d.jumlah + ' anggota ditambahkan'); ES = new Set(); evRefresh()
     }
+
+    /* ---- Pusat notifikasi ---- */
+    let NT = { rows: [], more: false };
+    const ntIcon = t => /^event/.test(t) ? 'calendar-event' : /^(kursus|pertemuan)/.test(t) ? 'mortarboard' : /^tugas/.test(t) ? 'journal-check' : 'person-plus';
+    async function vNtf() {
+      const d = await rpc('list_notifications', { p_limit: 50 }); if (!d || tab !== 'ntf') return;
+      NT.rows = d.rows; NT.more = d.rows.length >= 50; S.unread = d.unread; applyBadges(); drawNtf()
+    }
+    function drawNtf() {
+      $('#main').innerHTML = `<div class="mb-2"><button class="btn btn-sm btn-outline-secondary w-100" onclick="ntAll()" ${S.unread > 0 ? '' : 'disabled'}><i class="bi bi-check2-all"></i> Tandai semua dibaca</button></div>`
+        + (NT.rows.map((x, i) => `<div class="card card-body mb-2" role="button" tabindex="0" onclick="ntOpen(${i})" style="${x.read ? '' : 'border-left:4px solid var(--orange)'}"><div class="d-flex gap-2"><i class="bi bi-${ntIcon(x.tipe)} fs-5"></i><div class="flex-fill"><div class="${x.read ? '' : 'fw-semibold'}">${esc(x.judul)}</div>${x.isi ? `<div class="text-secondary small">${esc(x.isi)}</div>` : ''}<div class="text-secondary small">${esc(x.at)}</div></div></div></div>`).join('') || '<p class="text-secondary">Belum ada notifikasi.</p>')
+        + (NT.more ? `<button class="btn btn-outline-secondary w-100" onclick="ntMore()">Muat lebih banyak</button>` : '')
+    }
+    async function ntAll() { const d = await rpc('mark_notifications_read', {}); if (!d) return; S.unread = d.unread; NT.rows.forEach(x => x.read = true); applyBadges(); drawNtf() }
+    async function ntMore() { const l = NT.rows[NT.rows.length - 1]; if (!l) return; const d = await rpc('list_notifications', { p_limit: 50, p_before: l.id }); if (!d || tab !== 'ntf') return; NT.rows.push(...d.rows); NT.more = d.rows.length >= 50; drawNtf() }
+    function ntTab(k) { tab = k; $('#ttl').textContent = M[k][0]; $('#top').innerHTML = ''; $('#main').classList.add('flat'); document.querySelectorAll('button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === k)); window.scrollTo(0, 0) }
+    async function ntOpen(i) {
+      const x = NT.rows[i]; if (!x) return;
+      if (!x.read) { const d = await rpc('mark_notifications_read', { p_ids: [x.id] }); if (d) { x.read = true; S.unread = d.unread; applyBadges() } }
+      if (x.jenis === 'event') evOpen(x.tid);
+      else if (x.jenis === 'kursus') { ntTab('krs'); krsOpen(x.tid) }
+      else if (x.jenis === 'pertemuan' || x.jenis === 'tugas') { ntTab('krs'); mtOpen(x.tid) }
+      else if (x.jenis === 'pendaftaran') go('reg');
+      else drawNtf()
+    }
+    async function pollUnread() {
+      if (!S || document.hidden) return;
+      try { const { data, error } = await sb.rpc('get_state', { p_device: dev }); if (error || !data) return; if ((data.unread || 0) > (S.unread || 0)) toast('Ada notifikasi baru'); const t = tab; setS(data); applyBadges(); if (t !== tab) tab = t } catch (e) { }
+    }
+    setInterval(pollUnread, 60000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) pollUnread() });
 
     /* ---- Laporan event ---- */
     function evReport() {
