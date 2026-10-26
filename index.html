@@ -621,6 +621,10 @@
     /* ====== ISI: alamat proxy (Cloudflare Worker). URL & key Supabase TIDAK ada di file ini ====== */
     const API_URL = 'https://tight-sun-0f6d.askhacking.workers.dev';
     /* ================================================================================================ */
+    if (typeof supabase === 'undefined') {
+      document.getElementById('app').innerHTML = '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;color:#293F59"><b>Gagal memuat komponen aplikasi</b><div class="small">Periksa koneksi internet, lalu muat ulang.</div><button class="btn btn-success" onclick="location.reload()">Muat ulang</button></div>';
+      throw new Error('supabase-js tidak termuat');
+    }
     const sb = supabase.createClient(API_URL, 'public-anon-key-placeholder'); // key asli hanya ada di Worker
     const $ = s => document.querySelector(s), esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])), rp = n => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
     let dev = localStorage.getItem('dev'); if (!dev) { dev = crypto.randomUUID(); localStorage.setItem('dev', dev) }
@@ -653,7 +657,7 @@
     }
     async function doLogin() {
       busy(1); const { error } = await sb.auth.signInWithPassword({ email: $('#nik').value.trim() + '@kas.local', password: $('#pw').value }); busy(0);
-      if (error) return toast('NIK atau password salah.', 1);
+      if (error) return toast(error.status === 0 || error.name === 'AuthRetryableFetchError' || /fetch|network/i.test(error.message) ? 'Tidak dapat terhubung ke server. Periksa koneksi lalu coba lagi.' : 'NIK atau password salah.', 1);
       const d = await rpc('claim_device'); if (!d) { await sb.auth.signOut(); return } S = d; start()
     }
     function logoutLocal(m) { S = null; viewLogin(m) }
@@ -662,7 +666,4 @@
     async function doForce() { const d = await rpc('change_password', { p_old: $('#fa').value, p_new: $('#fb').value }, 'Password diganti'); if (d) { S.user.mustChange = false; closeM() } }
 
     /* ---- Shell: header, menu samping, kalender, menu cepat ---- */
-    const M = { home: ['Beranda', 'house'], hadir: ['Hadir & Kas', 'cash-coin'], grp: ['Kelompok', 'people'], lap: ['Laporan Kas', 'graph-up'], rh: ['Laporan Hadir', 'calendar-check'], usr: ['Anggota', 'person-lines-fill'], reg: ['Pendaftaran', 'person-plus'], kas: ['Kas Saya', 'wallet2'], evt: ['Event', 'calendar-event'], krs: ['Kursus', 'mortarboard'], nil: ['Nilai', 'award'], akun: ['Akun', 'person-circle'] };
-    const ROLEMENU = { pelatih: ['home', 'evt', 'krs', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'akun'], pengurus: ['home', 'evt', 'krs', 'nil', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'kas', 'akun'], peserta: ['home', 'evt', 'krs', 'nil', 'kas', 'akun'] };
-    function shell() {
-      const u = S.user, st = u.role !
+    const M = { home: ['Beranda', 'house'], hadir: ['Hadir & K
