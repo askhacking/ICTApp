@@ -1169,22 +1169,40 @@
     /* ---- Init ---- */
     const withTimeout = (p, ms) => Promise.race([p, new Promise((_, r) => setTimeout(() => r(new Error('timeout')), ms))]);
     async function init() {
-      busy(1, 'Menghubungkan ke server dan memeriksa sesi Anda…');
+      busy(1, 'Memeriksa sesi Anda…');
       $('#loader-title').textContent = 'Memuat ICT Club';
       $('#app').innerHTML = '<div style="min-height:100vh"></div>';
       let session = null;
-      try { ({ data: { session } } = await withTimeout(sb.auth.getSession(), 8000)) }
-      catch (e) {
-        // sesi lama macet (server tidak terjangkau): bersihkan sesi tersimpan lalu muat ulang sekali
-        Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k));
-        if (!sessionStorage.getItem('rl')) { sessionStorage.setItem('rl', '1'); return location.reload() }
-        return viewLogin('Tidak dapat terhubung ke server. Periksa koneksi internet lalu muat ulang.')
+      try {
+        try {
+          ({ data: { session } } = await withTimeout(sb.auth.getSession(), 8000));
+        } catch (e) {
+          // Sesi lama macet (server tidak terjangkau): bersihkan sesi tersimpan lalu muat ulang sekali.
+          Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k));
+          if (!sessionStorage.getItem('rl')) {
+            sessionStorage.setItem('rl', '1');
+            location.reload();
+            return;
+          }
+          viewLogin('Tidak dapat terhubung ke server. Periksa koneksi internet lalu muat ulang.');
+          return;
+        }
+        sessionStorage.removeItem('rl');
+        if (!session) {
+          // Login tidak memerlukan permintaan get_state; jangan biarkan overlay menutupi form.
+          viewLogin();
+          return;
+        }
+        const d = await withTimeout(rpc('get_state'), 12000).catch(() => null);
+        if (d) {
+          S = d;
+          start();
+        } else if (!$('.lg')) {
+          viewLogin('Gagal memuat data. Silakan masuk kembali.');
+        }
+      } finally {
+        busy(0);
       }
-      sessionStorage.removeItem('rl');
-      if (!session) return viewLogin();
-      const d = await withTimeout(rpc('get_state'), 12000).catch(() => null);
-      if (d) { S = d; start() } else if (!$('.lg')) viewLogin('Gagal memuat data. Silakan masuk kembali.');
-      busy(0);
     }
     init();
   </script>
