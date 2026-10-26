@@ -14,7 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+  
   <style>
     :root {
       --navy: #293F59;
@@ -455,57 +455,47 @@
       background: #fafafa;
       box-shadow: 0 16px 48px rgba(19, 34, 52, .18);
     }
-
     .lg-top {
       padding: 28px 24px 60px;
     }
-
     .logo-box {
       width: 124px;
       height: 124px;
     }
-
     .lg-sheet {
       margin-top: -36px;
       border-radius: 32px 32px 0 0;
       padding: 30px 28px 34px;
       min-height: 0;
     }
-
     .lg-sheet .form-control,
     .lg-sheet .form-select {
       min-height: 46px;
       border-radius: 14px;
     }
-
     .lg-sheet .btn {
       min-height: 46px;
       border-radius: 14px;
     }
-
     @media (max-width: 575.98px) {
       .lg {
         width: min(100% - 28px, 420px);
         margin: 18px auto;
         border-radius: 22px;
       }
-
       .lg-top {
         padding: 24px 20px 52px;
       }
-
       .logo-box {
         width: 108px;
         height: 108px;
       }
-
       .lg-sheet {
         margin-top: -30px;
         border-radius: 28px 28px 0 0;
         padding: 26px 22px 28px;
       }
     }
-
     @media (prefers-reduced-motion:reduce) {
       .lg-sheet.rise {
         animation: none
@@ -568,13 +558,11 @@
       pointer-events: none;
       transition: opacity .2s ease, visibility .2s ease;
     }
-
     #page-loader.on {
       opacity: 1;
       visibility: visible;
       pointer-events: auto;
     }
-
     .loader-panel {
       width: min(100%, 360px);
       padding: 32px 26px;
@@ -584,7 +572,6 @@
       box-shadow: 0 18px 55px rgba(19, 34, 52, .12);
       text-align: center;
     }
-
     .loader-mark {
       display: grid;
       place-items: center;
@@ -597,7 +584,6 @@
       font-size: 1.8rem;
       animation: loader-float 1.6s ease-in-out infinite;
     }
-
     .loader-ring {
       width: 36px;
       height: 36px;
@@ -608,7 +594,6 @@
       border-radius: 50%;
       animation: loader-spin .75s linear infinite;
     }
-
     .loader-progress {
       height: 5px;
       margin-top: 22px;
@@ -616,7 +601,6 @@
       border-radius: 99px;
       background: #edf1f6;
     }
-
     .loader-progress::after {
       content: "";
       display: block;
@@ -626,49 +610,13 @@
       background: linear-gradient(90deg, var(--blue), var(--yellow));
       animation: loader-progress 1.4s ease-in-out infinite;
     }
-
-    #loader-title {
-      color: var(--ink);
-      font-weight: 700;
-      font-size: 1rem;
-      margin-bottom: 6px;
-    }
-
-    #loader-message {
-      color: #607286;
-      font-size: .82rem;
-      margin: 0;
-    }
-
-    @keyframes loader-spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    @keyframes loader-float {
-      50% {
-        transform: translateY(-4px);
-      }
-    }
-
-    @keyframes loader-progress {
-      0% {
-        transform: translateX(-110%);
-      }
-
-      100% {
-        transform: translateX(290%);
-      }
-    }
-
+    #loader-title { color: var(--ink); font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+    #loader-message { color: #607286; font-size: .82rem; margin: 0; }
+    @keyframes loader-spin { to { transform: rotate(360deg); } }
+    @keyframes loader-float { 50% { transform: translateY(-4px); } }
+    @keyframes loader-progress { 0% { transform: translateX(-110%); } 100% { transform: translateX(290%); } }
     @media (prefers-reduced-motion: reduce) {
-
-      .loader-mark,
-      .loader-ring,
-      .loader-progress::after {
-        animation-duration: 3s;
-      }
+      .loader-mark, .loader-ring, .loader-progress::after { animation-duration: 3s; }
     }
 
     #bar {
@@ -745,377 +693,70 @@
     }
 
     /* ICTApp 2.4 — responsive desktop workspace */
-    .desk-side {
-      display: none
-    }
-
-    .workspace {
-      min-width: 0;
-      display: flex;
-      flex: 1;
-      flex-direction: column
-    }
-
-    .hdr {
-      gap: 12px
-    }
-
-    .hdr h1 {
-      flex: 1;
-      text-align: center
-    }
-
-    .desk-brand-mark {
-      width: 42px;
-      height: 42px;
-      border-radius: 13px;
-      display: grid;
-      place-items: center;
-      background: var(--yellow);
-      color: var(--ink);
-      font-size: 1.25rem
-    }
-
-    .desk-nav-label {
-      padding: 18px 12px 8px;
-      color: #9fb0c2;
-      font-size: .68rem;
-      font-weight: 700;
-      letter-spacing: .12em;
-      text-transform: uppercase
-    }
-
-    .desk-nav button {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      width: 100%;
-      border: 0;
-      border-radius: 12px;
-      padding: 11px 12px;
-      background: transparent;
-      color: #dce5ee;
-      text-align: left;
-      font-size: .88rem;
-      font-weight: 600;
-      transition: background .15s, color .15s
-    }
-
-    .desk-nav button:hover {
-      background: rgba(255, 255, 255, .08);
-      color: #fff
-    }
-
-    .desk-nav button.on {
-      background: #29445f;
-      color: #fff;
-      box-shadow: inset 3px 0 0 var(--yellow)
-    }
-
-    .desk-nav button i {
-      width: 20px;
-      text-align: center;
-      font-size: 1.05rem
-    }
-
-    .desk-nav .badge {
-      margin-left: auto
-    }
-
-    .desk-side-user {
-      border-top: 1px solid rgba(255, 255, 255, .12);
-      padding: 16px 10px 4px;
-      display: flex;
-      align-items: center;
-      gap: 10px
-    }
-
-    .desk-avatar {
-      width: 38px;
-      height: 38px;
-      flex: none;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: #d7e8f4;
-      color: var(--ink);
-      font-weight: 700
-    }
-
-    .desk-side-user .user-meta {
-      min-width: 0;
-      flex: 1;
-      color: #fff;
-      font-size: .8rem
-    }
-
-    .desk-side-user .user-meta div {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap
-    }
-
-    .desk-side-user button {
-      color: #fff;
-      border: 0;
-      background: transparent;
-      padding: 6px
-    }
-
-    .page-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px
-    }
-
-    .page-heading h2 {
-      font-size: 1.35rem;
-      font-weight: 700;
-      margin: 0;
-      color: var(--ink)
-    }
-
-    .page-heading p {
-      color: #607286;
-      font-size: .88rem;
-      margin: 5px 0 0
-    }
-
+    .desk-side { display:none }
+    .workspace { min-width:0; display:flex; flex:1; flex-direction:column }
+    .hdr { gap:12px }
+    .hdr h1 { flex:1; text-align:center }
+    .desk-brand-mark { width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--yellow);color:var(--ink);font-size:1.25rem }
+    .desk-nav-label { padding:18px 12px 8px;color:#9fb0c2;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase }
+    .desk-nav button { display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:12px;padding:11px 12px;background:transparent;color:#dce5ee;text-align:left;font-size:.88rem;font-weight:600;transition:background .15s,color .15s }
+    .desk-nav button:hover { background:rgba(255,255,255,.08);color:#fff }
+    .desk-nav button.on { background:#29445f;color:#fff;box-shadow:inset 3px 0 0 var(--yellow) }
+    .desk-nav button i { width:20px;text-align:center;font-size:1.05rem }
+    .desk-nav .badge { margin-left:auto }
+    .desk-side-user { border-top:1px solid rgba(255,255,255,.12);padding:16px 10px 4px;display:flex;align-items:center;gap:10px }
+    .desk-avatar { width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:50%;background:#d7e8f4;color:var(--ink);font-weight:700 }
+    .desk-side-user .user-meta { min-width:0;flex:1;color:#fff;font-size:.8rem }
+    .desk-side-user .user-meta div { overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+    .desk-side-user button { color:#fff;border:0;background:transparent;padding:6px }
+    .page-heading { display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px }
+    .page-heading h2 { font-size:1.35rem;font-weight:700;margin:0;color:var(--ink) }
+    .page-heading p { color:#607286;font-size:.88rem;margin:5px 0 0 }
     @media (min-width: 992px) {
-      body {
-        background: #f2f5f9;
-      }
-
-      #app {
-        min-height: 100vh;
-      }
-
-      .shell {
-        max-width: none;
-        min-height: 100vh;
-        min-height: 100dvh;
-        margin: 0;
-        display: flex;
-        flex-direction: row;
-        align-items: stretch;
-      }
-
-      .desk-side {
-        display: flex;
-        flex-direction: column;
-        flex: none;
-        width: 252px;
-        min-height: 100vh;
-        background: var(--ink);
-        color: #fff;
-        padding: 22px 16px 18px;
-        position: sticky;
-        top: 0;
-        height: 100vh;
-        overflow-y: auto;
-      }
-
-      .desk-brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 0 8px 24px;
-        border-bottom: 1px solid rgba(255, 255, 255, .12)
-      }
-
-      .desk-brand strong {
-        display: block;
-        font-size: 1rem;
-        letter-spacing: .02em
-      }
-
-      .desk-brand small {
-        display: block;
-        color: #aebdcb;
-        font-size: .72rem;
-        margin-top: 2px
-      }
-
-      .desk-nav {
-        flex: 1;
-        padding-top: 4px
-      }
-
-      .workspace {
-        width: calc(100% - 252px);
-        max-width: none;
-        min-height: 100vh;
-      }
-
-      .hdr {
-        position: sticky;
-        top: 0;
-        border-radius: 0;
-        padding: 18px 34px;
-        background: #fff;
-        color: var(--ink);
-        border-bottom: 1px solid #e3e9f0;
-        box-shadow: 0 3px 12px rgba(19, 34, 52, .04);
-        z-index: 20;
-      }
-
-      .hdr h1 {
-        text-align: left;
-        font-size: 1.05rem;
-      }
-
-      .hdr .ib {
-        color: var(--navy);
-      }
-
-      .hdr .ib:first-child {
-        display: none;
-      }
-
-      .hdr .ib:last-child {
-        display: none;
-      }
-
-      #top {
-        padding: 0 34px;
-      }
-
-      .prof {
-        color: var(--ink);
-        padding: 26px 0 18px;
-      }
-
-      .prof .small {
-        color: #607286;
-      }
-
-      .prof .ib {
-        color: var(--navy);
-      }
-
-      .av {
-        box-shadow: 0 5px 14px rgba(19, 34, 52, .12);
-      }
-
-      .band {
-        display: none;
-      }
-
-      .sheet,
-      .sheet.flat {
-        margin: 0;
-        padding: 24px 34px 44px;
-        background: transparent;
-        border-radius: 0;
-      }
-
-      .sheet>.card {
-        border: 1px solid #e1e8f0;
-        box-shadow: 0 4px 16px rgba(19, 34, 52, .055);
-        background: #fff;
-        border-radius: 16px;
-      }
-
-      .sheet .card .card {
-        box-shadow: none;
-      }
-
-      .qm {
-        grid-template-columns: repeat(4, minmax(100px, 1fr));
-        gap: 18px;
-      }
-
-      .qm button {
-        font-size: .82rem;
-      }
-
-      .qc {
-        width: 58px;
-        height: 58px;
-        border-radius: 16px;
-        background: #e6f0f7;
-        color: var(--navy);
-      }
-
-      .cg {
-        gap: 10px 0;
-      }
-
-      .cg .now {
-        width: 32px;
-        height: 32px;
-        line-height: 32px;
-      }
-
-      .table-responsive {
-        border-radius: 12px;
-      }
-
-      .table {
-        font-size: .9rem;
-      }
-
-      .drw {
-        display: none !important;
-      }
-
-      .lg {
-        width: min(100% - 48px, 560px);
-        max-width: 560px;
-        margin: 36px auto;
-        min-height: 0;
-        border-radius: 24px;
-        overflow: hidden;
-        box-shadow: 0 16px 48px rgba(19, 34, 52, .18);
-      }
-
-      .lg-top {
-        padding: 28px 24px 60px;
-      }
-
-      .logo-box {
-        width: 124px;
-        height: 124px;
-      }
-
-      .lg-sheet {
-        margin-top: -36px;
-        min-height: 0;
-        padding: 30px 36px 34px;
-        border-radius: 32px 32px 0 0;
-      }
+      body { background:#f2f5f9; }
+      #app { min-height:100vh; }
+      .shell { max-width:none;min-height:100vh;min-height:100dvh;margin:0;display:flex;flex-direction:row;align-items:stretch; }
+      .desk-side { display:flex;flex-direction:column;flex:none;width:252px;min-height:100vh;background:var(--ink);color:#fff;padding:22px 16px 18px;position:sticky;top:0;height:100vh;overflow-y:auto; }
+      .desk-brand { display:flex;align-items:center;gap:12px;padding:0 8px 24px;border-bottom:1px solid rgba(255,255,255,.12) }
+      .desk-brand strong { display:block;font-size:1rem;letter-spacing:.02em }
+      .desk-brand small { display:block;color:#aebdcb;font-size:.72rem;margin-top:2px }
+      .desk-nav { flex:1;padding-top:4px }
+      .workspace { width:calc(100% - 252px);max-width:none;min-height:100vh; }
+      .hdr { position:sticky;top:0;border-radius:0;padding:18px 34px;background:#fff;color:var(--ink);border-bottom:1px solid #e3e9f0;box-shadow:0 3px 12px rgba(19,34,52,.04);z-index:20; }
+      .hdr h1 { text-align:left;font-size:1.05rem; }
+      .hdr .ib { color:var(--navy); }
+      .hdr .ib:first-child { display:none; }
+      .hdr .ib:last-child { display:none; }
+      #top { padding:0 34px; }
+      .prof { color:var(--ink);padding:26px 0 18px; }
+      .prof .small { color:#607286; }
+      .prof .ib { color:var(--navy); }
+      .av { box-shadow:0 5px 14px rgba(19,34,52,.12); }
+      .band { display:none; }
+      .sheet,.sheet.flat { margin:0;padding:24px 34px 44px;background:transparent;border-radius:0; }
+      .sheet > .card { border:1px solid #e1e8f0;box-shadow:0 4px 16px rgba(19,34,52,.055);background:#fff;border-radius:16px; }
+      .sheet .card .card { box-shadow:none; }
+      .qm { grid-template-columns:repeat(4,minmax(100px,1fr));gap:18px; }
+      .qm button { font-size:.82rem; }
+      .qc { width:58px;height:58px;border-radius:16px;background:#e6f0f7;color:var(--navy); }
+      .cg { gap:10px 0; }
+      .cg .now { width:32px;height:32px;line-height:32px; }
+      .table-responsive { border-radius:12px; }
+      .table { font-size:.9rem; }
+      .drw { display:none !important; }
+      .lg { width:min(100% - 48px,560px);max-width:560px;margin:36px auto;min-height:0;border-radius:24px;overflow:hidden;box-shadow:0 16px 48px rgba(19,34,52,.18); }
+      .lg-top { padding:28px 24px 60px; }
+      .logo-box { width:124px;height:124px; }
+      .lg-sheet { margin-top:-36px;min-height:0;padding:30px 36px 34px;border-radius:32px 32px 0 0; }
     }
-
     @media (min-width: 1400px) {
-      .desk-side {
-        width: 272px;
-        padding-left: 20px;
-        padding-right: 20px;
-      }
-
-      .workspace {
-        width: calc(100% - 272px);
-      }
-
-      #top {
-        padding-left: 44px;
-        padding-right: 44px;
-      }
-
-      .sheet,
-      .sheet.flat {
-        padding-left: 44px;
-        padding-right: 44px;
-      }
-
-      .hdr {
-        padding-left: 44px;
-        padding-right: 44px;
-      }
+      .desk-side { width:272px;padding-left:20px;padding-right:20px; }
+      .workspace { width:calc(100% - 272px); }
+      #top { padding-left:44px;padding-right:44px; }
+      .sheet,.sheet.flat { padding-left:44px;padding-right:44px; }
+      .hdr { padding-left:44px;padding-right:44px; }
     }
-
+    
 
     @media print {
 
@@ -1164,101 +805,30 @@
         font-size: .8rem
       }
     }
-
+  
     /* ===== v2.4.1 ===== */
-    #page-loader {
-      backdrop-filter: none;
-      transition: opacity .15s ease, visibility 0s
-    }
-
-    #page-loader.on {
-      transition: opacity .2s ease .3s, visibility 0s linear .3s
-    }
-
-    [role=button]:focus-visible {
-      outline: 2px solid var(--blue);
-      outline-offset: 2px
-    }
-
-    .desk-logout {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      width: 100%;
-      border: 0;
-      border-radius: 12px;
-      padding: 11px 12px;
-      background: transparent;
-      color: #dce5ee;
-      text-align: left;
-      font-size: .88rem;
-      font-weight: 600
-    }
-
-    .desk-logout:hover {
-      background: rgba(255, 255, 255, .08);
-      color: #fff
-    }
-
+    #page-loader { backdrop-filter: none; transition: opacity .15s ease, visibility 0s }
+    #page-loader.on { transition: opacity .2s ease .3s, visibility 0s linear .3s }
+    [role=button]:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px }
+    .desk-logout { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; border-radius: 12px; padding: 11px 12px; background: transparent; color: #dce5ee; text-align: left; font-size: .88rem; font-weight: 600 }
+    .desk-logout:hover { background: rgba(255, 255, 255, .08); color: #fff }
     @media (min-width: 992px) {
-
-      #top,
-      .sheet,
-      .sheet.flat {
-        max-width: 1120px;
-        width: 100%;
-        margin-left: auto;
-        margin-right: auto
-      }
-
-      .home-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
-        gap: 16px;
-        align-items: start
-      }
-
-      .menu-card {
-        display: none
-      }
-
-      .ov .card {
-        max-width: 560px
-      }
-
-      .sheet .card {
-        border: 1px solid #e1e8f0;
-        box-shadow: 0 4px 16px rgba(19, 34, 52, .055);
-        background: #fff;
-        border-radius: 16px
-      }
-
-      .sheet .card .card {
-        box-shadow: none
-      }
+      #top, .sheet, .sheet.flat { max-width: 1120px; width: 100%; margin-left: auto; margin-right: auto }
+      .home-grid { display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 1fr); gap: 16px; align-items: start }
+      .menu-card { display: none }
+      .ov .card { max-width: 560px }
+      .sheet .card { border: 1px solid #e1e8f0; box-shadow: 0 4px 16px rgba(19, 34, 52, .055); background: #fff; border-radius: 16px }
+      .sheet .card .card { box-shadow: none }
     }
-
     @media print {
-
-      .desk-side,
-      #page-loader {
-        display: none !important
-      }
-
-      .shell {
-        display: block !important
-      }
-
-      .workspace {
-        width: 100% !important
-      }
-
-      #top,
-      .sheet,
-      .sheet.flat {
-        max-width: none !important
-      }
+      .desk-side, #page-loader { display: none !important }
+      .shell { display: block !important }
+      .workspace { width: 100% !important }
+      #top, .sheet, .sheet.flat { max-width: none !important }
     }
+  
+    /* v2.5: lonceng notifikasi tampil juga di desktop */
+    @media (min-width: 992px) { .hdr .ib:first-child { display: block; order: 3; font-size: 1.5rem } .hdr h1 { order: 1 } }
   </style>
 </head>
 
@@ -1354,11 +924,12 @@
     async function doForce() { const d = await rpc('change_password', { p_old: $('#fa').value, p_new: $('#fb').value }, 'Password diganti'); if (d) { S.user.mustChange = false; closeM() } }
 
     /* ---- Shell: header, menu samping, kalender, menu cepat ---- */
-    const M = { home: ['Beranda', 'house'], hadir: ['Hadir & Kas', 'cash-coin'], grp: ['Kelompok', 'people'], lap: ['Laporan Kas', 'graph-up'], rh: ['Laporan Hadir', 'calendar-check'], usr: ['Anggota', 'person-lines-fill'], reg: ['Pendaftaran', 'person-plus'], kas: ['Kas Saya', 'wallet2'], evt: ['Event', 'calendar-event'], krs: ['Kursus', 'mortarboard'], nil: ['Nilai', 'award'], akun: ['Akun', 'person-circle'] };
-    const ROLEMENU = { pelatih: ['home', 'evt', 'krs', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'akun'], pengurus: ['home', 'evt', 'krs', 'nil', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'kas', 'akun'], peserta: ['home', 'evt', 'krs', 'nil', 'kas', 'akun'] };
+    const M = { home: ['Beranda', 'house'], ntf: ['Notifikasi', 'bell'], hadir: ['Hadir & Kas', 'cash-coin'], grp: ['Kelompok', 'people'], lap: ['Laporan Kas', 'graph-up'], rh: ['Laporan Hadir', 'calendar-check'], usr: ['Anggota', 'person-lines-fill'], reg: ['Pendaftaran', 'person-plus'], kas: ['Kas Saya', 'wallet2'], evt: ['Event', 'calendar-event'], krs: ['Kursus', 'mortarboard'], nil: ['Nilai', 'award'], akun: ['Akun', 'person-circle'] };
+    const ROLEMENU = { pelatih: ['home', 'ntf', 'evt', 'krs', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'akun'], pengurus: ['home', 'ntf', 'evt', 'krs', 'nil', 'hadir', 'grp', 'lap', 'rh', 'usr', 'reg', 'kas', 'akun'], peserta: ['home', 'ntf', 'evt', 'krs', 'nil', 'kas', 'akun'] };
+    const bdg = k => (k === 'reg' ? S.notif : k === 'evt' ? S.notifEvt : k === 'ntf' ? S.unread : 0) || 0;
     function shell() {
       const u = S.user, st = u.role !== 'peserta';
-      const nav = ROLEMENU[u.role].map(k => `<button data-k="${k}" onclick="drw(0);go('${k}')"><i class="bi bi-${M[k][1]}"></i><span>${M[k][0]}</span>${(k === 'reg' ? S.notif : k === 'evt' ? S.notifEvt : 0) > 0 ? `<span class="badge bg-warning text-dark ms-auto">${k === 'reg' ? S.notif : S.notifEvt}</span>` : ''}</button>`).join('');
+      const nav = ROLEMENU[u.role].map(k => `<button data-k="${k}" onclick="drw(0);go('${k}')"><i class="bi bi-${M[k][1]}"></i><span>${M[k][0]}</span>${bdg(k) > 0 ? `<span class="badge bg-warning text-dark ms-auto">${bdg(k)}</span>` : ''}</button>`).join('');
       $('#app').innerHTML = `<div class="shell">
         <aside class="desk-side">
           <div class="desk-brand"><div class="desk-brand-mark"><i class="bi bi-mortarboard-fill"></i></div><div><strong>ICT CLUB</strong><small>Management System</small></div></div>
@@ -1368,7 +939,7 @@
           <button class="desk-logout mt-3" onclick="doLogout()"><i class="bi bi-box-arrow-right"></i>Keluar</button>
         </aside>
         <div class="workspace">
-          <div class="hdr"><button class="ib" onclick="go('${st ? 'reg' : 'home'}')" aria-label="${st ? 'Pendaftaran' : 'Beranda'}"><i class="bi bi-${st ? 'bell' : 'house'}"></i>${S.notif > 0 ? `<span class="dot">${S.notif}</span>` : ''}</button><h1 id="ttl"></h1><button class="ib" onclick="drw(1)" aria-label="Buka menu"><i class="bi bi-list"></i></button></div>
+          <div class="hdr"><button class="ib" onclick="go('ntf')" aria-label="Notifikasi"><i class="bi bi-bell"></i>${S.unread > 0 ? `<span class="dot">${S.unread}</span>` : ''}</button><h1 id="ttl"></h1><button class="ib" onclick="drw(1)" aria-label="Buka menu"><i class="bi bi-list"></i></button></div>
           <div id="top"></div><main class="sheet" id="main"></main>
         </div>
       </div>
@@ -1383,7 +954,7 @@
       document.querySelectorAll('button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === k));
       $('#top').innerHTML = h ? `<div class="prof"><div class="av">${esc((u.nama.trim()[0] || '?').toUpperCase())}</div><div class="flex-fill"><div class="fw-bold">${esc(u.nama)}</div><div class="small">${esc(u.divisi || u.role)}</div></div><button class="ib" onclick="go('akun')"><i class="bi bi-pencil-square"></i></button></div><div class="band"></div>` : '';
       $('#main').classList.toggle('flat', !h); window.scrollTo(0, 0);
-      ({ home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, reg: vReg, evt: vEvt, krs: vKrs, nil: vNil, akun: vAkun })[k]($('#main'))
+      ({ ntf: vNtf, home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, reg: vReg, evt: vEvt, krs: vKrs, nil: vNil, akun: vAkun })[k]($('#main'))
     }
     let cy = null, cmn = 0;
     const BLN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -1412,7 +983,7 @@
     const calWrap = () => `<div id="cal">${calHTML()}</div>`;
     const menuCard = () => `<div class="card card-body mb-3 menu-card"><div class="qm">${ROLEMENU[S.user.role].filter(k => k !== 'home' && k !== 'akun').map(k => `<button onclick="go('${k}')"><span class="qc"><i class="bi bi-${M[k][1]}"></i></span>${M[k][0]}</button>`).join('')}</div></div>`;
 
-    function applyBadges() { const m = { reg: S.notif, evt: S.notifEvt }; document.querySelectorAll('button[data-k]').forEach(b => { const n = m[b.dataset.k] || 0; let x = b.querySelector('.badge'); if (n > 0) { if (!x) { x = document.createElement('span'); x.className = 'badge bg-warning text-dark ms-auto'; b.appendChild(x) } x.textContent = n } else if (x) x.remove() }); const bell = document.querySelector('.hdr > .ib'); if (bell) { let d = bell.querySelector('.dot'); if (S.notif > 0) { if (!d) { d = document.createElement('span'); d.className = 'dot'; bell.appendChild(d) } d.textContent = S.notif } else if (d) d.remove() } }
+    function applyBadges() { const m = { reg: S.notif, evt: S.notifEvt, ntf: S.unread }; document.querySelectorAll('button[data-k]').forEach(b => { const n = m[b.dataset.k] || 0; let x = b.querySelector('.badge'); if (n > 0) { if (!x) { x = document.createElement('span'); x.className = 'badge bg-warning text-dark ms-auto'; b.appendChild(x) } x.textContent = n } else if (x) x.remove() }); const bell = document.querySelector('.hdr > .ib'); if (bell) { let d = bell.querySelector('.dot'); if (S.unread > 0) { if (!d) { d = document.createElement('span'); d.className = 'dot'; bell.appendChild(d) } d.textContent = S.unread } else if (d) d.remove() } }
     async function refreshNotif() { const d = await rpc('get_state'); if (d) { setS(d); applyBadges() } }
     /* ---- Pendaftaran anggota (pelatih setujui, pengurus aktifkan) ---- */
     let RG = [], rs = '';
@@ -1515,8 +1086,7 @@
     const pwBox = (t, n, pw, nik) => modal(`<h5>${t}</h5><p>${esc(n)}${nik ? `<br>NIK (untuk login): <b class="fs-5">${esc(nik)}</b>` : ''}<br>Password sementara:<br><b class="fs-3">${esc(pw)}</b></p><p class="text-secondary small">Berikan ke pengguna. Wajib diganti saat login.</p><button class="btn btn-success" onclick="closeM()">Tutup</button>`);
     async function uAct(i, a) { const x = LU[i]; if (!confirm('Lanjutkan untuk ' + x.nama + '?')) return; const d = await rpc('member_action', { p_nik: x.nik, p_act: a }, 'Berhasil'); if (d) { if (d.password) pwBox('Password direset', x.nama, d.password); vUsr($('#main')) } }
     function userForm(i) { const x = i == null ? null : LU[i], P = S.user.role === 'pelatih'; modal(`<h5>${x ? 'Ubah data anggota' : 'Tambah anggota'}</h5>${x ? `<div class="text-secondary small">NIK <b>${esc(x.nik)}</b> (tidak dapat diubah)</div>` : `<div class="alert alert-secondary py-2 small mb-0 mt-2">NIK dibuat otomatis: tahun daftar + angkatan + nomor urut.</div>${lbl('Angkatan (2 digit)')}<input id="ua" class="form-control" inputmode="numeric" maxlength="2" placeholder="mis. 20">`}${lbl('Nama')}<input id="uc" class="form-control" value="${esc(x?.nama || '')}">${lbl('Role')}<select id="ur" class="form-select">${(P ? ['peserta', 'pengurus', 'pelatih'] : ['peserta']).map(r => `<option ${x && x.role === r ? 'selected' : ''}>${r}</option>`).join('')}</select>${lbl('Divisi')}<select id="ud" class="form-select">${divOpt(x?.divisiId || '')}</select>${x ? '' : `${lbl('Password awal (kosongkan = acak)')}<input id="up" class="form-control">`}<div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="saveU(${x ? i : 'null'})">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Batal</button></div>`) }
-    async function saveU(i) {
-      const nik = i == null ? null : LU[i].nik;
+    async function saveU(i) { const nik = i == null ? null : LU[i].nik;
       const n = $('#uc').value, dv = $('#ud').value, a = { p_nama: n, p_role: $('#ur').value, p_divisi: dv ? +dv : null }; if (nik) a.p_nik = nik; else { a.p_angkatan = $('#ua').value.trim(); a.p_password = $('#up').value || null }
       const d = await rpc('save_member', a, 'Tersimpan'); if (!d) return; closeM(); if (d.nik) pwBox('Anggota ditambahkan', n, d.password, d.nik); vUsr($('#main'))
     }
@@ -1558,14 +1128,19 @@
       const mc = x => `<div class="d-flex justify-content-between align-items-center py-1 border-bottom"><span>${esc(x.nama)} <span class="text-secondary small">${x.role === 'pengurus' ? 'pengurus · ' : ''}${esc(x.divisi || '')}${x.tugas ? ' · ' + esc(x.tugas) : ''}</span></span>${stf && ok ? `<button class="btn btn-sm btn-outline-secondary" onclick="evRm(${members.indexOf(x)})"><i class="bi bi-x-lg"></i></button>` : ''}</div>`;
       const sec = (t, l) => `<h6 class="mt-3 mb-1">${t} (${l.length})</h6>${l.map(mc).join('') || '<div class="text-secondary small">Belum ada.</div>'}`;
       modal(`<div class="d-flex justify-content-between gap-2"><h5>${esc(e.judul)}</h5><span class="badge ${evCls(e.status)} align-self-start">${e.status}</span></div><div class="text-secondary small"><i class="bi bi-calendar-event"></i> ${fd(e.mulai, e.selesai)}${e.lokasi ? ` · <i class="bi bi-geo-alt"></i> ${esc(e.lokasi)}` : ''}</div>${e.deskripsi ? `<p class="small mt-2 mb-0">${esc(e.deskripsi)}</p>` : ''}${e.status === 'MENUNGGU' ? `<div class="small mt-2">Diajukan oleh ${esc(e.dibuatNama || '-')}, menunggu persetujuan pelatih.</div>` : ''}${e.alasan ? `<div class="small mt-2 text-danger">Ditolak: ${esc(e.alasan)}</div>` : ''}`
-        + (ok ? `<div class="mt-3"><div class="small fw-semibold mb-1">Pilihan Anda: ${my ? (my.status === 'TIDAK' ? 'Tidak ikut' : 'Ikut sebagai ' + (my.peran === 'PANITIA' ? 'panitia' : 'peserta')) : 'belum memilih'}</div><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm btn-success" onclick="evPick('peserta')">Ikut sebagai peserta</button><button class="btn btn-sm btn-success" onclick="evPick('panitia')">Ikut sebagai panitia</button><button class="btn btn-sm btn-outline-secondary" onclick="evPick('tidak')">Tidak ikut</button></div></div>` : '')
+        + (ok ? `<div class="mt-3"><div class="small fw-semibold mb-1">Pilihan Anda: ${my ? (my.status === 'TIDAK' ? 'Tidak ikut' : 'Ikut sebagai ' + (my.peran === 'PANITIA' ? 'panitia' + ((x => x && x.tugas ? ' (' + esc(x.tugas) + ')' : '')(members.find(z => z.nik === S.user.nik))) : 'peserta')) : 'belum memilih'}</div><div class="d-flex gap-2 flex-wrap"><button class="btn btn-sm btn-success" onclick="evPick('peserta')">Ikut sebagai peserta</button><button class="btn btn-sm btn-success" onclick="evPanitia()">Ikut sebagai panitia</button><button class="btn btn-sm btn-outline-secondary" onclick="evPick('tidak')">Tidak ikut</button></div></div>` : '')
         + (P && e.status === 'MENUNGGU' ? `<div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="evReview('setuju')">Setujui</button><button class="btn btn-outline-secondary flex-fill" onclick="evReview('tolak')">Tolak</button></div>` : '')
         + (ok ? sec('Panitia', pan) + sec('Peserta', pes) + (stf ? sec('Tidak ikut', tdk) : '') : '')
         + (stf && ok ? `<button class="btn btn-success w-100 mt-3" onclick="evAdd()"><i class="bi bi-person-plus"></i> Tambah panitia / peserta</button>` : '')
+        + (stf && ok ? `<button class="btn btn-outline-success w-100 mt-2" onclick="evReport()"><i class="bi bi-printer"></i> Laporan event / cetak daftar</button>` : '')
         + `<div class="d-flex gap-2 mt-2">${canEdit ? `<button class="btn btn-outline-secondary flex-fill" onclick="evForm(ED.event)">Ubah</button><button class="btn btn-outline-danger flex-fill" onclick="evDel()">Hapus</button>` : ''}<button class="btn btn-outline-secondary flex-fill" onclick="closeM()">Tutup</button></div>`)
     }
     async function evRefresh(cal) { const id = ED.event.id; await evOpen(id); if (cal) { CEC = {}; loadCE() } if (tab === 'evt') { const d = await rpc('list_events'); if (d) { EV = d; drawEvt() } } }
-    async function evPick(p) { const d = await rpc('event_choice', { p_id: ED.event.id, p_pilihan: p }, 'Pilihan disimpan'); if (d) evRefresh() }
+    async function evPick(p, t) { const a = { p_id: ED.event.id, p_pilihan: p }; if (t) a.p_tugas = t; const d = await rpc('event_choice', a, 'Pilihan disimpan'); if (d) evRefresh() }
+    function evPanitia() {
+      const m = ED.members.find(x => x.nik === S.user.nik), cur = m && m.status === 'IKUT' && m.peran === 'PANITIA' ? (m.tugas || '') : '';
+      modal(`<h5>Ikut sebagai panitia</h5><div class="text-secondary small">${esc(ED.event.judul)}</div>${lbl('Tugas / seksi (opsional)')}<input id="pt" class="form-control" maxlength="100" placeholder="mis. Dokumentasi" value="${esc(cur)}"><div class="d-flex gap-2 mt-3"><button class="btn btn-success flex-fill" onclick="evPick('panitia', $('#pt').value.trim())">Simpan</button><button class="btn btn-outline-secondary flex-fill" onclick="drawEd()">Batal</button></div>`)
+    }
     async function evReview(a) {
       let r = null; if (a === 'tolak') { r = await askReason(drawEd); if (r === null) return }
       const d = await rpc('review_event', { p_id: ED.event.id, p_aksi: a, p_alasan: r }, a === 'setuju' ? 'Event disetujui' : 'Event ditolak'); if (d) { const x = await rpc('get_state'); if (x) { setS(x); applyBadges() } evRefresh(1) }
@@ -1594,6 +1169,60 @@
       if (!ES.size) return toast('Pilih minimal satu anggota.', 1);
       const d = await rpc('add_event_members', { p_id: ED.event.id, p_niks: [...ES], p_peran: $('#ap').value, p_tugas: $('#at').value || null }); if (!d) return;
       toast(d.jumlah + ' anggota ditambahkan'); ES = new Set(); evRefresh()
+    }
+
+    /* ---- Pusat notifikasi ---- */
+    let NT = { rows: [], more: false };
+    const ntIcon = t => /^event/.test(t) ? 'calendar-event' : /^(kursus|pertemuan)/.test(t) ? 'mortarboard' : /^tugas/.test(t) ? 'journal-check' : 'person-plus';
+    async function vNtf() {
+      const d = await rpc('list_notifications', { p_limit: 50 }); if (!d || tab !== 'ntf') return;
+      NT.rows = d.rows; NT.more = d.rows.length >= 50; S.unread = d.unread; applyBadges(); drawNtf()
+    }
+    function drawNtf() {
+      $('#main').innerHTML = `<div class="mb-2"><button class="btn btn-sm btn-outline-secondary w-100" onclick="ntAll()" ${S.unread > 0 ? '' : 'disabled'}><i class="bi bi-check2-all"></i> Tandai semua dibaca</button></div>`
+        + (NT.rows.map((x, i) => `<div class="card card-body mb-2" role="button" tabindex="0" onclick="ntOpen(${i})" style="${x.read ? '' : 'border-left:4px solid var(--orange)'}"><div class="d-flex gap-2"><i class="bi bi-${ntIcon(x.tipe)} fs-5"></i><div class="flex-fill"><div class="${x.read ? '' : 'fw-semibold'}">${esc(x.judul)}</div>${x.isi ? `<div class="text-secondary small">${esc(x.isi)}</div>` : ''}<div class="text-secondary small">${esc(x.at)}</div></div></div></div>`).join('') || '<p class="text-secondary">Belum ada notifikasi.</p>')
+        + (NT.more ? `<button class="btn btn-outline-secondary w-100" onclick="ntMore()">Muat lebih banyak</button>` : '')
+    }
+    async function ntAll() { const d = await rpc('mark_notifications_read', {}); if (!d) return; S.unread = d.unread; NT.rows.forEach(x => x.read = true); applyBadges(); drawNtf() }
+    async function ntMore() { const l = NT.rows[NT.rows.length - 1]; if (!l) return; const d = await rpc('list_notifications', { p_limit: 50, p_before: l.id }); if (!d || tab !== 'ntf') return; NT.rows.push(...d.rows); NT.more = d.rows.length >= 50; drawNtf() }
+    function ntTab(k) { tab = k; $('#ttl').textContent = M[k][0]; $('#top').innerHTML = ''; $('#main').classList.add('flat'); document.querySelectorAll('button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === k)); window.scrollTo(0, 0) }
+    async function ntOpen(i) {
+      const x = NT.rows[i]; if (!x) return;
+      if (!x.read) { const d = await rpc('mark_notifications_read', { p_ids: [x.id] }); if (d) { x.read = true; S.unread = d.unread; applyBadges() } }
+      if (x.jenis === 'event') evOpen(x.tid);
+      else if (x.jenis === 'kursus') { ntTab('krs'); krsOpen(x.tid) }
+      else if (x.jenis === 'pertemuan' || x.jenis === 'tugas') { ntTab('krs'); mtOpen(x.tid) }
+      else if (x.jenis === 'pendaftaran') go('reg');
+      else drawNtf()
+    }
+    async function pollUnread() {
+      if (!S || document.hidden) return;
+      try { const { data, error } = await sb.rpc('get_state', { p_device: dev }); if (error || !data) return; if ((data.unread || 0) > (S.unread || 0)) toast('Ada notifikasi baru'); const t = tab; setS(data); applyBadges(); if (t !== tab) tab = t } catch (e) { }
+    }
+    setInterval(pollUnread, 60000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) pollUnread() });
+
+    /* ---- Laporan event ---- */
+    function evReport() {
+      const { event: e, members } = ED, srt = (a, b) => a.nama.localeCompare(b.nama, 'id'), ik = members.filter(x => x.status === 'IKUT'),
+        pan = ik.filter(x => x.peran === 'PANITIA').sort(srt), pes = ik.filter(x => x.peran === 'PESERTA').sort(srt),
+        nm = x => esc(x.nama) + (x.role === 'pengurus' ? ' <span class="badge bg-light text-dark border">pengurus</span>' : ''),
+        c = (l, v) => `<div class="col-4"><div class="card card-body text-center py-2"><div class="text-secondary small">${l}</div><b>${v}</b></div></div>`;
+      closeM(); tab = 'evt'; $('#ttl').textContent = 'Laporan Event'; $('#top').innerHTML = ''; $('#main').classList.add('flat');
+      document.querySelectorAll('button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === 'evt')); window.scrollTo(0, 0);
+      $('#main').innerHTML = `<div class="no-print">${bk('evOpen(' + e.id + ')', 'Detail event')}</div><div class="d-none d-print-block mb-2"><h5 class="mb-0">Laporan Event</h5><div class="small">Dicetak ${S.today} oleh ${esc(S.user.nama)}</div></div>`
+        + card(`<h5 class="mb-1">${esc(e.judul)}</h5><div class="text-secondary small"><i class="bi bi-calendar-event"></i> ${fd(e.mulai, e.selesai)}${e.lokasi ? ` · <i class="bi bi-geo-alt"></i> ${esc(e.lokasi)}` : ''}</div>${e.deskripsi ? `<div class="small mt-2">${esc(e.deskripsi)}</div>` : ''}`)
+        + `<div class="row g-2 mb-2">${c('Panitia', pan.length)}${c('Peserta', pes.length)}${c('Total', ik.length)}</div>`
+        + card('<h6>Panitia (' + pan.length + ')</h6>' + (pan.length ? tb(['No', 'Nama', 'Divisi', 'Tugas'], pan.map((x, i) => [i + 1, nm(x), esc(x.divisi || '-'), esc(x.tugas || '-')])) : '<div class="text-secondary small">Belum ada panitia.</div>'))
+        + card('<h6>Peserta (' + pes.length + ')</h6>' + (pes.length ? tb(['No', 'Nama', 'Divisi'], pes.map((x, i) => [i + 1, nm(x), esc(x.divisi || '-')])) : '<div class="text-secondary small">Belum ada peserta.</div>'))
+        + `<div class="d-flex gap-2 no-print"><button class="btn btn-success flex-fill" onclick="print()"><i class="bi bi-printer"></i> Cetak</button><button class="btn btn-outline-success flex-fill" onclick="csvE()">Unduh CSV</button></div>`
+    }
+    function csvE() {
+      const { event: e, members } = ED, rk = x => x.peran === 'PANITIA' ? 0 : 1,
+        rows = members.filter(x => x.status === 'IKUT').sort((a, b) => rk(a) - rk(b) || a.nama.localeCompare(b.nama, 'id')).map(x => [x.peran === 'PANITIA' ? 'Panitia' : 'Peserta', x.nik, x.nama, x.role, x.divisi || '', x.tugas || '']),
+        R = [['Peran', 'NIK', 'Nama', 'Role', 'Divisi', 'Tugas'], ...rows], a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob(['\ufeff' + R.map(r => r.map(cell).join(',')).join('\n')], { type: 'text/csv' }));
+      a.download = 'laporan-event_' + e.mulai + '_' + e.judul.replace(/[^\w-]+/g, '-').slice(0, 40) + '.csv'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000)
     }
 
     /* ---- E-Learning ---- */
