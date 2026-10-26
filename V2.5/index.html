@@ -1368,7 +1368,7 @@
           <button class="desk-logout mt-3" onclick="doLogout()"><i class="bi bi-box-arrow-right"></i>Keluar</button>
         </aside>
         <div class="workspace">
-          <div class="hdr"><button class="ib" onclick="go('${st ? 'reg' : 'home'}')" aria-label="${st ? 'Pendaftaran' : 'Beranda'}"><i class="bi bi-${st ? 'bell' : 'house'}"></i>${S.notif > 0 ? `<span class="dot">${S.notif}</span>` : ''}</button><h1 id="ttl"></h1><button class="ib" onclick="drw(1)" aria-label="Buka menu"><i class="bi bi-list"></i></button></div>
+          <div class="hdr"><button class="ib" onclick="openNotifications()" aria-label="Buka notifikasi"><i class="bi bi-bell"></i>${S.notif > 0 ? `<span class="dot">${S.notif}</span>` : ''} </button><h1 id="ttl"></h1><button class="ib" onclick="drw(1)" aria-label="Buka menu"><i class="bi bi-list"></i></button></div>
           <div id="top"></div><main class="sheet" id="main"></main>
         </div>
       </div>
@@ -1623,6 +1623,46 @@
       toast(d.jumlah + ' anggota ditambahkan'); ES = new Set(); evRefresh()
     }
 
+    /* ---- V2.5 Notification Center ---- */
+    let NOTIFS = [], notifFilter = 'all';
+    const notifCategories = { all: 'Semua', registration: 'Pendaftaran', event: 'Event', course: 'Kursus', grade: 'Penilaian' };
+    async function openNotifications() {
+      notifFilter = 'all';
+      modal('<div id="notification-center"><div class="d-flex align-items-center justify-content-between"><h5 class="mb-0"><i class="bi bi-bell me-2"></i>Notifikasi</h5><button class="btn btn-sm btn-outline-secondary" onclick="closeM()">Tutup</button></div><div class="text-secondary small mt-2">Memuat notifikasi…</div></div>');
+      await loadNotifications();
+    }
+    async function loadNotifications() {
+      const box = $('#notification-center'); if (!box) return;
+      try {
+        const { data, error } = await sb.rpc('list_notifications', { p_device: dev, p_limit: 50 });
+        if (error) { box.innerHTML = '<h5>Notifikasi</h5><div class="alert alert-warning mt-3"><b>Backend notifikasi V2.5 belum aktif.</b><div class="small mt-1">Aktifkan RPC dan tabel notifikasi sesuai V2.5/BACKEND_REQUIREMENTS.md.</div></div><button class="btn btn-outline-secondary w-100" onclick="closeM()">Tutup</button>'; return; }
+        NOTIFS = Array.isArray(data) ? data : (data?.items || []); drawNotifications();
+      } catch (e) { box.innerHTML = '<h5>Notifikasi</h5><p class="text-secondary small">Notifikasi belum dapat dimuat.</p><button class="btn btn-outline-success w-100" onclick="loadNotifications()">Coba lagi</button>'; }
+    }
+    function drawNotifications() {
+      const box = $('#notification-center'); if (!box) return;
+      const unread = NOTIFS.filter(n => !n.is_read).length, list = NOTIFS.filter(n => notifFilter === 'all' || n.type === notifFilter);
+      box.innerHTML = '<div class="d-flex align-items-center justify-content-between gap-2"><div><h5 class="mb-0"><i class="bi bi-bell me-2"></i>Notifikasi</h5><div class="small text-secondary">' + unread + ' belum dibaca</div></div><button class="btn btn-sm btn-outline-secondary" onclick="closeM()">Tutup</button></div>'
+        + '<div class="d-flex gap-1 flex-wrap mt-3">' + Object.entries(notifCategories).map(([k,v]) => '<button class="btn btn-sm ' + (notifFilter === k ? 'btn-success' : 'btn-outline-secondary') + '" onclick="notifFilter=\'' + k + '\';drawNotifications()">' + v + '</button>').join('') + '</div>'
+        + (unread ? '<button class="btn btn-sm btn-link px-0 mt-2" onclick="markAllNotificationsRead()">Tandai semua dibaca</button>' : '')
+        + '<div class="mt-2">' + (list.map(n => '<button class="w-100 text-start border rounded-3 p-3 mb-2 ' + (!n.is_read ? 'bg-success-subtle' : 'bg-white') + '" style="color:inherit" onclick="openNotification(\'' + String(n.id).replace(/'/g, '') + '\')"><div class="d-flex gap-2"><span class="fs-5"><i class="bi bi-' + ({registration:'person-plus',event:'calendar-event',course:'mortarboard',grade:'award'}[n.type] || 'bell') + '"></i></span><span class="flex-fill"><b>' + esc(n.title || 'Notifikasi') + '</b><span class="d-block small mt-1">' + esc(n.message || '') + '</span><span class="d-block text-secondary small mt-1">' + esc(n.created_at ? dtj(n.created_at) : '') + ' · ' + esc(notifCategories[n.type] || 'Lainnya') + '</span></span>' + (!n.is_read ? '<span class="text-primary">●</span>' : '') + '</div></button>').join('') || '<div class="text-secondary small text-center py-4">Tidak ada notifikasi pada kategori ini.</div>') + '</div>';
+    }
+    async function markAllNotificationsRead() {
+      const { error } = await sb.rpc('mark_all_notifications_read', { p_device: dev });
+      if (error) return toast('Backend belum mendukung aksi tandai semua dibaca.', 1);
+      NOTIFS = NOTIFS.map(n => ({...n, is_read:true})); drawNotifications(); refreshNotif();
+    }
+    async function openNotification(id) {
+      const n = NOTIFS.find(x => String(x.id) === String(id)); if (!n) return;
+      if (!n.is_read) { const { error } = await sb.rpc('mark_notification_read', { p_device: dev, p_notification_id: id }); if (error) return toast('Backend belum mendukung status baca notifikasi.', 1); n.is_read = true; }
+      closeM(); refreshNotif();
+      const type = n.reference_type || n.type, ref = n.reference_id;
+      if (type === 'event' && ref) return evOpen(Number(ref));
+      if (type === 'course' && ref) { go('krs'); return krsOpen(Number(ref)); }
+      if (type === 'grade') return go('nil');
+      if (type === 'registration') return go('reg');
+      const route = String(n.target_path || '').replace(/^\\//, ''); if (M[route] && ROLEMENU[S.user.role].includes(route)) go(route);
+    }
     /* ---- E-Learning ---- */
     let KR = null, KD = null, MD = null, SBL = [], SBA = 0;
     const stf_ = () => S.user.role !== 'peserta', pel_ = () => S.user.role === 'pelatih';
