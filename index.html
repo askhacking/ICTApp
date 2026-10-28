@@ -1340,7 +1340,7 @@
     const cell = v => { let t = String(v ?? ''); if (typeof v === 'string' && /^[=+\-@\t\r]/.test(t)) t = "'" + t; return '"' + t.replace(/"/g, '""') + '"' };
     const wa = hp => { let n = String(hp || '').replace(/\D/g, ''); if (n.startsWith('0')) n = '62' + n.slice(1); else if (n.startsWith('8')) n = '62' + n; return n };
     const okUrl = u => { try { return new URL(u).protocol === 'https:' } catch (e) { return false } };
-    let HF = false, QUIET = false, LSIG = null, LBUSY = false, LDIRTY = false, KV = '', EVV = '';
+    let HF = false, QUIET = false, LSIG = null, LBUSY = false, LDIRTY = false, KV = '', EVV = '', LHOLD = 0, LFAIL = 0, LACT = Date.now(), LN = 0;
     /* ---- Login & pendaftaran anggota ---- */
     const LOGO = `<div class="logo-box"><img src="assets/logo.png" alt="ICT Club" class="logo" onerror="this.style.display='none';document.getElementById('lgfb').style.display='block'"><div id="lgfb" class="logo-fb" style="display:none">ICT<br>CLUB</div></div>`;
     let riseOnce = true;
@@ -1358,6 +1358,7 @@
     }
     async function doLogin() {
       busy(1); const { error } = await sb.auth.signInWithPassword({ email: $('#nik').value.trim() + '@kas.local', password: $('#pw').value }); busy(0);
+      if (error && error.status === 429) return toast('Terlalu banyak percobaan masuk. Coba lagi beberapa menit lagi.', 1);
       if (error) return toast(error.status === 0 || error.name === 'AuthRetryableFetchError' || /fetch|network/i.test(error.message) ? 'Tidak dapat terhubung ke server. Periksa koneksi lalu coba lagi.' : 'NIK atau password salah.', 1);
       const d = await rpc('claim_device'); if (!d) { await sb.auth.signOut(); return } setS(d); start()
     }
@@ -1645,9 +1646,9 @@
     }
     /* ---- Tampilan live: cek ringan tiap 10 dtk, halaman yang terbuka dimuat ulang diam-diam bila ada perubahan ---- */
     async function liveTick() {
-      if (!S || document.hidden || LBUSY) return; LBUSY = true;
+      if (!S || document.hidden || LBUSY || Date.now() < LHOLD) return; LBUSY = true;
       try {
-        const { data, error } = await sb.rpc('live_status', { p_device: dev }); if (error || !data || !S) return;
+        const { data, error } = await sb.rpc('live_status', { p_device: dev }); if (error) { LHOLD = Date.now() + Math.min(60000 * (++LFAIL), 300000); return } LFAIL = 0; if (!data || !S) return;
         const old = S.unread || 0;
         S.unread = data.unread; S.notif = data.notif; S.notifEvt = data.notifEvt; applyBadges();
         if (data.unread > old) toast('Ada notifikasi baru');
@@ -1667,7 +1668,8 @@
       try { await f() } catch (e) { } finally { QUIET = false }
       window.scrollTo(0, y)
     }
-    setInterval(liveTick, 10000);
+    ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(ev => addEventListener(ev, () => { const was = Date.now() - LACT > 300000; LACT = Date.now(); if (was) liveTick() }, { passive: true }));
+    setInterval(() => { const idle = Date.now() - LACT; if (idle > 1800000) return; LN++; if (idle > 300000 && LN % 6) return; liveTick() }, 10000);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) liveTick() });
 
     /* ---- Laporan event ---- */
