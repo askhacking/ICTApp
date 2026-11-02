@@ -10,6 +10,7 @@
   <meta name="theme-color" content="#132234">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/app-icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/app-icons/favicon-16.png">
   <link rel="apple-touch-icon" href="assets/app-icons/apple-touch-icon.png">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="app-version" content="2.5.2">
@@ -840,6 +841,18 @@
     .ib .ic { width: 24px; height: 24px; vertical-align: middle }
     img.desk-brand-mark { background: none; border-radius: 0; display: block; object-fit: contain }
     .wm { display: block; height: 44px; margin: 0 auto 14px }
+  
+    /* v2.5.2 (sesuai Web Asset Kit): status menu, tombol, status ikon */
+    .desk-nav button.on, .drw-p button.on { background: rgba(245, 186, 66, .14); color: #F5BA42; box-shadow: none }
+    .btn-warning { --bs-btn-hover-bg: #4D9CBA; --bs-btn-hover-border-color: #4D9CBA; --bs-btn-hover-color: #132234; --bs-btn-active-bg: #3f8aa6; --bs-btn-active-border-color: #3f8aa6; --bs-btn-active-color: #132234 }
+    .btn-outline-warning { --bs-btn-color: #132234; --bs-btn-border-color: #ED8B34; --bs-btn-hover-bg: #ED8B34; --bs-btn-hover-border-color: #ED8B34; --bs-btn-hover-color: #132234; --bs-btn-active-bg: #ED8B34; --bs-btn-active-border-color: #ED8B34; --bs-btn-active-color: #132234 }
+    .btn:disabled, .btn.disabled { --bs-btn-disabled-bg: #8d99a9; --bs-btn-disabled-border-color: #8d99a9; --bs-btn-disabled-color: #e6ebf1; opacity: 1 }
+    .ib { border-radius: 12px; transition: background .15s }
+    .ib:hover { background: rgba(155, 201, 227, .3) }
+    .ib:active { background: var(--navy); color: #fff; box-shadow: 0 0 0 2px var(--yellow) }
+    .qm button:hover .qc { background: var(--blue) }
+    .qm button:active .qc { box-shadow: 0 0 0 3px var(--yellow) }
+    .sheet .card { border-color: #dce5ee }
   </style>
 </head>
 
@@ -914,10 +927,10 @@
     const LOGO = `<div class="logo-box"><img src="assets/logos/ict-club-original.png" alt="ICT Club" class="logo" onerror="this.style.display='none';document.getElementById('lgfb').style.display='block'"><div id="lgfb" class="logo-fb" style="display:none">ICT<br>CLUB</div></div>`;
     let riseOnce = true;
     const lgWrap = h => { const r = riseOnce ? ' rise' : ''; riseOnce = false; return `<div class="lg"><div class="lg-top">${LOGO}</div><div class="lg-sheet${r}">${h}</div></div>` };
-    function viewLogin(msg) { closeM(); $('#app').innerHTML = lgWrap(`<img class="wm" src="assets/logos/ictapp-primary.png" alt="ICTApp" onerror="this.remove()"><h5 class="fw-bold mb-3">Masuk ke akun Anda</h5>${msg ? `<div class="alert alert-warning">${esc(msg)}</div>` : ''}${lbl('NIK')}<input id="nik" class="form-control" inputmode="numeric" autocomplete="username" placeholder="NIK">${lbl('Password')}<input id="pw" type="password" class="form-control" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"><button class="btn btn-success w-100 mt-4 py-2" onclick="doLogin()">Masuk</button><p class="text-secondary small text-center mt-3 mb-1">Lupa password? Hubungi pelatih atau pengurus.</p><p class="text-center small mt-4">Belum menjadi anggota? <a href="#" onclick="viewDaftar();return false">Daftar sebagai anggota</a></p><p class="text-secondary small text-center">Satu akun hanya dapat dipakai di satu perangkat.</p>`) }
+    function viewLogin(msg) { closeM(); $('#app').innerHTML = lgWrap(`<img class="wm" src="assets/logos/ictapp-primary.png" alt="ICTApp" onerror="this.remove()"><h5 class="fw-bold mb-3">Masuk ke akun Anda</h5>${msg ? `<div class="alert alert-warning">${esc(msg)}</div>` : ''}${lbl('NIK')}<input id="nik" class="form-control" inputmode="numeric" autocomplete="username" placeholder="NIK">${lbl('Password')}<input id="pw" type="password" class="form-control" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"><button class="btn btn-success w-100 mt-4 py-2" onclick="doLogin()">Masuk</button><p class="text-secondary small text-center mt-3 mb-1">Lupa password? Hubungi pelatih atau pengurus.</p><div class="text-center small mt-4 mb-2">Belum menjadi anggota?</div><button class="btn btn-outline-warning w-100" onclick="viewDaftar()">Daftar Sekarang</button><p class="text-secondary small text-center">Satu akun hanya dapat dipakai di satu perangkat.</p>`) }
     async function viewDaftar() {
       busy(1); const { data } = await sb.rpc('public_divisions'); busy(0); const dv = data || [];
-      $('#app').innerHTML = lgWrap(`<h5 class="fw-bold mb-1">Pendaftaran anggota</h5><p class="text-secondary small">Pendaftaran disetujui pelatih, lalu akun diaktifkan pengurus. NIK dan password dikirim ke WhatsApp Anda setelah akun aktif.</p>${lbl('Nama lengkap')}<input id="dn" class="form-control" maxlength="100">${lbl('No. WhatsApp')}<input id="dh" class="form-control" inputmode="tel" placeholder="08xxxxxxxxxx">${lbl('Divisi')}<select id="dd" class="form-select"><option value="">Pilih divisi</option>${dv.map(x => `<option value="${x.id}">${esc(x.nama)}</option>`).join('')}</select>${lbl('Catatan (opsional)')}<input id="dc" class="form-control" maxlength="300"><input id="dw" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"><button class="btn btn-success w-100 mt-4 py-2" onclick="doDaftar()">Kirim pendaftaran</button><p class="text-center small mt-3"><a href="#" onclick="viewLogin();return false">Kembali ke login</a></p>`)
+      $('#app').innerHTML = lgWrap(`<h5 class="fw-bold mb-1">Pendaftaran anggota</h5><p class="text-secondary small">Pendaftaran disetujui pelatih, lalu akun diaktifkan pengurus. NIK dan password dikirim ke WhatsApp Anda setelah akun aktif.</p>${lbl('Nama lengkap')}<input id="dn" class="form-control" maxlength="100">${lbl('No. WhatsApp')}<input id="dh" class="form-control" inputmode="tel" placeholder="08xxxxxxxxxx">${lbl('Divisi')}<select id="dd" class="form-select"><option value="">Pilih divisi</option>${dv.map(x => `<option value="${x.id}">${esc(x.nama)}</option>`).join('')}</select>${lbl('Catatan (opsional)')}<input id="dc" class="form-control" maxlength="300"><input id="dw" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"><button class="btn btn-warning w-100 mt-4 py-2" onclick="doDaftar()">Daftar Sekarang</button><p class="text-center small mt-3"><a href="#" onclick="viewLogin();return false">Kembali ke login</a></p>`)
     }
     async function doDaftar() {
       const dd = $('#dd').value; if (!dd) return toast('Pilih divisi.', 1); busy(1);
