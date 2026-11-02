@@ -1,0 +1,26 @@
+{
+ "name": "ICTApp – ICT Club Management System",
+ "short_name": "ICTApp",
+ "description": "Absensi, kas, event, dan kursus ICT Club SMKN 2 Cikarang Barat",
+ "start_url": ".",
+ "scope": ".",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#132234",
+ "theme_color": "#132234",
+ "lang": "id",
+ "icons": [
+  {
+   "src": "assets/app-icons/ictapp-navy-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "assets/app-icons/ictapp-navy-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  }
+ ]
+}
