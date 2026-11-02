@@ -1,0 +1,18 @@
+:root {
+  --ict-navy: #293F59;
+  --ict-ink: #132234;
+  --ict-band: #081F44;
+  --ict-blue: #4D9CBA;
+  --ict-sky: #9BC9E3;
+  --ict-yellow: #F5BA42;
+  --ict-orange: #ED8B34;
+  --ict-grey: #5F7088;
+  --ict-bg: #F2F5F9;
+  --ict-surface: #FFFFFF;
+  --ict-border: #DCE5EE;
+  --ict-radius-sm: 10px;
+  --ict-radius-md: 16px;
+  --ict-radius-lg: 22px;
+  --ict-shadow-card: 0 5px 18px rgba(19, 34, 52, .08);
+  --ict-font: Inter, "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
