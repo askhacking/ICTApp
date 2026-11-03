@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="assets/app-icons/ict-logo-badge.png">
   <link rel="apple-touch-icon" href="assets/app-icons/ict-logo-badge.png">
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="app-version" content="2.6.0">
+  <meta name="app-version" content="2.6.1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -1419,7 +1419,44 @@
       .sheet { padding-left: 10px; padding-right: 10px; }
     }
 
-  </style>
+  /* V2.6.1 dashboard visual rebuild */
+:root{--navy:#123f70;--ink:#102b4b;--band:#eaf3ff;--blue:#1769aa;--sky:#dcecff;--yellow:#ffbd00;--orange:#f58212}
+body{background:#dcecff;color:var(--ink)}
+.hdr{min-height:96px;padding:18px 22px 22px;background:#103b68;border-radius:0 0 34px 34px;box-shadow:none}
+.hdr h1{font-size:1.18rem;font-weight:700;letter-spacing:-.02em}.hdr .ib{font-size:1.55rem}
+#top{display:none!important}
+.sheet,.sheet.flat{position:relative;isolation:isolate;overflow:hidden;margin:0;padding:18px 14px 34px;border-radius:0;background:#dcecff}
+.sheet:before{content:"";position:absolute;z-index:-1;top:0;left:0;right:0;height:170px;background:linear-gradient(155deg,#69b5ff 0 34%,#c4e0ff 34% 100%);clip-path:polygon(0 0,100% 0,100% 42%,0 100%)}
+.home-grid{display:flex!important;flex-direction:column;gap:0}.home-grid>div{width:100%;min-width:0}
+.sheet .card,.card{position:relative;overflow:hidden;color:#102b4b;background:#f4f8ff;border:1px solid #d4e4f7;border-radius:24px;box-shadow:0 2px 8px rgba(28,74,119,.07)}
+.sheet .card.card-body{padding:18px 16px}
+.dashboard-calendar{margin-bottom:16px!important;padding:18px 14px 14px!important}
+.dashboard-calendar:after{content:"";position:absolute;pointer-events:none;z-index:0;right:-2px;bottom:0;width:48%;height:54px;background:linear-gradient(165deg,transparent 0 26%,#ffd000 27% 54%,#ff8a00 55% 100%);clip-path:polygon(0 100%,42% 70%,72% 58%,100% 0,100% 100%);opacity:.95}
+.dashboard-calendar>*{position:relative;z-index:1}
+.calendar-heading{gap:8px;margin-bottom:18px!important}.calendar-heading .ib{color:#123f70;font-size:1.45rem}
+.pill{flex:1;margin:0 2px;padding:10px 8px;border-radius:999px;background:#174f86;color:#fff;box-shadow:none;font-size:1rem}
+.cg{grid-template-columns:repeat(7,minmax(0,1fr));gap:12px 0;font-size:.94rem;color:#173653}
+.cg b{color:#526c89;font-size:.9rem;font-weight:600}.cg .sun{color:#e34b43;font-weight:700}
+.cg .now{width:36px;height:36px;line-height:36px;border-radius:50%;background:#f58212;color:#fff;font-weight:700}
+.cg .ev:after{width:7px;height:7px;bottom:-5px;background:#f58212}
+.dashboard-calendar .border-top{border-color:#c6d8ec!important}
+.menu-card{margin:0 0 16px!important;padding:18px 12px 22px!important;min-height:0;background:#f4f8ff!important}
+.menu-card:after{content:"";position:absolute;z-index:0;pointer-events:none;right:-2px;bottom:0;width:76%;height:88px;background:linear-gradient(165deg,#9bcaff 0 42%,#ffd000 43% 68%,#ff8500 69% 100%);clip-path:polygon(0 100%,32% 75%,65% 66%,100% 0,100% 100%)}
+.qm{position:relative;z-index:1;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px 7px}
+.qm button{min-width:0;color:#102b4b;font-size:.72rem;font-weight:700;line-height:1.25;text-align:center;overflow-wrap:anywhere}
+.qc{width:min(100%,78px);height:78px;margin:0 auto 8px;flex:none;border-radius:22px;background:#e2efff;color:#1769aa;display:grid;place-items:center;font-size:1.8rem;box-shadow:none}
+.qc i{filter:drop-shadow(1px 1px 0 #f58212)}.menu-label{display:block;min-height:2.4em}
+.sheet .card:not(.dashboard-calendar):not(.menu-card){margin-bottom:12px!important}
+.sheet .card h5,.sheet .card h6{color:#102b4b;font-weight:700}
+.form-control,.form-select{border:1px solid #d6e3f2;border-radius:13px;background:#fff;min-height:44px;box-shadow:none}
+.btn{border-radius:13px;font-weight:600;min-height:42px}
+.btn-success{--bs-btn-bg:#1769aa;--bs-btn-border-color:#1769aa;--bs-btn-hover-bg:#12578f;--bs-btn-hover-border-color:#12578f;--bs-btn-active-bg:#12578f;--bs-btn-active-border-color:#12578f}
+.btn-outline-success{--bs-btn-color:#1769aa;--bs-btn-border-color:#a9c6e4;--bs-btn-hover-bg:#1769aa;--bs-btn-hover-border-color:#1769aa}
+.btn-warning{--bs-btn-bg:#f58212;--bs-btn-border-color:#f58212;--bs-btn-color:#fff}
+.desk-side{background:#123f70}
+@media(min-width:992px){.hdr{border-radius:0}.sheet{padding:26px 30px 40px}.home-grid{display:grid!important;grid-template-columns:minmax(320px,.95fr) minmax(320px,1.05fr);gap:18px;align-items:start}.home-grid>div{width:auto}.menu-card{display:block!important}.qm{gap:22px 10px}.qc{width:82px;height:82px}}
+@media(max-width:380px){.sheet,.sheet.flat{padding-left:10px;padding-right:10px}.dashboard-calendar{padding:16px 10px 12px!important}.cg{gap:10px 0;font-size:.88rem}.qc{width:62px;height:62px;border-radius:19px}.qm{gap:16px 4px}.qm button{font-size:.65rem}.pill{font-size:.88rem}}
+</style>
 </head>
 
 <body>
@@ -1558,7 +1595,7 @@
       for (let i = 0; i < first; i++)c += '<span></span>';
       for (let d = 1; d <= n; d++) { const w = (first + d - 1) % 7, key = `${cy}-${pm}-${String(d).padStart(2, '0')}`, ev = CE.some(e => e.mulai <= key && (e.selesai || e.mulai) >= key); c += `<span class="${w === 6 ? 'sun' : ''}${now && d === t[2] ? ' now' : ''}${ev ? ' ev' : ''}"${ev ? ` onclick="calDay('${key}')"` : ''}>${d}</span>` }
       const lst = CE.length ? `<div class="mt-3 pt-2 border-top small">${CE.slice(0, 5).map(e => `<div class="d-flex justify-content-between gap-2 py-1" role="button" tabindex="0" onclick="evOpen(${e.id})"><span><i class="bi bi-calendar-event"></i> ${esc(e.judul)}</span><span class="text-secondary text-nowrap">${fd(e.mulai, e.selesai)}</span></div>`).join('')}${CE.length > 5 ? `<div class="text-secondary">+${CE.length - 5} event lainnya</div>` : ''}</div>` : '';
-      return `<div class="card card-body mb-3"><div class="d-flex align-items-center justify-content-between mb-3"><button class="ib dk" onclick="calGo(-1)"><i class="bi bi-chevron-left"></i></button><div class="pill">${BLN[cmn]} - ${cy}</div><button class="ib dk" onclick="calGo(1)"><i class="bi bi-chevron-right"></i></button></div><div class="cg">${['SN', 'SL', 'RB', 'KM', 'JM', 'SB', 'MG'].map(x => `<b>${x}</b>`).join('')}${c}</div>${lst}</div>`
+      return `<div class="card card-body mb-3 dashboard-calendar"><div class="d-flex align-items-center justify-content-between mb-3 calendar-heading"><button class="ib dk" onclick="calGo(-1)"><i class="bi bi-chevron-left"></i></button><div class="pill">${BLN[cmn]} - ${cy}</div><button class="ib dk" onclick="calGo(1)"><i class="bi bi-chevron-right"></i></button></div><div class="cg">${['SN', 'SL', 'RB', 'KM', 'JM', 'SB', 'MG'].map(x => `<b>${x}</b>`).join('')}${c}</div>${lst}</div>`
     }
     let CEC = {};
     async function loadCE(force) {
