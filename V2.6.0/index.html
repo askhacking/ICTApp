@@ -1473,6 +1473,23 @@ body{background:#dcecff;color:var(--ink)}
 .menu-card:before{height:67px;width:78%;z-index:-1}
 .menu-card .qm{position:relative;z-index:2}
 @media(max-width:380px){.hdr{height:84px;min-height:84px;padding:9px 16px 11px}.calendar-wave{height:30px}}
+/* V2.6.3 — unify the calendar/menu orange wave and make the backdrop viewport-wide */
+html,body{min-height:100%;background:#dcecff}
+body{min-height:100vh;min-height:100dvh;background:linear-gradient(150deg,#72baff 0%,#a9d2ff 24%,#dcecff 56%,#dcecff 100%);background-repeat:no-repeat;background-size:100% 100%;background-attachment:fixed}
+.shell{background:transparent}
+.workspace{background:transparent!important}
+.sheet,.sheet.flat{background:transparent!important}
+/* Both cards use one shared wave silhouette; only its height scales with its container. */
+.calendar-wave,.menu-card{position:relative;isolation:isolate}
+.calendar-wave{height:34px;overflow:hidden}
+.menu-card{overflow:hidden}
+.calendar-wave:before,.menu-card:after{content:"";position:absolute;pointer-events:none;right:-2px;bottom:0;width:78%;height:100%;background:#ffbd00;clip-path:polygon(0 100%,12% 82%,27% 69%,43% 59%,59% 54%,73% 46%,86% 27%,100% 0,100% 100%)}
+.calendar-wave:after,.menu-card:before{content:"";position:absolute;pointer-events:none;right:-2px;bottom:0;width:78%;height:76%;background:#f58212;clip-path:polygon(0 100%,12% 82%,27% 69%,43% 59%,59% 54%,73% 46%,86% 27%,100% 0,100% 100%)}
+.calendar-wave:before,.calendar-wave:after{z-index:0}
+.menu-card:before,.menu-card:after{z-index:0}
+.menu-card .qm{position:relative;z-index:1}
+@media(max-width:380px){.calendar-wave{height:30px}}
+@media(min-width:992px){body{background-attachment:fixed}.shell{background:transparent}}
 </style>
 </head>
 
