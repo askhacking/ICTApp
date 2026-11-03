@@ -394,7 +394,7 @@
     .logo-box {
       width: 160px;
       height: 160px;
-      border-radius: 50%;
+      border-radius: 25%;
       background: #fff;
       margin: 0 auto;
       display: flex;
@@ -405,8 +405,8 @@
     }
 
     .logo {
-      width: 88%;
-      height: 88%;
+      width: 100%;
+      height: 100%;
       object-fit: contain
     }
 
@@ -461,8 +461,8 @@
     }
 
     .logo-box {
-      width: 124px;
-      height: 124px;
+      width: 180px;
+      height: 180px;
     }
 
     .lg-sheet {
@@ -495,8 +495,8 @@
       }
 
       .logo-box {
-        width: 108px;
-        height: 108px;
+        width: 138px;
+        height: 138px;
       }
 
       .lg-sheet {
@@ -1076,8 +1076,8 @@
       }
 
       .logo-box {
-        width: 124px;
-        height: 124px;
+        width: 154px;
+        height: 154px;
       }
 
       .lg-sheet {
@@ -1279,7 +1279,8 @@
   <div id="bar"></div>
   <div id="page-loader" role="status" aria-live="polite" aria-atomic="true">
     <div class="loader-panel">
-      <div class="loader-mark"><i class="bi bi-mortarboard-fill"></i></div>
+      <div class="loader-mark" style="background:none"><img src="assets/app-icons/ict-logo-only.png" alt="" width="62" height="62" onerror="this.remove()"></div>
+      <!-- <div class="loader-mark"><i class="bi bi-mortarboard-fill"></i></div> -->
       <div class="loader-ring" aria-hidden="true"></div>
       <div id="loader-title" class="mt-4">Memuat ICT Club</div>
       <p id="loader-message">Mohon tunggu, kami sedang menyiapkan halaman.</p>
@@ -1342,7 +1343,7 @@
     const okUrl = u => { try { return new URL(u).protocol === 'https:' } catch (e) { return false } };
     let HF = false, QUIET = false, LSIG = null, LBUSY = false, LDIRTY = false, KV = '', EVV = '', LHOLD = 0, LFAIL = 0, LACT = Date.now(), LN = 0;
     /* ---- Login & pendaftaran anggota ---- */
-    const LOGO = `<div class="logo-box"><img src="assets/logo.png" alt="ICT Club" class="logo" onerror="this.style.display='none';document.getElementById('lgfb').style.display='block'"><div id="lgfb" class="logo-fb" style="display:none">ICT<br>CLUB</div></div>`;
+    const LOGO = `<div class="logo-box"><img src="assets/logos/logo.png" alt="ICT Club" class="logo" onerror="this.style.display='none';document.getElementById('lgfb').style.display='block'"><div id="lgfb" class="logo-fb" style="display:none">ICT<br>CLUB</div></div>`;
     let riseOnce = true;
     const lgWrap = h => { const r = riseOnce ? ' rise' : ''; riseOnce = false; return `<div class="lg"><div class="lg-top">${LOGO}</div><div class="lg-sheet${r}">${h}</div></div>` };
     function viewLogin(msg) { closeM(); $('#app').innerHTML = lgWrap(`<h5 class="fw-bold mb-3">Masuk ke akun Anda</h5>${msg ? `<div class="alert alert-warning">${esc(msg)}</div>` : ''}${lbl('NIK')}<input id="nik" class="form-control" inputmode="numeric" autocomplete="username" placeholder="NIK">${lbl('Password')}<input id="pw" type="password" class="form-control" autocomplete="current-password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"><button class="btn btn-success w-100 mt-4 py-2" onclick="doLogin()">Masuk</button><p class="text-secondary small text-center mt-3 mb-1">Lupa password? Hubungi pelatih atau pengurus.</p><p class="text-center small mt-4">Belum menjadi anggota? <a href="#" onclick="viewDaftar();return false">Daftar sebagai anggota</a></p><p class="text-secondary small text-center">Satu akun hanya dapat dipakai di satu perangkat.</p>`) }
@@ -1376,7 +1377,7 @@
       const nav = ROLEMENU[u.role].map(k => `<button data-k="${k}" onclick="drw(0);go('${k}')"><i class="bi bi-${M[k][1]}"></i><span>${M[k][0]}</span>${bdg(k) > 0 ? `<span class="badge bg-warning text-dark ms-auto">${bdg(k)}</span>` : ''}</button>`).join('');
       $('#app').innerHTML = `<div class="shell">
         <aside class="desk-side">
-          <div class="desk-brand"><div class="desk-brand-mark"><i class="bi bi-mortarboard-fill"></i></div><div><strong>ICT CLUB</strong><small>Management System</small></div></div>
+          <div class="desk-brand"><img class="desk-brand-mark" src="assets/app-icons/ict-logo-badge.png" alt="ICTApp"><div><strong>ICT CLUB</strong><small>Management System</small></div></div>
           <div class="desk-nav-label">Menu utama</div>
           <nav class="desk-nav" aria-label="Navigasi utama">${nav}</nav>
           <div class="desk-side-user"><div class="desk-avatar">${esc((u.nama.trim()[0] || '?').toUpperCase())}</div><div class="user-meta"><div class="fw-semibold">${esc(u.nama)}</div><div>${esc(u.divisi || u.role)}</div></div><button title="Akun" aria-label="Akun" onclick="go('akun')"><i class="bi bi-gear"></i></button></div>
