@@ -1,0 +1,20 @@
+{
+  "project": "ICTApp",
+  "description": "ICT Club Management System \u2014 SMKN 2 Cikarang Barat",
+  "palette": {
+    "navy": "#293F59",
+    "ink": "#132234",
+    "band": "#081F44",
+    "blue": "#4D9CBA",
+    "sky": "#9BC9E3",
+    "yellow": "#F5BA42",
+    "orange": "#ED8B34",
+    "grey": "#5F7088"
+  },
+  "folders": [
+    "logos",
+    "app-icons",
+    "icons",
+    "design-system"
+  ]
+}
