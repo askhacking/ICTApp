@@ -24,7 +24,7 @@
     /* =====================================================================
        ICT App v2.6.4 — stylesheet (dirapikan)
        Semua lapisan versi lama (2.4 → 2.6.4) sudah digabung menjadi satu.
-       Isi file ini menggantikan seluruh isi <style>…</style>.
+       Isi file ini menggantikan seluruh isi
 
         1. Variabel
         2. Dasar
@@ -293,8 +293,8 @@
       position: sticky;
       top: 0;
       z-index: 20;
-      height: 84px;
-      min-height: 84px;
+      height: 60px;
+      min-height: 60px;
       padding: 10px 22px 12px;
       display: flex;
       align-items: center;
@@ -1386,7 +1386,7 @@
       if ($('#loader-message')) $('#loader-message').textContent = 'Menyiapkan data halaman, mohon tunggu.';
       const prev = tab; tab = k; HF = k === 'home' && prev !== 'home'; const u = S.user, h = k === 'home'; $('#ttl').textContent = M[k][0];
       document.querySelectorAll('button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === k));
-      $('#top').innerHTML = h ? `<div class="prof"><div class="av">${esc((u.nama.trim()[0] || '?').toUpperCase())}</div><div class="flex-fill"><div class="fw-bold">${esc(u.nama)}</div><div class="small">${esc(u.divisi || u.role)}</div></div><button class="ib" onclick="go('akun')"><i class="bi bi-pencil-square"></i></button></div><div class="band"></div>` : '';
+      $('#top').innerHTML = h ? `<div class="prof"><div class="av">${esc((u.nama.trim()[0] || '?').toUpperCase())}</div><div class="flex-fill"><div class="fw-bold">${esc(u.nama)}</div><div class="small">${esc(u.divisi || u.role)}</div></div><button class="ib" onclick="go('akun')"><i class="bi bi-pencil-square"></i></button></div>` : '';
       $('#main').classList.toggle('flat', !h); window.scrollTo(0, 0);
       ({ ntf: vNtf, home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, reg: vReg, evt: vEvt, krs: vKrs, nil: vNil, akun: vAkun })[k]($('#main'))
     }
