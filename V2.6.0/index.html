@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="assets/app-icons/ict-logo-badge.png">
   <link rel="apple-touch-icon" href="assets/app-icons/ict-logo-badge.png">
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="app-version" content="2.6.4">
+  <meta name="app-version" content="2.6.5">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -22,37 +22,40 @@
 
   <style>
     /* =====================================================================
-       ICT App v2.6.4 — stylesheet (dirapikan)
-       Semua lapisan versi lama (2.4 → 2.6.4) sudah digabung menjadi satu.
-       Isi file ini menggantikan seluruh isi
+       ICT App — stylesheet gabungan
+       Tata letak  : versi 2.5.2 (header + profil, band, sheet bertumpuk,
+                     kartu, menu bulat, grid desktop 400px | 1fr)
+       Tampilan    : versi 2.6.4 (palet warna, latar gradasi, ikon SVG,
+                     ornamen gelombang, logo)
 
-        1. Variabel
-        2. Dasar
-        3. Override Bootstrap (form, tombol, warna, tabel)
+        1. Variabel warna (2.6.4)
+        2. Dasar & latar
+        3. Override Bootstrap
         4. Login & pendaftaran
         5. Shell, header, drawer
-        6. Profil (#top — saat ini disembunyikan)
+        6. Profil & band
         7. Sheet & kartu
         8. Dashboard: kalender, ornamen gelombang, menu cepat
         9. Komponen halaman lain
        10. Overlay, loader, progress bar
        11. Desktop (≥ 992px, ≥ 1400px)
-       12. Layar kecil (≤ 575px, ≤ 380px)
+       12. Layar kecil (≤ 575px)
        13. Reduced motion
        14. Cetak
        ===================================================================== */
 
 
-    /* ---------- 1. Variabel ---------- */
+    /* ---------- 1. Variabel warna (2.6.4) ---------- */
     :root {
       --navy: #123f70;
       --header: #103b68;
       --ink: #102b4b;
-      --band: #eaf3ff;
       --blue: #1769aa;
       --blue-dark: #12578f;
       --sky: #dcecff;
       --pale: #f3f8ff;
+      --tile: #e2efff;
+      --line: #d3e3f5;
       --yellow: #ffbd00;
       --orange: #f58212;
       --muted: #607286;
@@ -63,7 +66,7 @@
     }
 
 
-    /* ---------- 2. Dasar ---------- */
+    /* ---------- 2. Dasar & latar ---------- */
     html {
       min-height: 100%;
       background: var(--sky);
@@ -76,12 +79,6 @@
       min-height: 100dvh;
       background: linear-gradient(145deg, #69b4ff 0%, #b8d9ff 27%, var(--sky) 58%, var(--sky) 100%) fixed;
       background-size: cover;
-    }
-
-    #app {
-      min-height: 100vh;
-      min-height: 100dvh;
-      background: transparent;
     }
 
     .text-secondary {
@@ -97,23 +94,20 @@
     /* ---------- 3. Override Bootstrap ---------- */
     .form-control,
     .form-select {
-      min-height: 44px;
       padding: .6rem 1rem;
       border: 1px solid #d6e3f2;
-      border-radius: 13px;
+      border-radius: 30px;
       background-color: #fff;
-      box-shadow: none;
     }
 
     .form-control:focus,
     .form-select:focus {
       border-color: var(--navy);
-      box-shadow: 0 0 0 .2rem rgba(41, 63, 89, .2);
+      box-shadow: 0 0 0 .2rem rgba(18, 63, 112, .2);
     }
 
     .btn {
-      min-height: 42px;
-      border-radius: 13px;
+      border-radius: 16px;
       font-weight: 600;
     }
 
@@ -185,7 +179,7 @@
     .table {
       --bs-table-bg: transparent;
       --bs-table-color: inherit;
-      --bs-table-border-color: rgba(41, 63, 89, .22);
+      --bs-table-border-color: rgba(18, 63, 112, .22);
       --bs-table-accent-bg: transparent;
       background: transparent;
     }
@@ -203,7 +197,7 @@
       overflow: hidden;
       border-radius: 24px;
       background: #fafafa;
-      box-shadow: 0 16px 48px rgba(19, 34, 52, .18);
+      box-shadow: 0 16px 48px rgba(16, 43, 75, .18);
     }
 
     .lg-top {
@@ -266,6 +260,11 @@
 
 
     /* ---------- 5. Shell, header, drawer ---------- */
+    #app {
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
     .shell {
       max-width: 640px;
       min-height: 100vh;
@@ -273,34 +272,35 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      background: transparent;
     }
 
     .desk-side {
       display: none;
     }
 
+    .desk-brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+    }
+
     .workspace {
-      position: relative;
       min-width: 0;
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: transparent;
     }
 
     .hdr {
       position: sticky;
       top: 0;
       z-index: 20;
-      height: 60px;
-      min-height: 60px;
-      padding: 10px 22px 12px;
+      padding: 18px 20px 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      border-radius: 0 0 34px 34px;
+      border-radius: 0 0 40px 40px;
       background: var(--header);
       color: #fff;
     }
@@ -309,10 +309,8 @@
       flex: 1;
       margin: 0;
       color: #fff;
-      font-size: 1.2rem;
-      font-weight: 750;
-      line-height: 1.15;
-      letter-spacing: -.02em;
+      font-size: 1rem;
+      font-weight: 700;
       text-align: center;
     }
 
@@ -329,11 +327,6 @@
 
     .ib.dk {
       color: var(--navy);
-    }
-
-    .hdr .ib {
-      color: #fff;
-      font-size: 1.55rem;
     }
 
     /* Badge jumlah notifikasi di lonceng */
@@ -364,7 +357,7 @@
     .drw-bg {
       position: absolute;
       inset: 0;
-      background: rgba(19, 34, 52, .55);
+      background: rgba(16, 43, 75, .55);
       opacity: 0;
       transition: .2s;
     }
@@ -410,19 +403,21 @@
     }
 
 
-    /* ---------- 6. Profil (#top) ----------
-       #top sengaja disembunyikan sejak v2.6.1. Gaya .prof/.av/.band
-       dibiarkan agar mudah diaktifkan lagi. */
-    #top {
-      display: none;
-    }
-
+    /* ---------- 6. Profil & band (Beranda) ---------- */
     .prof {
       padding: 22px 24px 12px;
       display: flex;
       align-items: center;
       gap: 14px;
-      color: #fff;
+      color: var(--ink);
+    }
+
+    .prof .small {
+      color: var(--muted);
+    }
+
+    .prof .ib {
+      color: var(--navy);
     }
 
     .av {
@@ -434,148 +429,93 @@
       justify-content: center;
       border-radius: 50%;
       background: var(--sky);
-      color: var(--ink);
+      color: var(--navy);
       font-size: 1.5rem;
       font-weight: 700;
     }
 
+    /* Pita gelap di belakang tepi atas sheet */
     .band {
       height: 70px;
       margin-top: 6px;
       border-radius: 21px 21px 0 0;
-      background: var(--band);
+      background: var(--header);
     }
 
 
     /* ---------- 7. Sheet & kartu ---------- */
     .sheet {
       position: relative;
-      isolation: isolate;
       flex: 1 0 auto;
-      margin: 0;
-      padding: 18px 14px 34px;
-      overflow: hidden;
-      border-radius: 0;
-      background: transparent !important;
+      margin-top: -34px;
+      padding: 18px 16px 40px;
+      border-radius: 21px 21px 0 0;
+      background: var(--sky);
+    }
+
+    .sheet.flat {
+      margin-top: 16px;
     }
 
     .card {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid #d3e3f5;
-      border-radius: 25px;
+      border: 1px solid var(--line);
+      border-radius: 21px;
       background: var(--pale);
       color: var(--ink);
       box-shadow: 0 2px 8px rgba(28, 74, 119, .07);
     }
 
-    .card.card-body {
-      padding: 18px;
-    }
-
-    .sheet .card.card-body {
-      padding: 18px 16px;
-    }
-
-    .sheet .card:not(.dashboard-calendar):not(.menu-card) {
-      margin-bottom: 12px !important;
-    }
-
     .sheet .card h5,
     .sheet .card h6 {
       color: var(--ink);
-      font-weight: 700;
-    }
-
-    .home-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .home-grid > div {
-      width: 100%;
-      min-width: 0;
     }
 
 
     /* ---------- 8. Dashboard ---------- */
 
     /* Kalender */
-    .dashboard-calendar {
-      margin-bottom: 16px !important;
-      padding: 18px 14px 14px !important;
-    }
-
-    .dashboard-calendar > * {
-      position: relative;
-      z-index: 1;
-    }
-
-    .dashboard-calendar .border-top {
-      position: relative;
-      z-index: 2;
-      margin-top: 0 !important;
-      padding-top: 12px !important;
-      border-color: #c5d8ed !important;
-    }
-
-    .calendar-heading {
-      gap: 8px;
-      margin-bottom: 18px !important;
-    }
-
-    .calendar-heading .ib {
-      color: var(--header);
-      font-size: 1.45rem;
-    }
-
     .pill {
       flex: 1;
-      margin: 0 2px;
-      padding: 10px 8px;
-      border-radius: 999px;
+      margin: 0 8px;
+      padding: 8px 0;
+      border-radius: 20px;
       background: #174f86;
       color: #fff;
-      font-size: 1rem;
       font-weight: 700;
       text-align: center;
     }
 
     .pill i {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       vertical-align: -1px;
     }
 
     .cg {
       display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
-      gap: 12px 0;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px 0;
       color: #173653;
-      font-size: .94rem;
+      font-size: .9rem;
       text-align: center;
     }
 
     .cg b {
       color: #526c89;
-      font-size: .9rem;
-      font-weight: 600;
+      font-weight: 400;
     }
 
     .cg .sun {
       color: #e34b43;
-      font-weight: 700;
     }
 
     .cg .now {
-      width: 36px;
-      height: 36px;
+      width: 28px;
+      height: 28px;
       margin: auto;
       border-radius: 50%;
       background: var(--orange);
       color: #fff;
-      font-weight: 700;
-      line-height: 36px;
+      line-height: 28px;
     }
 
     /* Tanggal yang punya event: titik oranye di bawah angka */
@@ -588,21 +528,31 @@
       content: "";
       position: absolute;
       left: 50%;
-      bottom: -5px;
-      width: 7px;
-      height: 7px;
+      bottom: -4px;
+      width: 6px;
+      height: 6px;
       margin-left: -3px;
       border-radius: 50%;
       background: var(--orange);
     }
 
-    /* Ornamen gelombang — dipakai bersama oleh kalender & menu cepat.
+    .cg .now.ev::after {
+      bottom: -5px;
+    }
+
+    .dashboard-calendar .border-top {
+      position: relative;
+      z-index: 1;
+      border-color: #c5d8ed !important;
+    }
+
+    /* Ornamen gelombang (2.6.4) — dipakai kalender & menu cepat.
        ::before = lapisan biru muda, ::after = lapisan kuning/oranye. */
     .calendar-wave {
       position: relative;
       isolation: isolate;
-      height: 42px;
-      margin: 7px -2px 0;
+      height: 34px;
+      margin: 6px -2px 0;
       overflow: hidden;
     }
 
@@ -633,34 +583,26 @@
 
     .calendar-wave::before { height: 100%; }
     .calendar-wave::after  { height: 76%; }
-    .menu-card::before     { height: 88px; }
-    .menu-card::after      { height: 67px; }
+    .menu-card::before     { height: 72px; }
+    .menu-card::after      { height: 54px; }
 
     /* Menu cepat */
     .menu-card {
       position: relative;
       isolation: isolate;
       overflow: hidden;
-      margin: 0 0 16px !important;
-      padding: 18px 12px 22px !important;
-      background: var(--pale) !important;
     }
 
     .qm {
       position: relative;
-      z-index: 2;
+      z-index: 1;
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 20px 7px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px 6px;
       text-align: center;
     }
 
-    .menu-card .qm {
-      z-index: 1;
-    }
-
     .qm button {
-      min-width: 0;
       padding: 0;
       display: flex;
       flex-direction: column;
@@ -670,21 +612,20 @@
       background: none;
       color: var(--ink);
       font-size: .72rem;
-      font-weight: 750;
+      font-weight: 700;
       line-height: 1.25;
-      text-align: center;
-      overflow-wrap: anywhere;
     }
 
     .qc {
       flex: none;
-      width: min(100%, 78px);
-      height: 78px;
-      margin: 0 auto 8px;
-      display: grid;
-      place-items: center;
-      border-radius: 23px;
-      background: #e2efff;
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--tile);
       color: var(--blue);
     }
 
@@ -692,11 +633,6 @@
       width: 76%;
       height: 76%;
       display: block;
-    }
-
-    .menu-label {
-      display: block;
-      min-height: 2.4em;
     }
 
 
@@ -737,7 +673,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(0, 0, 0, .15);
+      border: 1px solid var(--line);
       border-radius: 10px;
       background: #fff;
       font-size: .85rem;
@@ -765,7 +701,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(19, 34, 52, .55);
+      background: rgba(16, 43, 75, .55);
     }
 
     .ov .card {
@@ -812,10 +748,10 @@
     .loader-panel {
       width: min(100%, 360px);
       padding: 32px 26px;
-      border: 1px solid #e0e7ef;
+      border: 1px solid var(--line);
       border-radius: 24px;
       background: #fff;
-      box-shadow: 0 18px 55px rgba(19, 34, 52, .12);
+      box-shadow: 0 18px 55px rgba(16, 43, 75, .12);
       text-align: center;
     }
 
@@ -900,7 +836,7 @@
       }
 
       .drw {
-        display: none;
+        display: none !important;
       }
 
       /* Sidebar */
@@ -940,12 +876,6 @@
         font-size: .72rem;
       }
 
-      .desk-brand-mark {
-        width: 42px;
-        height: 42px;
-        border-radius: 13px;
-      }
-
       .desk-nav-label {
         padding: 18px 12px 8px;
         color: #9fb0c2;
@@ -974,6 +904,9 @@
         font-size: .88rem;
         font-weight: 600;
         text-align: left;
+      }
+
+      .desk-nav button {
         transition: background .15s, color .15s;
       }
 
@@ -1014,7 +947,7 @@
         display: grid;
         place-items: center;
         border-radius: 50%;
-        background: #d7e8f4;
+        background: var(--sky);
         color: var(--ink);
         font-weight: 700;
       }
@@ -1041,12 +974,13 @@
 
       /* Header: judul di kiri, lonceng di kanan, tombol menu disembunyikan */
       .hdr {
+        padding: 18px 34px;
         border-radius: 0;
-        border-bottom: 1px solid #e3e9f0;
       }
 
       .hdr h1 {
         order: 1;
+        font-size: 1.05rem;
         text-align: left;
       }
 
@@ -1059,33 +993,69 @@
         display: none;
       }
 
-      /* Area konten */
+      /* Profil & area konten: lebar maks. 1120px, di tengah */
+      #top,
       .sheet {
         width: 100%;
         max-width: 1120px;
+        margin-left: auto;
+        margin-right: auto;
       }
 
-      .sheet:not(.flat) {
-        padding: 26px 30px 40px;
+      #top {
+        padding: 0 34px;
+      }
+
+      .prof {
+        padding: 26px 0 18px;
+      }
+
+      .av {
+        box-shadow: 0 5px 14px rgba(16, 43, 75, .12);
+      }
+
+      .band {
+        display: none;
+      }
+
+      .sheet,
+      .sheet.flat {
+        margin-top: 0;
+        margin-bottom: 0;
+        padding: 24px 34px 44px;
+        border-radius: 0;
+        background: transparent;
+      }
+
+      .sheet .card {
+        border-radius: 16px;
       }
 
       .sheet .card .card {
         box-shadow: none;
       }
 
+      /* Beranda: kalender 400px | kartu sesi; menu cepat diganti sidebar */
       .home-grid {
         display: grid;
-        grid-template-columns: minmax(320px, .95fr) minmax(320px, 1.05fr);
-        gap: 18px;
+        grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+        gap: 16px;
         align-items: start;
       }
 
-      .home-grid > div {
-        width: auto;
+      .menu-card {
+        display: none;
       }
 
-      .qm  { gap: 22px 10px; }
-      .qc  { width: 82px; height: 82px; }
+      .cg {
+        gap: 10px 0;
+      }
+
+      .cg .now {
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+      }
 
       .table-responsive { border-radius: 12px; }
       .table            { font-size: .9rem; }
@@ -1120,6 +1090,14 @@
       .workspace {
         width: calc(100% - 272px);
       }
+
+      .hdr,
+      #top,
+      .sheet,
+      .sheet.flat {
+        padding-left: 44px;
+        padding-right: 44px;
+      }
     }
 
 
@@ -1144,48 +1122,6 @@
         margin-top: -30px;
         padding: 26px 22px 28px;
         border-radius: 28px 28px 0 0;
-      }
-    }
-
-    @media (max-width: 380px) {
-      .hdr {
-        padding: 9px 16px 11px;
-      }
-
-      .sheet {
-        padding-left: 10px;
-        padding-right: 10px;
-      }
-
-      .dashboard-calendar {
-        padding: 16px 10px 12px !important;
-      }
-
-      .pill {
-        font-size: .88rem;
-      }
-
-      .cg {
-        gap: 10px 0;
-        font-size: .88rem;
-      }
-
-      .calendar-wave {
-        height: 36px;
-      }
-
-      .qm {
-        gap: 16px 4px;
-      }
-
-      .qm button {
-        font-size: .65rem;
-      }
-
-      .qc {
-        width: 62px;
-        height: 62px;
-        border-radius: 19px;
       }
     }
 
@@ -1233,16 +1169,20 @@
         width: 100% !important;
       }
 
-      .sheet {
+      #top,
+      .sheet,
+      .sheet.flat {
         max-width: none !important;
+      }
+
+      .sheet {
         margin: 0 !important;
         padding: 0 !important;
         border-radius: 0;
         background: #fff !important;
       }
 
-      .card,
-      .sheet .card {
+      .card {
         break-inside: avoid;
         border: 1px solid #ddd;
         box-shadow: none;
@@ -1386,7 +1326,7 @@
       if ($('#loader-message')) $('#loader-message').textContent = 'Menyiapkan data halaman, mohon tunggu.';
       const prev = tab; tab = k; HF = k === 'home' && prev !== 'home'; const u = S.user, h = k === 'home'; $('#ttl').textContent = M[k][0];
       document.querySelectorAll('button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === k));
-      $('#top').innerHTML = h ? `<div class="prof"><div class="av">${esc((u.nama.trim()[0] || '?').toUpperCase())}</div><div class="flex-fill"><div class="fw-bold">${esc(u.nama)}</div><div class="small">${esc(u.divisi || u.role)}</div></div><button class="ib" onclick="go('akun')"><i class="bi bi-pencil-square"></i></button></div>` : '';
+      $('#top').innerHTML = h ? `<div class="prof"><div class="av">${esc((u.nama.trim()[0] || '?').toUpperCase())}</div><div class="flex-fill"><div class="fw-bold">${esc(u.nama)}</div><div class="small">${esc(u.divisi || u.role)}</div></div><button class="ib" onclick="go('akun')"><i class="bi bi-pencil-square"></i></button></div><div class="band"></div>` : '';
       $('#main').classList.toggle('flat', !h); window.scrollTo(0, 0);
       ({ ntf: vNtf, home: vHome, hadir: vHadir, grp: vGrp, kas: vKas, lap: vLap, rh: vRh, usr: vUsr, reg: vReg, evt: vEvt, krs: vKrs, nil: vNil, akun: vAkun })[k]($('#main'))
     }
